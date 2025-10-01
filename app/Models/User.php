@@ -14,7 +14,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     protected $fillable = [
-         'ngo', 'name', 'email', 'password', 'role',
+         'ngo', 'name', 'email', 'password', 'role', 'image'
     ];
 
     public function isAdmin()

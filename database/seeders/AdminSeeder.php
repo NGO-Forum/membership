@@ -16,15 +16,16 @@ class AdminSeeder extends Seeder
             // [
             //     'name' => 'Bunna',
             //     'ngo' => 'NGO Forum Cambodia',
-            //     'email' => 'support@ngoforum.org.kh',
+            //     'email' => 'bunna@ngoforum.org.kh',
             //     'role' => 'admin',
-            //     'password' => 'UnifiP@$$w0rd'
+            //     'image' => null,
+            //     'password' => '@BunnaRiti#NGOF2025'
             // ],
             // [
             //     'name' => 'Vicheth',
             //     'ngo' => 'NGO Forum Cambodia',
             //     'email' => 'vicheth@ngoforum.org.kh',
-            //     'role' => 'manager',
+            //     'role' => 'admin',
             //     'password' => 'NecaAwg*2023'
             // ],
             // [
@@ -51,15 +52,15 @@ class AdminSeeder extends Seeder
             [
                 'name' => 'Mengseu',
                 'ngo' => 'NGO Forum Cambodia',
-                'email' => 'mengseu.sork@student.passerellesnumeriques.org',
+                'email' => 'mengseu@ngoforum.org.kh',
                 'role' => 'admin',
-                'password' => '1234567890'
+                'password' => '@SeuRiti#NGOF2025'
             ],
         ];
 
         foreach ($users as $data) {
             User::updateOrCreate(
-                ['email' => $data['email']], // prevents duplicate seeding
+                ['email' => $data['email']],
                 [
                     'name' => $data['name'],
                     'ngo' => $data['ngo'],

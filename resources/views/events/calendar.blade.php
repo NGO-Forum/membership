@@ -57,7 +57,7 @@
 
                     <div class="relative h-20 sm:h-24 md:h-32 p-1 sm:p-2 border-b border-r border-green-300 cursor-pointer
                             {{ !$isCurrentMonth ? 'text-gray-400 bg-gray-100' : ($isWeekend ? 'bg-gray-50' : 'bg-white') }}"
-                             @if (auth()->user()->role === 'admin') onclick="openEventModal('{{ $date }}')" @endif>
+                        @if (auth()->user()->role === 'admin') onclick="openEventModal('{{ $date }}')" @endif>
 
                         {{-- Day Number --}}
                         <div class="absolute top-1 sm:top-2 left-1 sm:left-2 text-xs sm:text-sm">
@@ -84,7 +84,11 @@
                                     $widthClass = 'w-[' . $span * (100 / 7) . '%]';
                                     $leftOffset = $currentDay->dayOfWeek * (100 / 7);
                                 @endphp
-                                <div class="absolute z-10 p-1 sm:p-1.5 mt-6 md:mt-8 bg-green-300 rounded-lg cursor-pointer hover:bg-green-400 transition border-l-8 border-green-600"
+                                <div class="absolute z-10 p-1 sm:p-1.5 mt-6 md:mt-8 
+                                    rounded-lg cursor-pointer transition border-l-8
+                                    {{ \Carbon\Carbon::parse($event->end_date)->isPast()
+                                        ? 'bg-green-200 border-green-500 hover:bg-green-200 text-gray-400'
+                                        : 'bg-green-300 border-green-600 hover:bg-green-400' }}"
                                     style="width: {{ $span * 97 }}%;"
                                     onclick='event.stopPropagation(); openEventDetailModal(@json($event));'>
 
@@ -169,7 +173,7 @@
                     <input type="text" name="organizer"
                         class="border rounded-md p-2 w-full focus:ring focus:ring-blue-200">
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium mb-1">Organizer Email</label>
                     <input type="email" name="organizer_email"

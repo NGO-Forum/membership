@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="max-w-full mx-auto">
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex justify-between items-center mb-3 md:mb-6">
             <h1 class="text-2xl md:text-3xl font-semibold text-green-700">Report Memberships</h1>
         </div>
 

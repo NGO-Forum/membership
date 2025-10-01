@@ -114,6 +114,12 @@
                             </a>
                         </div>
                     </div>
+
+                    {{-- Admin --}}
+                    <a href="{{ route('admins.index') }}"
+                        class="font-semibold border-b-2 py-1 text-xs md:text-lg {{ request()->routeIs('admins.index') ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
+                        Admin
+                    </a>
                 @elseif(auth()->user()->role === 'user')
                     @php
                         $user = Auth::user();
@@ -159,10 +165,33 @@
                             </a>
                         </div>
                     </div>
-                    <a href="#"
-                        class="font-semibold border-b-2 py-1 text-xs md:text-lg flex items-center space-x-2 {{ request()->routeIs('') ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
-                        Membership Report
-                    </a>
+                    <div x-data="{ open: false }" class="relative">
+                        <!-- Parent Button -->
+                        <button @click="open = !open"
+                            class="font-semibold border-b-2 py-1 text-xs md:text-lg flex items-center space-x-2
+                                {{ request()->routeIs('') || request()->routeIs('') ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
+                            <span>Memberships</span>
+                            <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div x-show="open" @click.away="open = false"
+                            class="absolute left-0 mt-1 w-40 bg-white border rounded shadow-lg z-50 flex flex-col">
+                            <a href="#"
+                                class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('') ? 'font-semibold text-green-700' : '' }}">
+                                Membership Report
+                            </a>
+
+                            <a href="#"
+                                class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('') ? 'font-semibold text-green-700' : '' }}">
+                                Reports
+                            </a>
+                        </div>
+                    </div>
                 @endif
             </nav>
             <!-- Right Section: Notification + User (Desktop Only) -->
@@ -171,10 +200,18 @@
                 <!-- User Avatar + Name -->
                 <div class="flex items-center space-x-3">
                     <div class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200">
-                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M5.121 17.804A11.955 11.955 0 0112 15c2.486 0 4.779.755 6.879 2.045M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
+                        @if (Auth::user()->image)
+                            <img src="{{ asset('storage/' . Auth::user()->image) }}" alt="{{ Auth::user()->image }}"
+                                class="w-8 h-8 rounded-full object-cover">
+                        @else
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200">
+                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5.121 17.804A11.955 11.955 0 0112 15c2.486 0 4.779.755 6.879 2.045M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </div>
+                        @endif
                     </div>
                     <span class="text-gray-600 text-xs md:text-sm">{{ Auth::user()->name ?? 'Admin' }}</span>
                 </div>
@@ -258,6 +295,12 @@
                         </a>
                     </div>
                 </div>
+
+                <!-- Admin -->
+                <a href="{{ route('admins.index') }}"
+                    class="py-2 {{ request()->routeIs('admins.index') ? 'text-green-700 font-semibold' : 'text-gray-700 hover:text-green-600' }}">
+                    Admin
+                </a>
             @elseif(auth()->user()->role === 'user')
                 @php
                     $user = Auth::user();
@@ -268,19 +311,67 @@
                 @endphp
 
                 <a href="{{ route($homeRoute) }}"
-                    class="font-semibold border-b-2 py-1 text-xs md:text-lg flex items-center space-x-2
-                    {{ request()->routeIs($homeRoute) ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
+                    class="py-2 {{ request()->routeIs($homeRoute) ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
                     Home
                 </a>
 
-                <a href="#"
-                    class="py-2 {{ request()->routeIs('') ? 'text-green-700 font-semibold' : 'text-gray-700 hover:text-green-600' }}">
-                    Events
-                </a>
-                <a href="#"
-                    class="py-2 {{ request()->routeIs('') ? 'text-green-700 font-semibold' : 'text-gray-700 hover:text-green-600' }}">
-                    My Report
-                </a>
+                <div x-data="{ open: false }" class="relative">
+                    <!-- Parent Button -->
+                    <button @click="open = !open"
+                        class="font-semibold border-b-2 py-1 md:text-lg flex items-center space-x-2
+                                {{ request()->routeIs('events.calendar') || request()->routeIs('events.userEvent') || request()->routeIs('reports.eventReport') ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
+                        <span>Events</span>
+                        <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div x-show="open" @click.away="open = false"
+                        class="absolute left-0 mt-1 w-28 bg-white border rounded shadow-lg z-50 flex flex-col">
+                        <a href="{{ route('events.calendar') }}"
+                            class="px-3 py-2 md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('events.calendar') ? 'font-semibold text-green-700' : '' }}">
+                            Calendar
+                        </a>
+                        <a href="{{ route('events.userEvent') }}"
+                            class="px-3 py-2 md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('events.userEvent') ? 'font-semibold text-green-700' : '' }}">
+                            New Events
+                        </a>
+                        <a href="{{ route('reports.eventReport') }}"
+                            class="px-3 py-2 md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('reports.eventReport') ? 'font-semibold text-green-700' : '' }}">
+                            Reports
+                        </a>
+                    </div>
+                </div>
+                <div x-data="{ open: false }" class="relative">
+                    <!-- Parent Button -->
+                    <button @click="open = !open"
+                        class="font-semibold border-b-2 py-1 md:text-lg flex items-center space-x-2
+                                {{ request()->routeIs('') || request()->routeIs('') ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
+                        <span>Memberships</span>
+                        <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div x-show="open" @click.away="open = false"
+                        class="absolute left-0 mt-1 w-44 bg-white border rounded shadow-lg z-50 flex flex-col">
+                        <a href="#"
+                            class="px-3 py-2 md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('events.calendar') ? 'font-semibold text-green-700' : '' }}">
+                            Membership Report
+                        </a>
+
+                        <a href="#"
+                            class="px-3 py-2 md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('reports.eventReport') ? 'font-semibold text-green-700' : '' }}">
+                            Reports
+                        </a>
+                    </div>
+                </div>
             @endif
 
             <!-- Mobile User + Notification -->
@@ -295,10 +386,18 @@
                 </button>
                 <div class="flex items-center space-x-3">
                     <div class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200">
-                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M5.121 17.804A11.955 11.955 0 0112 15c2.486 0 4.779.755 6.879 2.045M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
+                        @if (Auth::user()->image)
+                            <img src="{{ asset('storage/' . Auth::user()->image) }}" alt="{{ Auth::user()->image }}"
+                                class="w-8 h-8 rounded-full object-cover">
+                        @else
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200">
+                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5.121 17.804A11.955 11.955 0 0112 15c2.486 0 4.779.755 6.879 2.045M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </div>
+                        @endif
                     </div>
                     <span class="text-gray-600">{{ Auth::user()->name ?? 'Admin' }}</span>
                 </div>
@@ -307,7 +406,7 @@
     </header>
 
     <!-- Page Content -->
-    <main class="flex-grow px-6 py-6">
+    <main class="flex-grow px-2 py-2 md:px-6 md:py-6">
         @yield('content')
     </main>
 

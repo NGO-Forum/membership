@@ -191,7 +191,7 @@ class EventController extends Controller
 
     public function showPast()
     {
-        $events = Event::whereDate('end_date', '<', Carbon::today())
+        $events = Event::with(['files', 'images'])->whereDate('end_date', '<', Carbon::today())
             ->orderBy('start_date', 'desc')
             ->get();
 
@@ -217,7 +217,7 @@ class EventController extends Controller
         return response()->download($filePath, $fileName);
     }
 
-    // ✅ Add files to event
+    // ✅ Add files to event (store in storage, save path in DB)
     public function addFiles(Request $request, Event $event)
     {
         $request->validate([
@@ -232,7 +232,7 @@ class EventController extends Controller
         }
 
         foreach ($files as $file) {
-            $path = $file->store('events/files', 'public');
+            $path = $file->store('events/files', 'public'); // saved in storage/app/public/events/files
             $event->files()->create([
                 'file_name' => $file->getClientOriginalName(),
                 'file_path' => $path,
@@ -243,7 +243,7 @@ class EventController extends Controller
         return back()->with('success', 'Files added successfully.');
     }
 
-    // ✅ Add images to event
+    // ✅ Add images to event (store in storage, save path in DB)
     public function addImages(Request $request, Event $event)
     {
         $request->validate([

@@ -4,10 +4,10 @@
 
 @section('content')
     <div class="max-w-full mx-auto">
-        <div class="flex justify-between items-center mb-4">
+        <div class="flex justify-between items-center mb-3 md:mb-6">
             {{-- Breadcrumbs --}}
             {{-- Page Title --}}
-            <h1 class="text-xl md:text-3xl font-semibold text-green-700">All Memberships</h1>
+            <h1 class="text-xl md:text-3xl font-semibold text-green-700">Old Memberships</h1>
             {{-- Tailwind Export Dropdown --}}
             <div x-data="{ open: false }" class="inline-block text-left">
                 <button @click="open = !open" type="button"

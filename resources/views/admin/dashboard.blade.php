@@ -3,12 +3,12 @@
 @section('title', 'Dashboard')
 
 @section('content')
-    <div class="mb-6">
+    <div class="mb-3 md:mb-6">
         <h1 class="text-2xl font-bold text-gray-800">📊 Membership Dashboard</h1>
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
+    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-8 md:gap-6">
         <!-- Card Component -->
         @php
             $cards = [
@@ -31,7 +31,7 @@
         @endphp
 
         @foreach ($cards as $card)
-            <div class="w-full">
+            <div class="w-full ">
                 <div class="mb-4 bg-{{ $card['color'] }} text-white text-sm text-center px-4 py-1 rounded-full">
                     {{ $card['title'] }}
                 </div>

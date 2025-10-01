@@ -14,6 +14,9 @@
 
         {{-- Section 1: Summary --}}
         <h3 class="text-2xl text-green-700 font-bold mb-3">1. Summary</h3>
+        {{-- <div class="prose max-w-none">
+            {!! $reportText !!}
+        </div> --}}
         <p>
             Buddhism for Social Development Action (BSDA) is a local Cambodian NGO established to
             empower marginalized communities, with a focus on children, youth, and women. Their mission
@@ -105,6 +108,7 @@
                     <th class="border px-2 py-2">Description</th>
                     <th class="border px-2 py-2">Rating(1-5)</th>
                     <th class="border px-2 py-2">Comments</th>
+                    <th class="border px-2 py-2">Files</th>
                 </tr>
             </thead>
             <tbody>
@@ -113,11 +117,13 @@
                     <td class="border px-2 py-2">Letter of Intent</td>
                     <td class="border text-center w-24">{{ $membership->letter_score }}</td>
                     <td class="border px-2 py-2">{{ $membership->letter_comments }}</td>
+                    <td class="border px-2 py-2">{{ $membership->letter_comments }}</td>
                 </tr>
                 <tr>
                     <td class="border w-16 text-center">2</td>
                     <td class="border px-2 py-2">Mission/Vision Statement</td>
                     <td class="border text-center w-24">{{ $membership->mission_vision_score }}</td>
+                    <td class="border px-2 py-2">{{ $membership->mission_vision_comments }}</td>
                     <td class="border px-2 py-2">{{ $membership->mission_vision_comments }}</td>
                 </tr>
                 <tr>
@@ -125,11 +131,13 @@
                     <td class="border px-2 py-2">Constitution / By-Laws</td>
                     <td class="border text-center w-24">{{ $membership->constitution_score }}</td>
                     <td class="border px-2 py-2">{{ $membership->constitution_comments }}</td>
+                    <td class="border px-2 py-2">{{ $membership->constitution_comments }}</td>
                 </tr>
                 <tr>
                     <td class="border w-16 text-center">4</td>
                     <td class="border px-2 py-2">Activities & Brochures</td>
                     <td class="border text-center w-24">{{ $membership->activities_score }}</td>
+                    <td class="border px-2 py-2">{{ $membership->activities_comments }}</td>
                     <td class="border px-2 py-2">{{ $membership->activities_comments }}</td>
                 </tr>
                 <tr>
@@ -137,11 +145,13 @@
                     <td class="border px-2 py-2">Funding & Decision-Makers</td>
                     <td class="border text-center w-24">{{ $membership->funding_score }}</td>
                     <td class="border px-2 py-2">{{ $membership->funding_comments }}</td>
+                    <td class="border px-2 py-2">{{ $membership->funding_comments }}</td>
                 </tr>
                 <tr>
                     <td class="border w-16 text-center">6</td>
                     <td class="border px-2 py-2">Authorization to Operate</td>
                     <td class="border text-center w-24">{{ $membership->authorization_score }}</td>
+                    <td class="border px-2 py-2">{{ $membership->authorization_comments }}</td>
                     <td class="border px-2 py-2">{{ $membership->authorization_comments }}</td>
                 </tr>
                 <tr>
@@ -149,17 +159,20 @@
                     <td class="border px-2 py-2">Strategic Plan</td>
                     <td class="border text-center w-24">{{ $membership->strategic_plan_score }}</td>
                     <td class="border px-2 py-2">{{ $membership->strategic_plan_comments }}</td>
+                    <td class="border px-2 py-2">{{ $membership->strategic_plan_comments }}</td>
                 </tr>
                 <tr>
                     <td class="border w-16 text-center">8</td>
                     <td class="border px-2 py-2">Fundraising Strategy</td>
                     <td class="border text-center w-24">{{ $membership->fundraising_strategy_score }}</td>
                     <td class="border px-2 py-2">{{ $membership->fundraising_strategy_comments }}</td>
+                    <td class="border px-2 py-2">{{ $membership->fundraising_strategy_comments }}</td>
                 </tr>
                 <tr>
                     <td class="border w-16 text-center">9</td>
                     <td class="border px-2 py-2">Global Audit Report</td>
                     <td class="border text-center w-24">{{ $membership->audit_report_score }}</td>
+                    <td class="border px-2 py-2">{{ $membership->audit_report_comments }}</td>
                     <td class="border px-2 py-2">{{ $membership->audit_report_comments }}</td>
                 </tr>
             </tbody>
@@ -191,21 +204,31 @@
                             <td class="border w-16 text-center">12</td>
                             <td class="border px-2 py-2">Network of Environment, Climate Change, Agriculture and Water (
                                 {{ $network->network_name }} )</td>
-                            <td class="border px-2 py-2"></td>
+                            <td class="border px-2 py-2">BSDA does not state specific individual names in the
+                                application form. However, BSDA will be engaged on
+                                providing inputs related to the national development
+                                strategies.</td>
                         </tr>
                     @endif
                     @if ($network->network_name == 'BWG')
                         <tr>
                             <td class="border w-16 text-center">13</td>
                             <td class="border px-2 py-2">Budget Working Group ( {{ $network->network_name }} )</td>
-                            <td class="border px-2 py-2"></td>
+                            <td class="border px-2 py-2">BSDA does not state specific individual names in the
+                                application form. However, BSDA will be engaged on
+                                providing inputs related to the national development
+                                strategies. </td>
                         </tr>
                     @endif
                     @if ($network->network_name == 'RCC')
                         <tr>
                             <td class="border w-16 text-center">14</td>
-                            <td class="border px-2 py-2">Rivers Coalition of Cambodia ( {{ $network->network_name }} )</td>
-                            <td class="border px-2 py-2"></td>
+                            <td class="border px-2 py-2">Rivers Coalition of Cambodia ( {{ $network->network_name }} )
+                            </td>
+                            <td class="border px-2 py-2">BSDA does not state specific individual names in the
+                                application form. However, BSDA will be engaged on
+                                providing inputs related to the national development
+                                strategies. </td>
                         </tr>
                     @endif
                     @if ($network->network_name == 'NRLG')
@@ -213,7 +236,10 @@
                             <td class="border w-16 text-center">15</td>
                             <td class="border px-2 py-2">Natural Resources and Land Governance (
                                 {{ $network->network_name }} )</td>
-                            <td class="border px-2 py-2"></td>
+                            <td class="border px-2 py-2">BSDA does not state specific individual names in the
+                                application form. However, BSDA will be engaged on
+                                providing inputs related to the national development
+                                strategies. </td>
                         </tr>
                     @endif
                     @if ($network->network_name == 'GGESI')
@@ -221,7 +247,10 @@
                             <td class="border w-16 text-center">16</td>
                             <td class="border px-2 py-2">Gender, Governance, Environment and Social Inclusion (
                                 {{ $network->network_name }} )</td>
-                            <td class="border px-2 py-2"></td>
+                            <td class="border px-2 py-2">BSDA does not state specific individual names in the
+                                application form. However, BSDA will be engaged on
+                                providing inputs related to the national development
+                                strategies. </td>
                         </tr>
                     @endif
                 @endforeach

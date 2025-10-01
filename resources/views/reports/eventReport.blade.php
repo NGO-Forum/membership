@@ -10,7 +10,7 @@
             </h1>
         </div>
         <div
-            class="bg-white rounded-lg card-shadow border border-gray-200 overflow-hidden mb-8 animate-fade-in animate-delay-3">
+            class="bg-white rounded-lg card-shadow border border-gray-200 overflow-hidden mb-8 animate-fade-in animate-delay-3 overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-green-600">
                     <tr>

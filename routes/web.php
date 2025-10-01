@@ -15,6 +15,7 @@ use App\Http\Controllers\MembershipReportController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\AdminSystemController;
 
 
 // Authentication routes
@@ -41,6 +42,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
         Route::get('/membership', [AdminController::class, 'membershipShow'])->name('membership');
         Route::get('/newMembership', [AdminController::class, 'newMembership'])->name('newMembership');
+    });
+
+    Route::prefix('admins')->group(function() {
+        Route::get('/', [AdminSystemController::class, 'index'])->name('admins.index');      // list all admins
+        Route::get('/create', [AdminSystemController::class, 'create'])->name('admins.create'); // show create form
+        Route::post('/store', [AdminSystemController::class, 'store'])->name('admins.store');   // save new admin
+        Route::get('/{admin}/edit', [AdminSystemController::class, 'edit'])->name('admins.edit'); // show edit form
+        Route::put('/{admin}', [AdminSystemController::class, 'update'])->name('admins.update'); // update admin
+        Route::delete('/{admin}', [AdminSystemController::class, 'destroy'])->name('admins.destroy'); // delete admin
     });
 
     //edit and delete old memberships

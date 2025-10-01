@@ -4,10 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\NewMembership;
-use Spatie\PdfToText\Pdf;
-use PhpOffice\PhpWord\IOFactory;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
 use OpenAI\Laravel\Facades\OpenAI;
 
 
@@ -15,15 +12,13 @@ class MembershipReportController extends Controller
 {
     public function index()
     {
-        $newMemberships = NewMembership::where('status', 'approved')
-            ->with(['user'])
-            ->get();
-
+        $newMemberships = NewMembership::where('status', 'approved')->with(['user'])->get();
         return view('reports.membership', compact('newMemberships'));
     }
 
     public function show($id)
     {
+        // Load membership with uploads, networks, and focal points
         $membership = NewMembership::with([
             'membershipUploads.networks',
             'membershipUploads.focalPoints'
@@ -31,64 +26,11 @@ class MembershipReportController extends Controller
 
         $upload = $membership->membershipUploads->first();
 
-        // Path to stored JSON
-        $membershipId = $membership->new_membership_id ?? $membership->id;
-        $jsonFile = storage_path('app/public/membershipJSON/membership_' . $membershipId . '.json');
-        $jsonData = [];
-
-        if (file_exists($jsonFile)) {
-            $content = file_get_contents($jsonFile);
-            $content = preg_replace('/^\x{FEFF}/u', '', $content);
-            $jsonData = json_decode($content, true);
-
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                dd('JSON Error: ' . json_last_error_msg());
-            }
-            // dd($jsonData);
-        }
-
-        // Extract Vision / Mission
-        $visionText = null;
-        $missionText = null;
-        $addressText = null;
-        $typeNgo = null;
-        $keyActions = [];
-
-        if (!empty($jsonData['data'])) {
-            $text = $jsonData['data'];
-
-            //Vision
-            preg_match('/Vision\s*[:\-]?\s*([\s\S]*?).(?=Mission|$)/i', $text, $visionMatches);
-            $visionText = $visionMatches[1] ?? null;
-
-            //Mission
-            preg_match('/Mission\s*[:\-]?\s*([\s\S]*?).(?=Core Values|$)/i', $text, $missionMatches);
-            $missionText = $missionMatches[1] ?? null;
-
-            //Address
-            if (preg_match('/(#\d+.*Cambodia)/', $text, $matches)) {
-                $addressText = trim($matches[1]);
-            }
-
-            // Extract Core Values / Key Actions (if available)
-            if (preg_match('/Core Values\s*(.*?)\s*(www\.|#\d+|\d{3}\s\d{3}\s\d{3})/s', $text, $matches)) {
-                $lines = preg_split("/\r\n|\n|\r/", $matches[1]);
-                $keyActions = array_filter(array_map(function ($line) {
-                    return trim(str_replace(['•', '• '], '', $line));
-                }, $lines));
-            }
-
-            if (preg_match('/(#?\d*.*(?:Cambodia|Thailand|Vietnam|Singapore|Malaysia|...))/i', $text, $matches)) {
-                $typeNgo = trim($matches[1]);
-            }
-        }
-
-        // Score uploaded fields
+        // Prepare scores for uploaded files
         $fields = [
             'letter',
             'mission_vision',
             'constitution',
-            'typeNgo',
             'activities',
             'funding',
             'authorization',
@@ -98,86 +40,133 @@ class MembershipReportController extends Controller
             'logo'
         ];
 
+        $scores = [];
         foreach ($fields as $field) {
-            if (optional($upload)->{$field}) {
-                $membership->{$field . '_score'} = 5;
-                $membership->{$field . '_comments'} = "File submitted.";
-            } else {
-                $membership->{$field . '_score'} = 3;
-                $membership->{$field . '_comments'} = "File missing.";
+            $scores[$field] = ($upload && $upload->{$field}) ? Storage::url($upload->{$field}) : null;
+        }
+
+        // Prepare networks with focal points
+        $networkData = $upload ? $upload->networks->map(function ($network) use ($upload) {
+            $focalPoints = $upload->focalPoints
+                ->where('network_name', $network->network_name)
+                ->map(fn($fp) => [
+                    'name' => $fp->name,
+                    'position' => $fp->position,
+                    'email' => $fp->email,
+                    'phone' => $fp->phone,
+                    'sex' => $fp->sex,
+                ])->toArray();
+
+            return [
+                'network_name' => $network->network_name,
+                'focal_points' => $focalPoints
+            ];
+        }) : collect();
+
+        // Extract membership JSON text if exists
+        $membershipId = $membership->id;
+        $jsonFile = storage_path("app/public/membershipJSON/membership_{$membershipId}.json");
+        $text = '';
+        if (file_exists($jsonFile)) {
+            $content = file_get_contents($jsonFile);
+            $content = preg_replace('/^\x{FEFF}/u', '', $content);
+            $jsonData = json_decode($content, true);
+            $text = $jsonData['data'] ?? '';
+        }
+
+        // Blade template variables
+        $visionText = $membership->vision_text ?? 'N/A';
+        $missionText = $membership->mission_text ?? 'N/A';
+        $addressText = $membership->address ?? 'N/A';
+        $typeNgo = $membership->type_ngo ?? 'N/A';
+
+        // Key actions
+        $keyActions = [];
+        if (!empty($membership->key_actions)) {
+            if (is_string($membership->key_actions)) {
+                $keyActions = json_decode($membership->key_actions, true) ?: [];
+            } elseif (is_array($membership->key_actions)) {
+                $keyActions = $membership->key_actions;
             }
         }
 
-        // Aggregate scores
-        $scores = collect([
-            $membership->letter_score,
-            $membership->mission_vision_score,
-            $membership->constitution_score,
-            $membership->activities_score,
-            $membership->funding_score,
-            $membership->authorization_score,
-            $membership->strategic_plan_score,
-            $membership->fundraising_strategy_score,
-            $membership->audit_report_score,
+        // Uploaded files: just names
+        $uploadedFilesText = '';
+        foreach ($fields as $field) {
+            if ($upload->{$field}) {
+                $uploadedFilesText .= ucfirst(str_replace('_', ' ', $field)) . "\n";
+            }
+        }
+
+        // Networks: only summary
+        $networkSummary = $networkData->pluck('network_name')->implode(', ');
+
+        // Membership text: only first 500 chars (or summary)
+        $membershipSummary = substr($text, 0, 500);
+
+
+        // Optional AI report generation
+        $response = OpenAI::chat()->create([
+            'model' => 'gpt-4o-mini',
+            'messages' => [
+                [
+                    'role' => 'system',
+                    'content' => "You are an evaluator who produces NGO membership assessment reports in a fixed template format."
+                ],
+                [
+                    'role' => 'user',
+                    'content' => "
+                Generate an NGO membership assessment report using the following fixed structure. 
+                Use professional wording but keep the format exactly:
+
+                1. Summary  
+                - Overview of organization  
+                - Key strengths  
+                - Minor gaps  
+
+                2. Information about Applicant  
+                - Name  
+                - Type of NGO  
+                - Vision  
+                - Mission  
+                - Year Established  
+                - Address  
+                - Director  
+                - Key Actions  
+
+                3. Checklist of Requirements  
+                Table with: Item | Description | Rating (1–5) | Comments | Files  
+
+                4. Type of Membership / Fee  
+
+                5. Interest in Attending Network Meetings  
+
+                6. Conclusions and Recommendations  
+                - Strengths  
+                - Minor gaps  
+                - Final recommendation  
+
+                Then close with **Reviewed by / Submitted by / Endorsed by** signatures (placeholders if not in data).
+                "
+                ],
+            ],
+            'max_tokens' => 16384,
         ]);
 
-        $hasScore5 = $scores->contains(5);
-        $hasScore3 = $scores->contains(3);
+        $reportText = $response->choices[0]->message->content ?? '';
 
-        // Pass JSON + extracted points to Blade
+
+
         return view('reports.show', compact(
             'membership',
+            'scores',
+            'networkData',
             'visionText',
             'missionText',
             'addressText',
+            'typeNgo',
             'keyActions',
+            'reportText'
         ));
-    }
-
-
-
-
-    /**
-     * Extract text from PDF or DOCX files.
-     */
-    private function extractText(string $filePath, string $extension): string
-    {
-        $text = '';
-
-        if ($extension === 'pdf') {
-            // Correct binary path (make sure it matches your system)
-            $binaryPath = 'C:\\poppler\\Library\\bin\\pdftotext.exe';
-
-            if (!file_exists($binaryPath)) {
-                throw new \Exception("Binary not found at: {$binaryPath}");
-            }
-
-            // Run pdftotext with -layout (keeps formatting) and output to stdout (-)
-            $command = "\"{$binaryPath}\" -layout \"{$filePath}\" -";
-            $text = shell_exec($command);
-
-            if (empty($text)) {
-                throw new \Exception("Failed to extract text from PDF: {$filePath}");
-            }
-        } elseif ($extension === 'docx') {
-            $phpWord = IOFactory::load($filePath);
-            foreach ($phpWord->getSections() as $section) {
-                foreach ($section->getElements() as $element) {
-                    if ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
-                        foreach ($element->getElements() as $textElement) {
-                            if ($textElement instanceof \PhpOffice\PhpWord\Element\Text) {
-                                $text .= $textElement->getText() . ' ';
-                            }
-                        }
-                    } elseif ($element instanceof \PhpOffice\PhpWord\Element\Text) {
-                        $text .= $element->getText() . ' ';
-                    }
-                }
-            }
-        } else {
-            throw new \Exception("Unsupported file format: {$extension}");
-        }
-
-        return trim($text);
     }
 }

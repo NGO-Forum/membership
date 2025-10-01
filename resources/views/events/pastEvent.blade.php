@@ -32,7 +32,35 @@
                             <div x-show="open" @click.away="open = false"
                                 class="absolute right-0 mt-2 w-20 bg-white border border-gray-200 rounded-lg shadow-lg z-20 text-sm">
                                 <a href="#" onclick='openEventDetailModal(@json($event))'
-                                    class="block px-3 py-1 text-blue-600 hover:bg-blue-100">View</a>
+                                    class="flex items-center px-3 py-1 text-blue-600 hover:bg-blue-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 mr-1"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    View</a>
+
+                                <a href="#" onclick="openFileModal({{ $event->id }})"
+                                    class="flex items-center px-3 py-1 text-orange-600 hover:bg-orange-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    File
+                                </a>
+
+                                <a href="#" onclick="openImageModal({{ $event->id }})"
+                                    class="flex items-center px-3 py-1 text-yellow-600 hover:bg-yellow-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 7h18M3 12h18M3 17h18" />
+                                    </svg>
+                                    Image
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -107,8 +135,7 @@
     @endif
 
     <!--- View --->
-    <div id="eventDetailModal"
-        class="fixed inset-0 flex items-center justify-center bg-black/50 hidden z-50 p-2">
+    <div id="eventDetailModal" class="fixed inset-0 flex items-center justify-center bg-black/50 hidden z-50 p-2">
 
         <div
             class="bg-white rounded-2xl shadow-2xl w-full max-w-lg md:max-w-xl lg:max-w-xl relative overflow-hidden max-h-[95vh] overflow-y-auto transform transition-all duration-300 custom-scrollbar">
@@ -191,8 +218,7 @@
                         </svg>
                         <span class="font-semibold">Files:</span>
                     </div>
-                    <div id="detailFiles"
-                        class="text-sm md:text-base text-gray-600">
+                    <div id="detailFiles" class="text-sm md:text-base text-gray-600">
                     </div>
                 </div>
 
@@ -210,6 +236,44 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- File Upload Modal -->
+    <div id="fileModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+            <h3 class="text-lg font-semibold mb-4">Upload Files</h3>
+            <form id="fileUploadForm" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="file" name="files[]" multiple required class="mb-3 w-full border rounded p-2">
+                <p class="text-sm text-gray-500 mb-3">Allowed: pdf, doc, docx, xls, xlsx. Max size: 5MB each. Max 10 files
+                    total.</p>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeFileModal()"
+                        class="px-4 py-2 bg-gray-300 rounded">Cancel</button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Image Upload Modal -->
+    <div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+            <h3 class="text-lg font-semibold mb-4">Upload Images</h3>
+            <form id="imageUploadForm" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="file" name="images[]" multiple accept="image/*" required
+                    class="mb-3 w-full border rounded p-2">
+                <p class="text-sm text-gray-500 mb-3">Allowed: jpg, jpeg, png. Max size: 2MB each. Max 3 images total.</p>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeImageModal()"
+                        class="px-4 py-2 bg-gray-300 rounded">Cancel</button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Upload</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -335,6 +399,26 @@
         function truncateText(text, start, end) {
             if (!text) return '';
             return text.length > end ? text.substring(start, end) + '...' : text;
+        }
+
+        function openFileModal(eventId) {
+            document.getElementById('fileModal').classList.remove('hidden');
+            const form = document.getElementById('fileUploadForm');
+            form.action = `/events/${eventId}/files`;
+        }
+
+        function closeFileModal() {
+            document.getElementById('fileModal').classList.add('hidden');
+        }
+
+        function openImageModal(eventId) {
+            document.getElementById('imageModal').classList.remove('hidden');
+            const form = document.getElementById('imageUploadForm');
+            form.action = `/events/${eventId}/images`;
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.add('hidden');
         }
     </script>
 

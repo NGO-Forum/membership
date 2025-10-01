@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\MembershipUpload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Smalot\PdfParser\Parser as PdfParser;
-use PhpOffice\PhpWord\IOFactory as WordIOFactory;
 use PhpOffice\PhpWord\IOFactory;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 
