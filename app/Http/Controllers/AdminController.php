@@ -28,13 +28,16 @@ class AdminController extends Controller
         // Count memberships by status
         $totalNew = NewMembership::where('status', 'approved')->count();
         $totalRequest = NewMembership::where('status', 'pending')->count();
-        $totalCancel  = NewMembership::where('status', 'cancel')->count();
+        $Cancel  = NewMembership::where('status', 'cancel')->count();
+        $Old = Membership::where('membership_status', 0)->count();
+
 
         // Old memberships
-        $totalOld = Membership::count();
+        $totalOld = Membership::where('membership_status', 1)->count();
 
         // Sum all memberships
         $totalMembership = $totalOld + $totalNew;
+        $totalCancel = $Old + $Cancel;
 
         $currentMonthNum = Carbon::now()->month; // e.g., 9 for September
         $allMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -82,8 +85,7 @@ class AdminController extends Controller
 
         $memberships = Membership::with('user', 'networks', 'focalPoints', 'applications')
             ->where('membership_status', true)  // Only show "Yes"
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
 
         return view('admin.membership', compact('memberships'));
     }

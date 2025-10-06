@@ -14,8 +14,7 @@ class UserController extends Controller
     {
         $memberships = Membership::with('user', 'networks', 'focalPoints')
             ->where('membership_status', false) // Only show "No"
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
 
         return view('admin.user', compact('memberships'));
     }

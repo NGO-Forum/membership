@@ -26,7 +26,7 @@
                 </button>
 
                 <div x-show="open" @click.away="open = false"
-                    class="origin-top-right absolute right-0 mt-2 w-28 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                    class="origin-top-right absolute right-5 mt-2 w-24 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
                     role="menu" aria-orientation="vertical" aria-labelledby="export-menu-button" tabindex="-1">
                     <div class="py-1" role="none">
                         <a href="{{ route('memberships.exportPDF') }}"
@@ -320,10 +320,6 @@
                         @endforeach
                     </tbody>
                 </table>
-            </div>
-
-            <div class="mt-8 flex justify-center">
-                {{ $memberships->links() }}
             </div>
         @else
             <p class="text-center text-gray-600">No memberships found.</p>

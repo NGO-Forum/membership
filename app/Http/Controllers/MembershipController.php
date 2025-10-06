@@ -160,7 +160,7 @@ class MembershipController extends Controller
             $membershipConfirmed = in_array($request->membership, ['Yes', 1, '1'], true);
             $moreInfoAgreed = in_array($request->more_info, ['Yes', 1, '1'], true);
             $deadline = now()->addDays(15);
-            $admins = User::where('role', 'admin')->pluck('email');
+            $admins = User::where('role', 'admin')->pluck('email')->toArray();
 
             try {
                 if ($membershipConfirmed && $moreInfoAgreed) {
@@ -169,9 +169,7 @@ class MembershipController extends Controller
                 }
 
                 if ($membershipConfirmed) {
-                    Log::info('Sending admin email to: ' . implode(', ', $admins->toArray()));
-                    Mail::to($admins->toArray())
-                        ->send(new MembershipAdminEmail($membership));
+                    Mail::to($admins)->send(new MembershipAdminEmail($membership));
                 }
             } catch (\Exception $e) {
                 Log::error('Email send failed: ' . $e->getMessage());
@@ -199,7 +197,7 @@ class MembershipController extends Controller
     // Export methods
     public function exportPDF()
     {
-        $memberships = Membership::with(['user', 'networks', 'focalPoints', 'applications'])->get();
+        $memberships = Membership::with(['user', 'networks', 'focalPoints', 'applications'])->where('membership_status', 1)->get();
 
         $pdf = PDF::loadView('admin.pdf', compact('memberships'))
             ->setPaper('a4', 'landscape'); // optional: landscape mode for wide tables
@@ -215,7 +213,7 @@ class MembershipController extends Controller
     // Export to Word document
     public function exportWord()
     {
-        $memberships = Membership::with(['networks', 'focalPoints', 'applications'])->get();
+        $memberships = Membership::with(['networks', 'focalPoints', 'applications'])->where('membership_status', 1)->get();
 
         $phpWord = new PhpWord();
         $section = $phpWord->addSection();

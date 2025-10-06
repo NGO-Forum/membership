@@ -146,7 +146,6 @@ class MembershipReportController extends Controller
                 - Minor gaps  
                 - Final recommendation  
 
-                Then close with **Reviewed by / Submitted by / Endorsed by** signatures (placeholders if not in data).
                 "
                 ],
             ],

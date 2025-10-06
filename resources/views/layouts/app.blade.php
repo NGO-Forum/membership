@@ -55,7 +55,7 @@
 
                         <!-- Dropdown Menu -->
                         <div x-show="open" @click.away="open = false"
-                            class="absolute left-0 mt-1 w-36 bg-white border rounded shadow-lg z-50 flex flex-col">
+                            class="absolute left-0 mt-1 w-40 bg-white border rounded shadow-lg z-50 flex flex-col">
                             <a href="{{ route('admin.newMembership') }}"
                                 class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('admin.newMembership') ? 'font-semibold text-green-700' : '' }}">
                                 New Membership
@@ -69,6 +69,10 @@
                                 Non Membership
                             </a>
                             <a href="{{ route('reports.membership') }}"
+                                class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('reports.membership') ? 'font-semibold text-green-700' : '' }}">
+                                Membership Reports
+                            </a>
+                            <a href="#"
                                 class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('reports.membership') ? 'font-semibold text-green-700' : '' }}">
                                 Reports
                             </a>
@@ -241,7 +245,7 @@
 
                     <!-- Dropdown Menu -->
                     <div x-show="open" @click.away="open = false"
-                        class="absolute left-0 mt-1 w-40 bg-white border rounded shadow-lg z-50 flex flex-col">
+                        class="absolute left-0 mt-1 w-44 bg-white border rounded shadow-lg z-50 flex flex-col">
                         <a href="{{ route('admin.newMembership') }}"
                             class="px-3 py-2 text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('admin.newMembership') ? 'font-semibold text-green-700' : '' }}">
                             New Membership
@@ -255,6 +259,10 @@
                             Non Membership
                         </a>
                         <a href="{{ route('reports.membership') }}"
+                            class="px-3 py-2 text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('reports.membership') ? 'font-semibold text-green-700' : '' }}">
+                            Membership Reports
+                        </a>
+                        <a href="#"
                             class="px-3 py-2 text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('reports.membership') ? 'font-semibold text-green-700' : '' }}">
                             Reports
                         </a>

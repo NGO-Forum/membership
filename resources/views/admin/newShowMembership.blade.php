@@ -334,7 +334,7 @@
 
                     <!-- Applications Section -->
                     <div
-                        class="bg-white rounded-xl card-shadow border border-gray-200 overflow-hidden animate-fade-in animate-delay-3">
+                        class="bg-white rounded-xl card-shadow border border-gray-200 overflow-hidden animate-fade-in animate-delay-3 mb-8">
                         <div class="section-header px-6 py-4">
                             <div class="flex items-center gap-3">
                                 <div class="p-2 icon-medium-green rounded-lg">
