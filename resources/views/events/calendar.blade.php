@@ -121,7 +121,7 @@
 
             <h3 class="text-lg text-green-600 font-semibold mb-3">Add Event</h3>
 
-            <form action="{{ route('events.store') }}" method="POST" class="space-y-3">
+            <form action="{{ route('events.storeCalendar') }}" method="POST" class="space-y-3">
                 @csrf
                 <input type="hidden" name="date" id="eventDate">
 

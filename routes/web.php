@@ -119,9 +119,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Event calendar routes
     Route::prefix('calendar')->name('events.')->group(function () {
-        Route::get('/', [CalendarController::class, 'index'])->name('calendar');   // events.calendar
-        Route::post('/', [CalendarController::class, 'store'])->name('store');      // events.store
+        Route::get('/', [CalendarController::class, 'index'])->name('calendar'); 
+        Route::post('/', [CalendarController::class, 'store'])->name('storeCalendar'); // unique
     });
+
 
     // Event management routes
     Route::prefix('newEvent')->name('events.')->group(function () {
