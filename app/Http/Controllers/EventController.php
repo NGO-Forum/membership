@@ -18,7 +18,7 @@ class EventController extends Controller
     {
         // Fetch only events whose end_date is today or in the future
         $events = Event::with(['files', 'images'])->whereDate('end_date', '>=', Carbon::today())
-            ->orderBy('start_date')
+            ->orderBy('id', 'desc')
             ->get();
 
         return view('events.newEvent', compact('events'));
@@ -192,7 +192,7 @@ class EventController extends Controller
     public function showPast()
     {
         $events = Event::with(['files', 'images'])->whereDate('end_date', '<', Carbon::today())
-            ->orderBy('start_date', 'desc')
+            ->orderBy('id', 'desc')
             ->get();
 
         return view('events.pastEvent', compact('events'));
@@ -260,7 +260,6 @@ class EventController extends Controller
         foreach ($images as $image) {
             $path = $image->store('events/images', 'public');
             $event->images()->create([
-                'file_name' => $image->getClientOriginalName(),
                 'image_path' => $path,
             ]);
         }
@@ -272,7 +271,7 @@ class EventController extends Controller
     public function newEvent()
     {
         $events = Event::with(['files', 'images'])->whereDate('end_date', '>=', Carbon::today())
-            ->orderBy('start_date')
+            ->orderBy('id', 'desc')
             ->get();
 
         return view('events.userEvent', compact('events'));
@@ -290,7 +289,7 @@ class EventController extends Controller
         $event = Event::findOrFail($request->event_id);
 
         // Organizer email: from DB or a default
-        $organizerEmail = $event->organizer_email ?? 'mengseu.sork@student.passerellesnumeriques.org';
+        $organizerEmail = $event->organizer_email ?? 'vicheth@ngoforum.org.kh';
 
         Mail::to($organizerEmail)->send(
             new EventInterestMail(

@@ -99,6 +99,43 @@ class MembershipUploadController extends Controller
             }
         }
 
+        // Send file paths to n8n webhook
+        try {
+            $n8nWebhookUrl = 'http://192.168.1.179:5678/webhook/membership-upload'; // n8n webhook URL
+
+            $multipart = [
+                [
+                    'name' => 'membership_id',
+                    'contents' => $membership->id
+                ]
+            ];
+
+            // List of file fields
+            $fileFields = [
+                'letter', 'mission_vision', 'constitution', 'activities', 
+                'funding', 'authorization', 'strategic_plan', 
+                'fundraising_strategy', 'audit_report'
+            ];
+
+            foreach ($fileFields as $field) {
+                if ($membership->$field) {
+                    $multipart[] = [
+                        'name' => $field,
+                        'contents' => fopen(storage_path("app/public/{$membership->$field}"), 'r'),
+                        'filename' => basename($membership->$field)
+                    ];
+                }
+            }
+
+            $client = new \GuzzleHttp\Client();
+            $response = $client->post($n8nWebhookUrl, [
+                'multipart' => $multipart
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to send files to n8n: ' . $e->getMessage());
+        }
+
         return redirect()->route('membership.thankyou');
     }
     
