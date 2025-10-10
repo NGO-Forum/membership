@@ -260,7 +260,6 @@ class EventController extends Controller
         foreach ($images as $image) {
             $path = $image->store('events/images', 'public');
             $event->images()->create([
-                'file_name' => $image->getClientOriginalName(),
                 'image_path' => $path,
             ]);
         }
@@ -290,7 +289,7 @@ class EventController extends Controller
         $event = Event::findOrFail($request->event_id);
 
         // Organizer email: from DB or a default
-        $organizerEmail = $event->organizer_email ?? 'mengseu.sork@student.passerellesnumeriques.org';
+        $organizerEmail = $event->organizer_email ?? 'vicheth@ngoforum.org.kh';
 
         Mail::to($organizerEmail)->send(
             new EventInterestMail(

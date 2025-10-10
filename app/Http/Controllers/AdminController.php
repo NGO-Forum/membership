@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Membership;
 use App\Models\MembershipUpload;
 use Illuminate\Support\Facades\Auth;
-use App\Models\newMembership;
+use App\Models\NewMembership;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
