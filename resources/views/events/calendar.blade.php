@@ -180,6 +180,20 @@
                         class="border rounded-md p-2 w-full focus:ring focus:ring-blue-200">
                 </div>
 
+                <!-- Upload New Files -->
+                <div>
+                    <label for="files" class="font-semibold">Upload New Files (optional):</label>
+                    <input type="file" name="files[]" id="files" multiple
+                        class="block w-full mt-1 border p-2 rounded">
+                </div>
+
+                <!-- Upload New Images -->
+                <div>
+                    <label for="images" class="font-semibold">Upload New Images (optional):</label>
+                    <input type="file" name="images[]" id="images" multiple
+                        class="block w-full mt-1 border p-2 rounded">
+                </div>
+
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="closeEventModal()"
                         class="px-3 py-1 rounded-md bg-orange-400 text-white hover:bg-orange-500 transition">

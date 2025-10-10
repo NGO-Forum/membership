@@ -18,7 +18,7 @@ class EventController extends Controller
     {
         // Fetch only events whose end_date is today or in the future
         $events = Event::with(['files', 'images'])->whereDate('end_date', '>=', Carbon::today())
-            ->orderBy('start_date')
+            ->orderBy('id', 'desc')
             ->get();
 
         return view('events.newEvent', compact('events'));
@@ -192,7 +192,7 @@ class EventController extends Controller
     public function showPast()
     {
         $events = Event::with(['files', 'images'])->whereDate('end_date', '<', Carbon::today())
-            ->orderBy('start_date', 'desc')
+            ->orderBy('id', 'desc')
             ->get();
 
         return view('events.pastEvent', compact('events'));
@@ -271,7 +271,7 @@ class EventController extends Controller
     public function newEvent()
     {
         $events = Event::with(['files', 'images'])->whereDate('end_date', '>=', Carbon::today())
-            ->orderBy('start_date')
+            ->orderBy('id', 'desc')
             ->get();
 
         return view('events.userEvent', compact('events'));

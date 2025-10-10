@@ -10,7 +10,7 @@
 <body class="bg-green-600 flex items-center justify-center min-h-screen px-4">
 
     <div class="bg-white p-8 mt-4 mb-4 rounded-2xl shadow-2xl max-w-4xl w-full">
-        <img src="/logo.PNG" alt="" class="h-24 md:h-40 mx-auto mb-6" />
+        <img src="/logo.png" alt="" class="h-24 md:h-40 mx-auto mb-6" />
         <h2 class="text-lg md:text-2xl font-extrabold mb-8 text-center text-gray-500">Register for: <span class="text-xl md:text-3xl text-green-800">{{ $event->title }}</span></h2>
 
         @if ($errors->any())

@@ -115,7 +115,7 @@ class MembershipUploadController extends Controller
             $fileFields = [
                 'letter', 'mission_vision', 'constitution', 'activities', 
                 'funding', 'authorization', 'strategic_plan', 
-                'fundraising_strategy', 'audit_report', 'logo'
+                'fundraising_strategy', 'audit_report'
             ];
 
             foreach ($fileFields as $field) {
@@ -134,7 +134,7 @@ class MembershipUploadController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Failed to send files to n8n: ' . $e->getMessage());
+            Log::error('Failed to send files to n8n: ' . $e->getMessage());
         }
 
         return redirect()->route('membership.thankyou');
