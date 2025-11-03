@@ -124,7 +124,6 @@ class MembershipUploadController extends Controller
                 'strategic_plan',
                 'fundraising_strategy',
                 'audit_report',
-                'logo',
             ];
 
             // ✅ Attach each file as binary[field]
