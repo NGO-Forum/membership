@@ -165,7 +165,11 @@ class MembershipUploadController extends Controller
                 'verify' => false, // optional if you’re using self-signed SSL
             ]);
 
-            $response = $client->post($n8nWebhookUrl, ['multipart' => $multipart]);
+            $response = $client->post($n8nWebhookUrl, [
+                'headers' => ['Accept' => 'application/json'],
+                'multipart' => $multipart,
+            ]);
+
             $body = $response->getBody()->getContents();
 
             Log::info("✅ Files sent to n8n successfully.", [
