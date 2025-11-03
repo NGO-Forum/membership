@@ -107,7 +107,7 @@ class MembershipUploadController extends Controller
             $multipart = [
                 [
                     'name' => 'membership_id',
-                    'contents' => $membership->id,
+                    'contents' => (string)$membership->id,
                 ],
             ];
 
@@ -120,33 +120,62 @@ class MembershipUploadController extends Controller
                 'authorization',
                 'strategic_plan',
                 'fundraising_strategy',
-                'audit_report'
+                'audit_report',
             ];
 
             foreach ($fileFields as $field) {
-                if ($membership->$field) {
-                    $filePath = storage_path("app/public/{$membership->$field}");
-                    if (file_exists($filePath)) {
-                        $multipart[] = [
-                            'name'     => $field,
-                            'contents' => fopen($filePath, 'r'),
-                            'filename' => basename($filePath),
-                        ];
-                    } else {
-                        Log::warning("⚠️ File not found for {$field}: {$filePath}");
+                $relativePath = $membership->$field; // e.g. memberships/abc.pdf
+                $filePath = $relativePath ? storage_path("app/public/{$relativePath}") : null;
+
+                if ($filePath && file_exists($filePath)) {
+                    // Make sure the PHP process can read the file
+                    if (!is_readable($filePath)) {
+                        Log::warning("⚠️ File not readable for {$field}: {$filePath}");
+                        continue;
                     }
+
+                    $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
+                    $handle = fopen($filePath, 'r');
+
+                    if ($handle === false) {
+                        Log::warning("⚠️ Could not open stream for {$field}: {$filePath}");
+                        continue;
+                    }
+
+                    $multipart[] = [
+                        'name' => $field,
+                        'contents' => $handle,
+                        'filename' => basename($filePath),
+                        'headers' => [
+                            'Content-Type' => $mimeType,
+                            'Content-Disposition' => "form-data; name=\"{$field}\"; filename=\"" . basename($filePath) . "\"",
+                        ],
+                    ];
+
+                    Log::info("📎 Attached file for {$field}: {$filePath}");
+                } else {
+                    Log::warning("⚠️ File not found for {$field}: {$filePath}");
                 }
             }
-            
-            Log::info('📂 Sending to n8n multipart fields:', collect($multipart)->pluck('name')->toArray());
 
-            $client = new \GuzzleHttp\Client(['timeout' => 300]);
+            Log::info('📦 Prepared multipart fields for n8n:', collect($multipart)->pluck('name')->toArray());
+
+            $client = new \GuzzleHttp\Client([
+                'timeout' => 300,
+                'verify' => false, // optional if you’re using self-signed SSL
+            ]);
+
             $response = $client->post($n8nWebhookUrl, ['multipart' => $multipart]);
+            $body = $response->getBody()->getContents();
 
-            Log::info("✅ Files sent to n8n. Status: " . $response->getStatusCode());
+            Log::info("✅ Files sent to n8n successfully.", [
+                'status' => $response->getStatusCode(),
+                'response' => $body,
+            ]);
         } catch (\Exception $e) {
             Log::error('❌ Failed to send to n8n: ' . $e->getMessage());
         }
+
 
 
         return redirect()->route('membership.thankyou');
