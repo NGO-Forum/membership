@@ -132,13 +132,9 @@ class MembershipUploadController extends Controller
                     $filePath = storage_path("app/public/{$membership->$field}");
                     if (file_exists($filePath)) {
                         $multipart[] = [
-                            // Important: Use bracket syntax so n8n groups them under “binary”
-                            'name' => "binary.$field",
+                            'name'     => "binary.$field", // dot syntax for n8n
                             'contents' => fopen($filePath, 'r'),
                             'filename' => basename($filePath),
-                            'headers' => [
-                                'Content-Type' => mime_content_type($filePath) ?: 'application/octet-stream',
-                            ],
                         ];
                         Log::info("📎 Attached file for {$field}: {$filePath}");
                     } else {
@@ -154,9 +150,7 @@ class MembershipUploadController extends Controller
             $client = new \GuzzleHttp\Client([
                 'timeout' => 300,
                 'verify' => false,
-                'headers' => [
-                    'Accept' => 'application/json',
-                ],
+                
             ]);
 
             // ✅ Send POST multipart request
