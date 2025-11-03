@@ -128,7 +128,7 @@ class MembershipUploadController extends Controller
                     $filePath = storage_path("app/public/{$membership->$field}");
                     if (file_exists($filePath)) {
                         $multipart[] = [
-                            'name' => "binary",
+                            'name' => "binary[$field]",
                             'contents' => fopen($filePath, 'r'),
                             'filename' => basename($filePath),
                         ];
