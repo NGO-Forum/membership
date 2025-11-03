@@ -143,7 +143,7 @@ class MembershipUploadController extends Controller
                     }
 
                     $multipart[] = [
-                        'name' => $field,
+                        'name' => "binary[$field]",
                         'contents' => $handle,
                         'filename' => basename($filePath),
                         'headers' => [
