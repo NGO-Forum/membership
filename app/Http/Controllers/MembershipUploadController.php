@@ -103,11 +103,12 @@ class MembershipUploadController extends Controller
         // ✅ Send file paths to n8n webhook
         try {
             $n8nWebhookUrl = 'https://automate.mengseu-student.site/webhook/membership-upload';
+
             $multipart = [
                 [
                     'name' => 'membership_id',
                     'contents' => $membership->id,
-                ]
+                ],
             ];
 
             $fileFields = [
@@ -126,9 +127,8 @@ class MembershipUploadController extends Controller
                 if ($membership->$field) {
                     $filePath = storage_path("app/public/{$membership->$field}");
                     if (file_exists($filePath)) {
-                        // ✅ Correct way — Guzzle handles headers automatically
                         $multipart[] = [
-                            'name' => $field,
+                            'name'     => $field,
                             'contents' => fopen($filePath, 'r'),
                             'filename' => basename($filePath),
                         ];
@@ -138,13 +138,14 @@ class MembershipUploadController extends Controller
                 }
             }
 
-            $client = new Client(['timeout' => 300]);
+            $client = new \GuzzleHttp\Client(['timeout' => 300]);
             $response = $client->post($n8nWebhookUrl, ['multipart' => $multipart]);
 
-            Log::info("✅ Files sent to n8n OCR successfully. Status: " . $response->getStatusCode());
+            Log::info("✅ Files sent to n8n. Status: " . $response->getStatusCode());
         } catch (\Exception $e) {
-            Log::error('❌ Failed to send files to n8n: ' . $e->getMessage());
+            Log::error('❌ Failed to send to n8n: ' . $e->getMessage());
         }
+
 
         return redirect()->route('membership.thankyou');
     }
