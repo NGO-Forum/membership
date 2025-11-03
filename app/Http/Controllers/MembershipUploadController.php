@@ -101,6 +101,7 @@ class MembershipUploadController extends Controller
         }
 
         // ✅ SEND FILES TO N8N WEBHOOK
+        // ✅ SEND FILES TO N8N WEBHOOK
         try {
             $n8nWebhookUrl = 'https://automate.mengseu-student.site/webhook/membership-upload';
 
@@ -125,36 +126,53 @@ class MembershipUploadController extends Controller
             ];
 
             foreach ($fileFields as $field) {
-                if ($membership->$field) {
+                if (!empty($membership->$field)) {
                     $filePath = storage_path("app/public/{$membership->$field}");
                     if (file_exists($filePath)) {
-                        // ✅ Use binary[field_name] — very important
                         $multipart[] = [
                             'name' => "binary[$field]",
                             'contents' => fopen($filePath, 'r'),
                             'filename' => basename($filePath),
+                            'headers' => [
+                                'Content-Type' => mime_content_type($filePath),
+                            ],
                         ];
                         Log::info("📎 Attached file for {$field}: {$filePath}");
+                    } else {
+                        Log::warning("⚠️ File for {$field} not found: {$filePath}");
                     }
                 }
             }
 
-            Log::info('📦 Prepared multipart fields for n8n: ' . json_encode(collect($multipart)->pluck('name')));
+            Log::info('📦 Sending to n8n webhook: ' . $n8nWebhookUrl);
+            Log::info('🧾 Multipart fields: ' . json_encode(collect($multipart)->pluck('name')));
 
-            $client = new \GuzzleHttp\Client(['timeout' => 300, 'verify' => false]);
+            $client = new Client(['timeout' => 300, 'verify' => false]);
 
             $response = $client->post($n8nWebhookUrl, [
-                'headers' => ['Accept' => 'application/json'],
+                'headers' => [
+                    'Accept' => 'application/json',
+                ],
                 'multipart' => $multipart,
             ]);
 
-            Log::info("✅ Files sent to n8n successfully.", [
+            $responseBody = (string) $response->getBody();
+            Log::info("✅ Files sent to n8n successfully", [
                 'status' => $response->getStatusCode(),
-                'response' => $response->getBody()->getContents(),
+                'response' => $responseBody,
+            ]);
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            $response = $e->getResponse();
+            $errorBody = $response ? $response->getBody()->getContents() : $e->getMessage();
+
+            Log::error('❌ n8n webhook failed', [
+                'error' => $e->getMessage(),
+                'body' => $errorBody,
             ]);
         } catch (\Exception $e) {
-            Log::error('❌ Failed to send to n8n: ' . $e->getMessage());
+            Log::error('❌ General n8n upload error: ' . $e->getMessage());
         }
+
 
         return redirect()->route('membership.thankyou');
     }
