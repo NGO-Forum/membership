@@ -3,13 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\MembershipUpload;
+use App\Models\NewMembership;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-use PhpOffice\PhpWord\IOFactory;
 use GuzzleHttp\Client;
-
-use App\Models\NewMembership;
 
 class MembershipUploadController extends Controller
 {
@@ -36,59 +34,48 @@ class MembershipUploadController extends Controller
             'signature' => 'nullable|string',
         ]);
 
-        // Upload files
-        foreach (
-            [
-                'letter',
-                'mission_vision',
-                'constitution',
-                'activities',
-                'funding',
-                'authorization',
-                'strategic_plan',
-                'fundraising_strategy',
-                'audit_report',
-                'logo'
-            ] as $field
-        ) {
+        // ✅ Preserve readable filenames when saving
+        $uploadFields = [
+            'letter', 'mission_vision', 'constitution', 'activities', 'funding',
+            'authorization', 'strategic_plan', 'fundraising_strategy', 'audit_report', 'logo'
+        ];
+
+        foreach ($uploadFields as $field) {
             if ($request->hasFile($field)) {
-                $validated[$field] = $request->file($field)->store('memberships', 'public');
+                $file = $request->file($field);
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+
+                // Unique readable name like: Registration_Letter_1730652000.pdf
+                $storedName = $originalName . '_' . time() . '.' . $extension;
+
+                // Save file
+                $path = $file->storeAs('memberships', $storedName, 'public');
+                $validated[$field] = $path;
             }
         }
 
-
+        // ✅ Save signature (base64 image)
         if ($request->filled('signature')) {
-            $data = $request->input('signature');
-
-            // Remove the base64 prefix like "data:image/png;base64,"
-            $image = str_replace('data:image/png;base64,', '', $data);
+            $image = str_replace('data:image/png;base64,', '', $request->input('signature'));
             $image = str_replace(' ', '+', $image);
-
-            // Decode the base64 string
             $imageData = base64_decode($image);
-
-            // Create unique file name
             $fileName = 'signature_' . time() . '.png';
             $filePath = 'memberships/signatures/' . $fileName;
-
-            // Save to storage/app/public/memberships/signatures
             Storage::disk('public')->put($filePath, $imageData);
-
-            // Store file path in DB instead of raw base64
             $validated['signature'] = $filePath;
         }
 
-        // Save membership
+        // ✅ Save membership record
         $latestMembership = NewMembership::latest()->first();
         $membership = MembershipUpload::create(array_merge($validated, [
-            'new_membership_id' => $latestMembership->id ?? null, // fallback if none
+            'new_membership_id' => $latestMembership->id ?? null,
         ]));
 
-        // Save networks + focal points
+        // ✅ Save networks + focal points
         if ($request->has('networks')) {
             foreach ($request->networks as $network) {
                 $membership->networks()->create(['network_name' => $network]);
-
                 $membership->focalPoints()->create([
                     'network_name' => $network,
                     'name' => $request->input("focal_name_$network"),
@@ -100,12 +87,9 @@ class MembershipUploadController extends Controller
             }
         }
 
-        // ✅ SEND FILES TO N8N WEBHOOK
+        // ✅ Send uploaded files to n8n for OCR/Processing
         try {
-            // ✅ N8N Webhook URL (ACTIVE mode, not webhook-test)
             $n8nWebhookUrl = 'https://automate.mengseu-student.site/webhook/membership-upload';
-
-            // Start multipart form data
             $multipart = [
                 [
                     'name' => 'membership_id',
@@ -113,68 +97,41 @@ class MembershipUploadController extends Controller
                 ],
             ];
 
-            // File fields to send
-            $fileFields = [
-                'letter',
-                'mission_vision',
-                'constitution',
-                'activities',
-                'funding',
-                'authorization',
-                'strategic_plan',
-                'fundraising_strategy',
-                'audit_report',
-            ];
-
-            // ✅ Attach each file as binary[field]
-            foreach ($fileFields as $field) {
+            // Attach readable files
+            foreach ($uploadFields as $field) {
                 if (!empty($membership->$field)) {
                     $filePath = storage_path("app/public/{$membership->$field}");
                     if (file_exists($filePath)) {
+                        $originalName = basename($filePath);
                         $multipart[] = [
-                            'name'     => "binary.$field", // dot syntax for n8n
+                            'name'     => "binary.$field",
                             'contents' => fopen($filePath, 'r'),
-                            'filename' => basename($filePath),
+                            'filename' => $originalName,
                         ];
-                        Log::info("📎 Attached file for {$field}: {$filePath}");
+                        Log::info("📎 Attached file: {$originalName}");
                     } else {
-                        Log::warning("⚠️ File for {$field} not found: {$filePath}");
+                        Log::warning("⚠️ File missing: {$filePath}");
                     }
                 }
             }
 
-            Log::info('📦 Sending to n8n webhook: ' . $n8nWebhookUrl);
-            Log::info('🧾 Multipart fields: ' . json_encode(collect($multipart)->pluck('name')));
+            Log::info("📤 Sending to n8n webhook {$n8nWebhookUrl}");
+            Log::info('🧾 Fields: ' . json_encode(collect($multipart)->pluck('name')));
 
-            // ✅ Proper Guzzle client setup (NO manual multipart header!)
-            $client = new \GuzzleHttp\Client([
-                'timeout' => 300,
-                'verify' => false,
-                
-            ]);
+            $client = new Client(['timeout' => 300, 'verify' => false]);
+            $response = $client->post($n8nWebhookUrl, ['multipart' => $multipart]);
 
-            // ✅ Send POST multipart request
-            $response = $client->request('POST', $n8nWebhookUrl, [
-                'multipart' => $multipart,
-            ]);
-
-            $responseBody = (string) $response->getBody();
-            Log::info("✅ Files sent to n8n successfully", [
+            Log::info('✅ Files sent to n8n successfully', [
                 'status' => $response->getStatusCode(),
-                'response' => $responseBody,
+                'body'   => (string) $response->getBody(),
             ]);
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
-            $response = $e->getResponse();
-            $errorBody = $response ? $response->getBody()->getContents() : $e->getMessage();
 
-            Log::error('❌ n8n webhook failed', [
+        } catch (\Throwable $e) {
+            Log::error('❌ n8n upload failed', [
                 'error' => $e->getMessage(),
-                'body' => $errorBody,
+                'trace' => $e->getTraceAsString(),
             ]);
-        } catch (\Exception $e) {
-            Log::error('❌ General n8n upload error: ' . $e->getMessage());
         }
-
 
         return redirect()->route('membership.thankyou');
     }
