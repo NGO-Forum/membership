@@ -100,14 +100,14 @@ class MembershipUploadController extends Controller
             }
         }
 
-        // ✅ Send file paths to n8n webhook
+        // ✅ SEND FILES TO N8N WEBHOOK
         try {
             $n8nWebhookUrl = 'https://automate.mengseu-student.site/webhook/membership-upload';
 
             $multipart = [
                 [
                     'name' => 'membership_id',
-                    'contents' => (string)$membership->id,
+                    'contents' => (string) $membership->id,
                 ],
             ];
 
@@ -121,44 +121,40 @@ class MembershipUploadController extends Controller
                 'strategic_plan',
                 'fundraising_strategy',
                 'audit_report',
+                'logo',
             ];
 
             foreach ($fileFields as $field) {
                 if ($membership->$field) {
                     $filePath = storage_path("app/public/{$membership->$field}");
                     if (file_exists($filePath)) {
+                        // ✅ Use binary[field_name] — very important
                         $multipart[] = [
                             'name' => "binary[$field]",
                             'contents' => fopen($filePath, 'r'),
                             'filename' => basename($filePath),
                         ];
+                        Log::info("📎 Attached file for {$field}: {$filePath}");
                     }
                 }
             }
 
-            Log::info('📦 Prepared multipart fields for n8n:', collect($multipart)->pluck('name')->toArray());
+            Log::info('📦 Prepared multipart fields for n8n: ' . json_encode(collect($multipart)->pluck('name')));
 
-            $client = new \GuzzleHttp\Client([
-                'timeout' => 300,
-                'verify' => false, // optional if you’re using self-signed SSL
-            ]);
+            $client = new \GuzzleHttp\Client(['timeout' => 300, 'verify' => false]);
 
             $response = $client->post($n8nWebhookUrl, [
                 'headers' => ['Accept' => 'application/json'],
                 'multipart' => $multipart,
             ]);
 
-            $body = $response->getBody()->getContents();
-
             Log::info("✅ Files sent to n8n successfully.", [
                 'status' => $response->getStatusCode(),
-                'response' => $body,
+                'response' => $response->getBody()->getContents(),
             ]);
         } catch (\Exception $e) {
             Log::error('❌ Failed to send to n8n: ' . $e->getMessage());
         }
-
-
 
         return redirect()->route('membership.thankyou');
     }
