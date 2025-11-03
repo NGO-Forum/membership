@@ -101,7 +101,6 @@ class MembershipUploadController extends Controller
         }
 
         // ✅ SEND FILES TO N8N WEBHOOK
-        // ✅ SEND FILES TO N8N WEBHOOK
         try {
             $n8nWebhookUrl = 'https://automate.mengseu-student.site/webhook/membership-upload';
 
@@ -130,7 +129,7 @@ class MembershipUploadController extends Controller
                     $filePath = storage_path("app/public/{$membership->$field}");
                     if (file_exists($filePath)) {
                         $multipart[] = [
-                            'name' => "binary[$field]",
+                            'name' => "binary.$field",
                             'contents' => fopen($filePath, 'r'),
                             'filename' => basename($filePath),
                             'headers' => [
@@ -172,7 +171,6 @@ class MembershipUploadController extends Controller
         } catch (\Exception $e) {
             Log::error('❌ General n8n upload error: ' . $e->getMessage());
         }
-
 
         return redirect()->route('membership.thankyou');
     }
