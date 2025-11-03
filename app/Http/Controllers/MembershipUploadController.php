@@ -104,7 +104,7 @@ class MembershipUploadController extends Controller
                     if (file_exists($filePath)) {
                         $originalName = basename($filePath);
                         $multipart[] = [
-                            'name'     => "binary.$field",
+                            'name'     => "binary[$field]",
                             'contents' => fopen($filePath, 'r'),
                             'filename' => $originalName,
                         ];
