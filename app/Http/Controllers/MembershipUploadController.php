@@ -124,37 +124,15 @@ class MembershipUploadController extends Controller
             ];
 
             foreach ($fileFields as $field) {
-                $relativePath = $membership->$field; // e.g. memberships/abc.pdf
-                $filePath = $relativePath ? storage_path("app/public/{$relativePath}") : null;
-
-                if ($filePath && file_exists($filePath)) {
-                    // Make sure the PHP process can read the file
-                    if (!is_readable($filePath)) {
-                        Log::warning("⚠️ File not readable for {$field}: {$filePath}");
-                        continue;
+                if ($membership->$field) {
+                    $filePath = storage_path("app/public/{$membership->$field}");
+                    if (file_exists($filePath)) {
+                        $multipart[] = [
+                            'name' => "binary",
+                            'contents' => fopen($filePath, 'r'),
+                            'filename' => basename($filePath),
+                        ];
                     }
-
-                    $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
-                    $handle = fopen($filePath, 'r');
-
-                    if ($handle === false) {
-                        Log::warning("⚠️ Could not open stream for {$field}: {$filePath}");
-                        continue;
-                    }
-
-                    $multipart[] = [
-                        'name' => "binary[$field]",
-                        'contents' => $handle,
-                        'filename' => basename($filePath),
-                        'headers' => [
-                            'Content-Type' => $mimeType,
-                            'Content-Disposition' => "form-data; name=\"{$field}\"; filename=\"" . basename($filePath) . "\"",
-                        ],
-                    ];
-
-                    Log::info("📎 Attached file for {$field}: {$filePath}");
-                } else {
-                    Log::warning("⚠️ File not found for {$field}: {$filePath}");
                 }
             }
 
