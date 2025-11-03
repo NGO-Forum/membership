@@ -141,7 +141,7 @@ class MembershipUploadController extends Controller
             $client = new \GuzzleHttp\Client(['timeout' => 300]);
             $response = $client->post($n8nWebhookUrl, ['multipart' => $multipart]);
 
-            Log::info("✅ Files sent to n8n. Status: " . $response->getStatusCode());
+            // Log::info("✅ Files sent to n8n. Status: " . $response->getStatusCode());
             Log::info('📂 Sending to n8n multipart fields:', collect($multipart)->pluck('name')->toArray());
         } catch (\Exception $e) {
             Log::error('❌ Failed to send to n8n: ' . $e->getMessage());
