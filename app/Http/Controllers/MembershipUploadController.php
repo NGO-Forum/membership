@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpWord\IOFactory;
-use thiagoalessio\TesseractOCR\TesseractOCR;
+use GuzzleHttp\Client;
 
 use App\Models\NewMembership;
 
@@ -100,45 +100,65 @@ class MembershipUploadController extends Controller
             }
         }
 
-        // Send file paths to n8n webhook
+        // ✅ Send file paths to n8n webhook
         try {
-            $n8nWebhookUrl = 'http://192.168.1.179:5678/webhook/membership-upload'; // n8n webhook URL
+            $n8nWebhookUrl = 'https://automate.mengseu-student.site/webhook/membership-upload';
 
             $multipart = [
                 [
                     'name' => 'membership_id',
-                    'contents' => $membership->id
-                ]
+                    'contents' => $membership->id,
+                ],
             ];
 
-            // List of file fields
             $fileFields = [
-                'letter', 'mission_vision', 'constitution', 'activities', 
-                'funding', 'authorization', 'strategic_plan', 
-                'fundraising_strategy', 'audit_report'
+                'letter', 'mission_vision', 'constitution', 'activities', 'funding',
+                'authorization', 'strategic_plan', 'fundraising_strategy', 'audit_report'
             ];
 
             foreach ($fileFields as $field) {
                 if ($membership->$field) {
-                    $multipart[] = [
-                        'name' => $field,
-                        'contents' => fopen(storage_path("app/public/{$membership->$field}"), 'r'),
-                        'filename' => basename($membership->$field)
-                    ];
+                    $filePath = storage_path("app/public/{$membership->$field}");
+
+                    if (file_exists($filePath)) {
+                        $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
+
+                        // ✅ Explicitly send with Content-Type & stream
+                        $multipart[] = [
+                            'name' => $field,
+                            'contents' => fopen($filePath, 'r'),
+                            'filename' => basename($filePath),
+                            'headers' => [
+                                'Content-Type' => $mimeType,
+                                'Content-Disposition' => "form-data; name=\"{$field}\"; filename=\"" . basename($filePath) . "\""
+                            ],
+                        ];
+                    } else {
+                        Log::warning("⚠️ File not found for {$field}: {$filePath}");
+                    }
                 }
             }
 
-            $client = new \GuzzleHttp\Client();
-            $response = $client->post($n8nWebhookUrl, [
-                'multipart' => $multipart
+            // ✅ Use a Guzzle Client with proper headers and timeout
+            $client = new Client([
+                'headers' => [
+                    'Accept' => 'application/json',
+                ],
+                'timeout' => 300,
             ]);
 
+            $response = $client->post($n8nWebhookUrl, [
+                'multipart' => $multipart,
+            ]);
+
+            $status = $response->getStatusCode();
+            $body = $response->getBody()->getContents();
+
+            Log::info("✅ Files sent successfully to n8n OCR. Status: {$status}. Response: {$body}");
         } catch (\Exception $e) {
-            Log::error('Failed to send files to n8n: ' . $e->getMessage());
+            Log::error('❌ Failed to send files to n8n: ' . $e->getMessage());
         }
 
         return redirect()->route('membership.thankyou');
     }
-    
 }
-
