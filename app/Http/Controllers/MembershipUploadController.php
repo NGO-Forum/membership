@@ -133,7 +133,7 @@ class MembershipUploadController extends Controller
                     if (file_exists($filePath)) {
                         $multipart[] = [
                             // Important: Use bracket syntax so n8n groups them under “binary”
-                            'name' => "binary[$field]",
+                            'name' => "binary.$field",
                             'contents' => fopen($filePath, 'r'),
                             'filename' => basename($filePath),
                             'headers' => [
