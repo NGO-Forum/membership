@@ -138,7 +138,6 @@ class MembershipUploadController extends Controller
                             'filename' => basename($filePath),
                             'headers' => [
                                 'Content-Type' => mime_content_type($filePath) ?: 'application/octet-stream',
-                                'Content-Disposition' => 'form-data; name="binary[' . $field . ']"; filename="' . basename($filePath) . '"',
                             ],
                         ];
                         Log::info("📎 Attached file for {$field}: {$filePath}");
