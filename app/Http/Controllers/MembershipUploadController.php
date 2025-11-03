@@ -103,35 +103,34 @@ class MembershipUploadController extends Controller
         // ✅ Send file paths to n8n webhook
         try {
             $n8nWebhookUrl = 'https://automate.mengseu-student.site/webhook/membership-upload';
-
             $multipart = [
                 [
                     'name' => 'membership_id',
                     'contents' => $membership->id,
-                ],
+                ]
             ];
 
             $fileFields = [
-                'letter', 'mission_vision', 'constitution', 'activities', 'funding',
-                'authorization', 'strategic_plan', 'fundraising_strategy', 'audit_report'
+                'letter',
+                'mission_vision',
+                'constitution',
+                'activities',
+                'funding',
+                'authorization',
+                'strategic_plan',
+                'fundraising_strategy',
+                'audit_report'
             ];
 
             foreach ($fileFields as $field) {
                 if ($membership->$field) {
                     $filePath = storage_path("app/public/{$membership->$field}");
-
                     if (file_exists($filePath)) {
-                        $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
-
-                        // ✅ Explicitly send with Content-Type & stream
+                        // ✅ Correct way — Guzzle handles headers automatically
                         $multipart[] = [
                             'name' => $field,
                             'contents' => fopen($filePath, 'r'),
                             'filename' => basename($filePath),
-                            'headers' => [
-                                'Content-Type' => $mimeType,
-                                'Content-Disposition' => "form-data; name=\"{$field}\"; filename=\"" . basename($filePath) . "\""
-                            ],
                         ];
                     } else {
                         Log::warning("⚠️ File not found for {$field}: {$filePath}");
@@ -139,22 +138,10 @@ class MembershipUploadController extends Controller
                 }
             }
 
-            // ✅ Use a Guzzle Client with proper headers and timeout
-            $client = new Client([
-                'headers' => [
-                    'Accept' => 'application/json',
-                ],
-                'timeout' => 300,
-            ]);
+            $client = new Client(['timeout' => 300]);
+            $response = $client->post($n8nWebhookUrl, ['multipart' => $multipart]);
 
-            $response = $client->post($n8nWebhookUrl, [
-                'multipart' => $multipart,
-            ]);
-
-            $status = $response->getStatusCode();
-            $body = $response->getBody()->getContents();
-
-            Log::info("✅ Files sent successfully to n8n OCR. Status: {$status}. Response: {$body}");
+            Log::info("✅ Files sent to n8n OCR successfully. Status: " . $response->getStatusCode());
         } catch (\Exception $e) {
             Log::error('❌ Failed to send files to n8n: ' . $e->getMessage());
         }
