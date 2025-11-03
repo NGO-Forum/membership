@@ -129,7 +129,7 @@ class MembershipUploadController extends Controller
                     $filePath = storage_path("app/public/{$membership->$field}");
                     if (file_exists($filePath)) {
                         $multipart[] = [
-                            'name' => "binary.$field",
+                            'name' => "binary[$field]",
                             'contents' => fopen($filePath, 'r'),
                             'filename' => basename($filePath),
                             'headers' => [
@@ -146,7 +146,13 @@ class MembershipUploadController extends Controller
             Log::info('📦 Sending to n8n webhook: ' . $n8nWebhookUrl);
             Log::info('🧾 Multipart fields: ' . json_encode(collect($multipart)->pluck('name')));
 
-            $client = new Client(['timeout' => 300, 'verify' => false]);
+            $client = new Client([
+                'timeout' => 300,
+                'verify' => false,
+                'headers' => [
+                    'Accept' => 'application/json',
+                ],
+            ]);
 
             $response = $client->post($n8nWebhookUrl, [
                 'headers' => [
