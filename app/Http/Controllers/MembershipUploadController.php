@@ -102,8 +102,10 @@ class MembershipUploadController extends Controller
 
         // ✅ SEND FILES TO N8N WEBHOOK
         try {
+            // ✅ N8N Webhook URL (ACTIVE mode, not webhook-test)
             $n8nWebhookUrl = 'https://automate.mengseu-student.site/webhook/membership-upload';
 
+            // Start multipart form data
             $multipart = [
                 [
                     'name' => 'membership_id',
@@ -111,6 +113,7 @@ class MembershipUploadController extends Controller
                 ],
             ];
 
+            // File fields to send
             $fileFields = [
                 'letter',
                 'mission_vision',
@@ -124,11 +127,13 @@ class MembershipUploadController extends Controller
                 'logo',
             ];
 
+            // ✅ Attach each file as binary[field]
             foreach ($fileFields as $field) {
                 if (!empty($membership->$field)) {
                     $filePath = storage_path("app/public/{$membership->$field}");
                     if (file_exists($filePath)) {
                         $multipart[] = [
+                            // Important: Use bracket syntax so n8n groups them under “binary”
                             'name' => "binary[$field]",
                             'contents' => fopen($filePath, 'r'),
                             'filename' => basename($filePath),
@@ -146,7 +151,8 @@ class MembershipUploadController extends Controller
             Log::info('📦 Sending to n8n webhook: ' . $n8nWebhookUrl);
             Log::info('🧾 Multipart fields: ' . json_encode(collect($multipart)->pluck('name')));
 
-            $client = new Client([
+            // ✅ Proper Guzzle client setup (NO manual multipart header!)
+            $client = new \GuzzleHttp\Client([
                 'timeout' => 300,
                 'verify' => false,
                 'headers' => [
@@ -154,10 +160,8 @@ class MembershipUploadController extends Controller
                 ],
             ]);
 
-            $response = $client->post($n8nWebhookUrl, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                ],
+            // ✅ Send POST multipart request
+            $response = $client->request('POST', $n8nWebhookUrl, [
                 'multipart' => $multipart,
             ]);
 
@@ -177,6 +181,7 @@ class MembershipUploadController extends Controller
         } catch (\Exception $e) {
             Log::error('❌ General n8n upload error: ' . $e->getMessage());
         }
+
 
         return redirect()->route('membership.thankyou');
     }
