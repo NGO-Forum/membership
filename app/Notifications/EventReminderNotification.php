@@ -1,34 +1,33 @@
 <?php
-namespace App\Mail;
+
+namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
 use Carbon\Carbon;
 
-class EventInterestMail extends Mailable
+class EventReminderNotification extends Notification
 {
-    use Queueable, SerializesModels;
+    use Queueable;
 
-    public $event;
-    public $name;
-    public $email;
-    public $messageContent;
+    protected $event;
 
-    public function __construct($event, $name, $email, $messageContent)
+    public function __construct($event)
     {
         $this->event = $event;
-        $this->name = $name;
-        $this->email = $email;
-        $this->messageContent = $messageContent;
     }
 
-    public function build()
+    public function via($notifiable)
+    {
+        return ['mail'];
+    }
+
+    public function toMail($notifiable)
     {
         $start = Carbon::parse($this->event->start_date . ' ' . $this->event->start_time);
         $end   = Carbon::parse($this->event->end_date . ' ' . $this->event->end_time);
 
-        // Build ICS calendar content
         $ics = "BEGIN:VCALENDAR
             VERSION:2.0
             BEGIN:VEVENT
@@ -36,15 +35,19 @@ class EventInterestMail extends Mailable
             DTSTART:" . $start->format('Ymd\THis') . "
             DTEND:" . $end->format('Ymd\THis') . "
             DESCRIPTION:{$this->event->description}
-            LOCATION:{$this->event->location}
             URL:" . url('/events/' . $this->event->id) . "
             END:VEVENT
             END:VCALENDAR";
 
-        return $this->subject("Interest in Event: {$this->event->title}")
-            ->markdown('emails.event_interest')
+        return (new MailMessage)
+            ->subject('Reminder: Event in 7 Days')
+            ->line("Event: {$this->event->title}")
+            ->line("Date: {$this->event->start_date} at {$this->event->start_time}")
+            ->action('View Event', url('/events/' . $this->event->id))
+            ->line('Add this event to your calendar:')
             ->attachData($ics, 'event.ics', [
                 'mime' => 'text/calendar',
-            ]);
+            ])
+            ->line('Thank you!');
     }
 }
