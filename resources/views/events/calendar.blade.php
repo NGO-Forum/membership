@@ -45,8 +45,8 @@
                     @for ($i = 0; $i < 7; $i++)
                         <div
                             class="relative p-2 border-r border-green-300
-                                {{ $day->month !== $startOfMonth->month ? 'bg-gray-100 text-gray-400' : '' }}
-                                {{ $day->isSameDay(now()) ? 'bg-blue-50' : '' }}
+                                {{ $day->month !== $startOfMonth->month ? 'bg-gray-200 text-gray-400' : '' }}
+                                {{ $day->isSameDay(now()) ? 'bg-blue-50' : 'bg-white' }}
                              ">
                             @php
                                 $isToday = $day->isSameDay(now());
@@ -56,7 +56,7 @@
                                 class="
                                     inline-flex items-center justify-center
                                     w-7 h-7 text-sm font-semibold
-                                    {{ $isToday ? 'bg-blue-600 text-white rounded-full ring-2 ring-gray-300' : '' }}
+                                    {{ $isToday ? 'bg-blue-600 text-white rounded-full ring-2 ring-blue-300' : '' }}
                                 ">
                                 {{ $day->day }}
                             </span>
