@@ -21,14 +21,16 @@ class CalendarController extends Controller
         $gridStart = $startOfMonth->copy()->startOfWeek(Carbon::SUNDAY);
         $gridEnd = $startOfMonth->copy()->endOfMonth()->endOfWeek(Carbon::SATURDAY);
 
-        $events = Event::where(function ($query) use ($gridStart, $gridEnd) {
-            $query->whereBetween('start_date', [$gridStart, $gridEnd])
-                ->orWhereBetween('end_date', [$gridStart, $gridEnd])
-                ->orWhere(function ($q) use ($gridStart, $gridEnd) {
-                    $q->where('start_date', '<=', $gridStart)
-                        ->where('end_date', '>=', $gridEnd);
-                });
-        })
+        $events = Event::with('images') // 👈 load images
+            ->where(function ($query) use ($gridStart, $gridEnd) {
+                $query->whereBetween('start_date', [$gridStart, $gridEnd])
+                    ->orWhereBetween('end_date', [$gridStart, $gridEnd])
+                    ->orWhere(function ($q) use ($gridStart, $gridEnd) {
+                        $q->where('start_date', '<=', $gridStart)
+                            ->where('end_date', '>=', $gridEnd);
+                    });
+            })
+            ->orderBy('start_date')
             ->get();
 
 
@@ -101,13 +103,13 @@ class CalendarController extends Controller
         return redirect()->route('events.calendar')->with('success', 'Event created successfully!');
     }
 
-     /* ================= API (REACT) ================= */
+    /* ================= API (REACT) ================= */
     public function api(Request $request)
     {
         $month = (int) $request->query('month', now()->month);
         $year = (int) $request->query('year', now()->year);
 
-        [$events, , $gridStart, $gridEnd] =
+        [$events,, $gridStart, $gridEnd] =
             $this->calendarEvents($month, $year);
 
         return response()->json([
@@ -115,7 +117,7 @@ class CalendarController extends Controller
             'year' => $year,
             'grid_start' => $gridStart->toDateString(),
             'grid_end' => $gridEnd->toDateString(),
-            'events' => $events->map(fn ($event) => [
+            'events' => $events->map(fn($event) => [
                 'id' => $event->id,
                 'title' => $event->title,
                 'start_date' => $event->start_date->toDateString(),
@@ -127,11 +129,10 @@ class CalendarController extends Controller
                 'description' => $event->description,
 
                 // ✅ IMAGES (PUBLIC URLs)
-                'images' => $event->images->map(fn ($img) => [
+                'images' => $event->images->map(fn($img) => [
                     'url' => asset('storage/' . $img->image_path),
                 ]),
             ]),
         ]);
     }
-
 }
