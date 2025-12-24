@@ -2,155 +2,92 @@
 @section('content')
     <div class="pt-6">
 
-        {{-- Calendar Header --}}
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-            <div class="flex items-center gap-2">
-                @php
-                    $isCurrentMonth = $startOfMonth->isSameMonth(now()) && $startOfMonth->isSameYear(now());
-                @endphp
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex gap-2">
                 <a href="{{ route('events.calendar', ['month' => $startOfMonth->copy()->subMonth()->month, 'year' => $startOfMonth->copy()->subMonth()->year]) }}"
-                    class="px-2 sm:px-3 py-1 rounded-md bg-gray-300 hover:bg-gray-400 transition">&lt;</a>
+                    class="px-3 py-1 bg-gray-300 rounded">&lt;</a>
 
                 <a href="{{ route('events.calendar', ['month' => now()->month, 'year' => now()->year]) }}"
-                    class="px-3 sm:px-4 py-1 rounded-md shadow transition
-                   {{ $isCurrentMonth ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-400 text-white hover:bg-blue-500' }}">
-                    Today
-                </a>
+                    class="px-4 py-1 bg-blue-600 text-white rounded">Today</a>
 
                 <a href="{{ route('events.calendar', ['month' => $startOfMonth->copy()->addMonth()->month, 'year' => $startOfMonth->copy()->addMonth()->year]) }}"
-                    class="px-2 sm:px-3 py-1 rounded-md bg-gray-300 hover:bg-gray-400 transition">&gt;</a>
+                    class="px-3 py-1 bg-gray-300 rounded">&gt;</a>
             </div>
 
-            <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 text-center sm:text-left">
-                {{ $startOfMonth->format('F Y') }}
-            </h2>
-            @if (auth()->user()->role === 'admin')
-                <button onclick="openEventModal()"
-                    class="px-3 sm:px-4 py-1 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition text-sm sm:text-base">
-                    + Add Event
-                </button>
-            @endif
+            <h2 class="text-2xl font-bold">{{ $startOfMonth->format('F Y') }}</h2>
         </div>
 
-        {{-- Calendar Grid --}}
-        <div class="overflow-x-auto">
-            <div class="grid grid-cols-7 min-w-[700px] border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                {{-- Weekday Header --}}
-                @foreach (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $dayName)
-                    <div
-                        class="py-2 sm:py-3 text-center text-xs sm:text-sm font-semibold bg-green-600 text-white border-b border-white">
-                        {{ $dayName }}
-                    </div>
-                @endforeach
+        {{-- Weekday Header --}}
+        <div class="grid grid-cols-7 bg-green-600 text-white font-semibold">
+            @foreach (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day)
+                <div class="text-center py-3 border-r border-white">{{ $day }}</div>
+            @endforeach
+        </div>
 
-                @php $currentDay = $gridStart->copy(); @endphp
-                @while ($currentDay <= $gridEnd)
+        {{-- Calendar Body --}}
+        @php $weekStart = $gridStart->copy(); @endphp
+
+        @while ($weekStart <= $gridEnd)
+            {{-- WEEK ROW (RELATIVE CONTAINER) --}}
+            <div class="relative grid grid-cols-7 border-b min-h-[140px]">
+
+                {{-- Day Cells --}}
+                @php $day = $weekStart->copy(); @endphp
+                @for ($i = 0; $i < 7; $i++)
+                    <div
+                        class="relative border-r p-2 text-sm {{ $day->month !== $startOfMonth->month ? 'bg-gray-100 text-gray-400' : '' }}">
+                        <span class="font-semibold">{{ $day->day }}</span>
+                    </div>
+                    @php $day->addDay(); @endphp
+                @endfor
+
+                {{-- EVENTS (RENDER ONCE PER WEEK) --}}
+                @foreach ($events as $event)
                     @php
-                        $date = $currentDay->toDateString();
-                        $dayEvents = $events->filter(function ($event) use ($date) {
-                            return $event->start_date <= $date && $event->end_date >= $date;
-                        });
-                        $isToday = $date === now()->toDateString();
-                        $isCurrentMonth = $currentDay->month === $startOfMonth->month;
-                        $isWeekend = in_array($currentDay->dayOfWeek, [0, 6]);
+                        $start = \Carbon\Carbon::parse($event->start_date);
+                        $end = \Carbon\Carbon::parse($event->end_date);
+
+                        $weekEnd = $weekStart->copy()->endOfWeek(\Carbon\Carbon::SATURDAY);
+
+                        // Skip if event not in this week
+                        if ($end < $weekStart || $start > $weekEnd) {
+                            continue;
+                        }
+
+                        // Clamp start & end to this week
+                        $renderStart = $start->greaterThan($weekStart) ? $start : $weekStart;
+                        $renderEnd = $end->lessThan($weekEnd) ? $end : $weekEnd;
+
+                        $span = $renderStart->diffInDays($renderEnd) + 1;
+                        $dayWidth = 100 / 7;
+
+                        static $row = 0;
                     @endphp
 
-                    <div class="relative h-20 sm:h-24 md:h-32 p-1 sm:p-2 border-b border-r border-green-300 cursor-pointer
-                            {{ !$isCurrentMonth ? 'text-gray-400 bg-gray-100' : ($isWeekend ? 'bg-gray-50' : 'bg-white') }}"
-                        @if (auth()->user()->role === 'admin') onclick="openEventModal('{{ $date }}')" @endif>
+                    <div class="absolute h-7 rounded-full px-3 text-white text-xs flex items-center
+                            bg-green-400 hover:bg-green-500 shadow cursor-pointer"
+                        style="
+                        top: {{ 32 + $row * 28 }}px;
+                        left: {{ $renderStart->dayOfWeek * $dayWidth }}%;
+                        width: {{ $span * $dayWidth }}%;
+                     "
+                        onclick='openEventDetailModal(@json($event));'>
 
-                        {{-- Day Number --}}
-                        <div class="absolute top-1 sm:top-2 left-1 sm:left-2 text-xs sm:text-sm">
-                            @if ($isToday)
-                                <span
-                                    class="bg-blue-600 text-white rounded-full w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center font-semibold">
-                                    {{ $currentDay->day }}
-                                </span>
-                            @else
-                                <span class="font-medium">{{ $currentDay->day }}</span>
-                            @endif
-                        </div>
-
-                        {{-- Events (Multi-Day Logic) --}}
-                        {{-- @foreach ($dayEvents as $event)
-                            @if (Carbon\Carbon::parse($event->start_date)->isSameDay($currentDay))
-                                @php
-                                    $start = Carbon\Carbon::parse($event->start_date);
-                                    $end = Carbon\Carbon::parse($event->end_date);
-                                    $days = $start->diffInDays($end) + 1;
-                                    $remainingDays =
-                                        $start->diffInDays($gridEnd->copy()->endOfWeek(Carbon\Carbon::SATURDAY)) + 1;
-                                    $span = min($days, $remainingDays);
-                                    $widthClass = 'w-[' . $span * (100 / 7) . '%]';
-                                    $leftOffset = $currentDay->dayOfWeek * (100 / 7);
-                                @endphp
-                                <div class="absolute z-10 p-1 sm:p-1.5 mt-6 md:mt-8 
-                                    rounded-lg cursor-pointer transition border-l-8
-                                    {{ \Carbon\Carbon::parse($event->end_date)->isPast()
-                                        ? 'bg-green-200 border-green-500 hover:bg-green-200 text-gray-400'
-                                        : 'bg-green-300 border-green-600 hover:bg-green-400' }}"
-                                    style="width: {{ $span * 97 }}%;"
-                                    onclick='event.stopPropagation(); openEventDetailModal(@json($event));'>
-
-                                    <div class="text-[6px] sm:text-xs truncate">
-                                        {{ Carbon\Carbon::parse($event->start_time)->format('g:i A') }} <span
-                                            class="font-medium">
-                                            @if (strlen($event->title) > 30)
-                                                {{ substr($event->title, 0, 30) . '...' }}
-                                            @else
-                                                {{ $event->title }}
-                                            @endif
-                                        </span>
-                                    </div>
-                                </div>
-                            @endif
-                        @endforeach --}}
-                        @foreach ($events as $event)
-
-    @php
-        $start = \Carbon\Carbon::parse($event->start_date);
-        $end   = \Carbon\Carbon::parse($event->end_date);
-
-        // Skip if event does not touch this day
-        if (!$currentDay->between($start, $end)) continue;
-
-        // Determine FIRST visible day in this week
-        $weekStart = $currentDay->copy()->startOfWeek(\Carbon\Carbon::SUNDAY);
-        $weekEnd   = $currentDay->copy()->endOfWeek(\Carbon\Carbon::SATURDAY);
-
-        $renderDay = $start->greaterThan($weekStart) ? $start : $weekStart;
-
-        // Render ONLY on first visible day
-        if (!$currentDay->isSameDay($renderDay)) continue;
-
-        // Limit span inside this week
-        $visibleEnd = $end->lessThan($weekEnd) ? $end : $weekEnd;
-        $span = $renderDay->diffInDays($visibleEnd) + 1;
-
-        $dayWidth = 100 / 7;
-    @endphp
-
-    <div class="absolute left-0 z-10 mt-6
-        h-7 rounded-full px-3 flex items-center
-        bg-green-400 text-white text-xs font-medium
-        shadow cursor-pointer hover:bg-green-500"
-        style="
-            left: {{ $renderDay->dayOfWeek * $dayWidth }}%;
-            width: {{ $span * $dayWidth }}%;
-        "
-        onclick='event.stopPropagation(); openEventDetailModal(@json($event));'>
-
-        {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }}
-        &nbsp;{{ \Illuminate\Support\Str::limit($event->title, 25) }}
-    </div>
-
-@endforeach
-
+                        {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }}
+                        &nbsp;{{ \Illuminate\Support\Str::limit($event->title, 25) }}
                     </div>
-                    @php $currentDay->addDay(); @endphp
-                @endwhile
+
+                    @php $row++; @endphp
+                @endforeach
+
             </div>
-        </div>
+
+            @php
+                $weekStart->addWeek();
+                $row = 0;
+            @endphp
+        @endwhile
+
     </div>
 
     {{-- Create Event Modal --}}
@@ -264,8 +201,7 @@
             <div class="bg-gradient-to-r from-green-600 to-green-800 px-6 py-4 flex justify-between items-center">
                 <h3 id="detailTitle" class="text-xl font-bold text-white flex items-center gap-2">
                 </h3>
-                <button type="button" onclick="closeEventDetailModal()"
-                    class="text-white hover:text-gray-200 transition">
+                <button type="button" onclick="closeEventDetailModal()" class="text-white hover:text-gray-200 transition">
                     ✕
                 </button>
             </div>
