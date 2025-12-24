@@ -74,10 +74,9 @@
                             $dayWidth = 100 / 7;
                         @endphp
 
-                        <div class="absolute h-7 rounded-lg px-3 flex items-center text-xs text-white
-                            bg-green-400 hover:bg-green-500 shadow cursor-pointer"
+                        <div class="absolute bg-green-400 border-l-8 border-green-600 text-white hover:bg-green-500 text-[6px] md:text-xs rounded-md md:rounded-lg px-2 py-1 shadow cursor-pointer"
                             style="
-                        top: {{ 26 + $row * 36 }}px;
+                        top: {{ 30 + $row * 36 }}px;
                         left: {{ $renderStart->dayOfWeek * $dayWidth }}%;
                         width: {{ $span * $dayWidth }}%;
                      "
