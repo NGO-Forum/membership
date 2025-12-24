@@ -34,77 +34,79 @@
 
         {{-- Calendar Grid --}}
         <div class="overflow-x-auto">
-            {{-- Weekday Header --}}
-            <div class="grid grid-cols-7 bg-green-600 text-white font-semibold">
+            <div class="grid grid-cols-7 min-w-[700px] border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                {{-- Weekday Header --}}
                 @foreach (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day)
-                    <div class="text-center py-3 border-r border-white">{{ $day }}</div>
+                    <div
+                        class="py-2 sm:py-3 text-center text-xs sm:text-sm font-semibold bg-green-600 text-white border-b border-white">
+                        {{ $day }}
+                    </div>
                 @endforeach
-            </div>
 
-            {{-- Calendar Body --}}
-            @php $weekStart = $gridStart->copy(); @endphp
+                {{-- Calendar Body --}}
+                @php $weekStart = $gridStart->copy(); @endphp
 
-            @while ($weekStart <= $gridEnd)
-                {{-- WEEK ROW (RELATIVE CONTAINER) --}}
-                <div class="relative grid grid-cols-7 border-b min-h-[140px]">
+                @while ($weekStart <= $gridEnd)
+                    {{-- WEEK ROW (RELATIVE CONTAINER) --}}
+                    <div class="relative grid grid-cols-7 border-b min-h-[140px]">
 
-                    {{-- Day Cells --}}
-                    @php $day = $weekStart->copy(); @endphp
-                    @for ($i = 0; $i < 7; $i++)
-                        <div
-                            class="relative border-r p-2 text-sm {{ $day->month !== $startOfMonth->month ? 'bg-gray-100 text-gray-400' : '' }}">
-                            <span class="font-semibold">{{ $day->day }}</span>
-                        </div>
-                        @php $day->addDay(); @endphp
-                    @endfor
+                        {{-- Day Cells --}}
+                        @php $day = $weekStart->copy(); @endphp
+                        @for ($i = 0; $i < 7; $i++)
+                            <div
+                                class="relative border-r p-2 text-sm {{ $day->month !== $startOfMonth->month ? 'bg-gray-100 text-gray-400' : '' }}">
+                                <span class="font-semibold">{{ $day->day }}</span>
+                            </div>
+                            @php $day->addDay(); @endphp
+                        @endfor
 
-                    {{-- EVENTS (RENDER ONCE PER WEEK) --}}
-                    @foreach ($events as $event)
-                        @php
-                            $start = \Carbon\Carbon::parse($event->start_date);
-                            $end = \Carbon\Carbon::parse($event->end_date);
+                        {{-- EVENTS (RENDER ONCE PER WEEK) --}}
+                        @foreach ($events as $event)
+                            @php
+                                $start = \Carbon\Carbon::parse($event->start_date);
+                                $end = \Carbon\Carbon::parse($event->end_date);
 
-                            $weekEnd = $weekStart->copy()->endOfWeek(\Carbon\Carbon::SATURDAY);
+                                $weekEnd = $weekStart->copy()->endOfWeek(\Carbon\Carbon::SATURDAY);
 
-                            // Skip if event not in this week
-                            if ($end < $weekStart || $start > $weekEnd) {
-                                continue;
-                            }
+                                // Skip if event not in this week
+                                if ($end < $weekStart || $start > $weekEnd) {
+                                    continue;
+                                }
 
-                            // Clamp start & end to this week
-                            $renderStart = $start->greaterThan($weekStart) ? $start : $weekStart;
-                            $renderEnd = $end->lessThan($weekEnd) ? $end : $weekEnd;
+                                // Clamp start & end to this week
+                                $renderStart = $start->greaterThan($weekStart) ? $start : $weekStart;
+                                $renderEnd = $end->lessThan($weekEnd) ? $end : $weekEnd;
 
-                            $span = $renderStart->diffInDays($renderEnd) + 1;
-                            $dayWidth = 100 / 7;
+                                $span = $renderStart->diffInDays($renderEnd) + 1;
+                                $dayWidth = 100 / 7;
 
-                            static $row = 0;
-                        @endphp
+                                static $row = 0;
+                            @endphp
 
-                        <div class="absolute h-7 rounded-full px-3 text-white text-xs flex items-center
+                            <div class="absolute h-7 rounded-full px-3 text-white text-xs flex items-center
                             bg-green-400 hover:bg-green-500 shadow cursor-pointer"
-                            style="
+                                style="
                         top: {{ 32 + $row * 28 }}px;
                         left: {{ $renderStart->dayOfWeek * $dayWidth }}%;
                         width: {{ $span * $dayWidth }}%;
                      "
-                            onclick='openEventDetailModal(@json($event));'>
+                                onclick='openEventDetailModal(@json($event));'>
 
-                            {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }}
-                            &nbsp;{{ \Illuminate\Support\Str::limit($event->title, 25) }}
-                        </div>
+                                {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }}
+                                &nbsp;{{ \Illuminate\Support\Str::limit($event->title, 25) }}
+                            </div>
 
-                        @php $row++; @endphp
-                    @endforeach
+                            @php $row++; @endphp
+                        @endforeach
 
-                </div>
+                    </div>
 
-                @php
-                    $weekStart->addWeek();
-                    $row = 0;
-                @endphp
-            @endwhile
-
+                    @php
+                        $weekStart->addWeek();
+                        $row = 0;
+                    @endphp
+                @endwhile
+            </div>
         </div>
     </div>
 
