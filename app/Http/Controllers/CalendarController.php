@@ -101,43 +101,37 @@ class CalendarController extends Controller
         return redirect()->route('events.calendar')->with('success', 'Event created successfully!');
     }
 
+     /* ================= API (REACT) ================= */
     public function api(Request $request)
     {
-        $month = $request->query('month', Carbon::now()->month);
-        $year = $request->query('year', Carbon::now()->year);
+        $month = (int) $request->query('month', now()->month);
+        $year = (int) $request->query('year', now()->year);
 
-        $startOfMonth = Carbon::create($year, $month, 1);
-        $gridStart = $startOfMonth->copy()->startOfWeek(Carbon::SUNDAY);
-        $gridEnd = $startOfMonth->copy()->endOfMonth()->endOfWeek(Carbon::SATURDAY);
-
-        $events = Event::where(function ($query) use ($gridStart, $gridEnd) {
-            $query->whereBetween('start_date', [$gridStart, $gridEnd])
-                ->orWhereBetween('end_date', [$gridStart, $gridEnd])
-                ->orWhere(function ($q) use ($gridStart, $gridEnd) {
-                    $q->where('start_date', '<=', $gridStart)
-                        ->where('end_date', '>=', $gridEnd);
-                });
-        })
-            ->orderBy('start_date')
-            ->get()
-            ->map(function ($event) {
-                return [
-                    'id' => $event->id,
-                    'title' => $event->title,
-                    'start_date' => $event->start_date,
-                    'end_date' => $event->end_date,
-                    'start_time' => $event->start_time,
-                    'end_time' => $event->end_time,
-                    'location' => $event->location,
-                ];
-            });
+        [$events, , $gridStart, $gridEnd] =
+            $this->calendarEvents($month, $year);
 
         return response()->json([
-            'month' => (int) $month,
-            'year' => (int) $year,
+            'month' => $month,
+            'year' => $year,
             'grid_start' => $gridStart->toDateString(),
             'grid_end' => $gridEnd->toDateString(),
-            'events' => $events,
+            'events' => $events->map(fn ($event) => [
+                'id' => $event->id,
+                'title' => $event->title,
+                'start_date' => $event->start_date->toDateString(),
+                'end_date' => $event->end_date->toDateString(),
+                'start_time' => $event->start_time,
+                'end_time' => $event->end_time,
+                'location' => $event->location,
+                'organizer' => $event->organizer,
+                'description' => $event->description,
+
+                // ✅ IMAGES (PUBLIC URLs)
+                'images' => $event->images->map(fn ($img) => [
+                    'url' => asset('storage/' . $img->image_path),
+                ]),
+            ]),
         ]);
     }
+
 }
