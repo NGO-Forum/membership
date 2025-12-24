@@ -72,7 +72,7 @@
                         </div>
 
                         {{-- Events (Multi-Day Logic) --}}
-                        @foreach ($dayEvents as $event)
+                        {{-- @foreach ($dayEvents as $event)
                             @if (Carbon\Carbon::parse($event->start_date)->isSameDay($currentDay))
                                 @php
                                     $start = Carbon\Carbon::parse($event->start_date);
@@ -104,7 +104,18 @@
                                     </div>
                                 </div>
                             @endif
+                        @endforeach --}}
+                        @foreach ($dayEvents as $event)
+                            @if ($currentDay->between(\Carbon\Carbon::parse($event->start_date), \Carbon\Carbon::parse($event->end_date)))
+                                <div class="absolute z-10 mt-6 p-1 rounded bg-green-300 border-l-8 border-green-600 text-xs cursor-pointer"
+                                    style="width:95%; left:2.5%;"
+                                    onclick='event.stopPropagation(); openEventDetailModal(@json($event));'>
+                                    {{ \Carbon\Carbon::parse($event->start_time)->format('g:i A') }}
+                                    {{ \Illuminate\Support\Str::limit($event->title, 30) }}
+                                </div>
+                            @endif
                         @endforeach
+
                     </div>
                     @php $currentDay->addDay(); @endphp
                 @endwhile
