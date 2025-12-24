@@ -73,38 +73,42 @@
 
                         {{-- Events (Multi-Day Logic) --}}
                         @foreach ($dayEvents as $event)
-                            @if (Carbon\Carbon::parse($event->start_date)->isSameDay($currentDay))
+                            @if ($currentDay->between(Carbon\Carbon::parse($event->start_date), Carbon\Carbon::parse($event->end_date)))
                                 @php
                                     $start = Carbon\Carbon::parse($event->start_date);
                                     $end = Carbon\Carbon::parse($event->end_date);
-                                    $days = $start->diffInDays($end) + 1;
-                                    $remainingDays =
-                                        $start->diffInDays($gridEnd->copy()->endOfWeek(Carbon\Carbon::SATURDAY)) + 1;
-                                    $span = min($days, $remainingDays);
-                                    $widthClass = 'w-[' . $span * (100 / 7) . '%]';
-                                    $leftOffset = $currentDay->dayOfWeek * (100 / 7);
+
+                                    // Render only once (on visible start)
+                                    if (!$currentDay->isSameDay(max($start, $currentDay))) {
+                                        continue;
+                                    }
+
+                                    $visibleEnd = $end->lessThan($gridEnd) ? $end : $gridEnd;
+                                    $span = $currentDay->diffInDays($visibleEnd) + 1;
+                                    $dayWidth = 100 / 7;
                                 @endphp
-                                <div class="absolute z-10 p-1 sm:p-1.5 mt-6 md:mt-8 
+
+                                <div class="absolute z-10 p-1 sm:p-1.5 mt-6 md:mt-8
                                     rounded-lg cursor-pointer transition border-l-8
-                                    {{ \Carbon\Carbon::parse($event->end_date)->isPast()
-                                        ? 'bg-green-200 border-green-500 hover:bg-green-200 text-gray-400'
+                                    {{ $end->isPast()
+                                        ? 'bg-green-200 border-green-500 text-gray-400'
                                         : 'bg-green-300 border-green-600 hover:bg-green-400' }}"
-                                    style="width: {{ $span * 97 }}%;"
+                                                            style="
+                                        width: {{ min($span * $dayWidth, 100) }}%;
+                                        left: {{ $currentDay->dayOfWeek * $dayWidth }}%;
+                                    "
                                     onclick='event.stopPropagation(); openEventDetailModal(@json($event));'>
 
                                     <div class="text-[6px] sm:text-xs truncate">
-                                        {{ Carbon\Carbon::parse($event->start_time)->format('g:i A') }} <span
-                                            class="font-medium">
-                                            @if (strlen($event->title) > 30)
-                                                {{ substr($event->title, 0, 30) . '...' }}
-                                            @else
-                                                {{ $event->title }}
-                                            @endif
+                                        {{ Carbon\Carbon::parse($event->start_time)->format('g:i A') }}
+                                        <span class="font-medium">
+                                            {{ \Illuminate\Support\Str::limit($event->title, 30) }}
                                         </span>
                                     </div>
                                 </div>
                             @endif
                         @endforeach
+
 
                     </div>
                     @php $currentDay->addDay(); @endphp
