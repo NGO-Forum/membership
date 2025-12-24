@@ -77,7 +77,7 @@
                         <div class="absolute h-7 rounded-lg px-3 flex items-center text-xs text-white
                             bg-green-400 hover:bg-green-500 shadow cursor-pointer"
                             style="
-                        top: {{ 22 + $row * 30 }}px;
+                        top: {{ 22 + $row * 36 }}px;
                         left: {{ $renderStart->dayOfWeek * $dayWidth }}%;
                         width: {{ $span * $dayWidth }}%;
                      "
