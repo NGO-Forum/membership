@@ -106,46 +106,45 @@
                             @endif
                         @endforeach --}}
                         @foreach ($events as $event)
-                            @php
-                                $start = \Carbon\Carbon::parse($event->start_date);
-                                $end = \Carbon\Carbon::parse($event->end_date);
 
-                                // Skip if event not visible today
-                                if (!$currentDay->between($start, $end)) {
-                                    continue;
-                                }
+    @php
+        $start = \Carbon\Carbon::parse($event->start_date);
+        $end   = \Carbon\Carbon::parse($event->end_date);
 
-                                // Render ONLY on first visible day
-                                $renderDay = $start->lessThan($gridStart) ? $gridStart : $start;
-                                if (!$currentDay->isSameDay($renderDay)) {
-                                    continue;
-                                }
+        // Skip if event does not touch this day
+        if (!$currentDay->between($start, $end)) continue;
 
-                                // Calculate span inside current week
-                                $weekEnd = $currentDay->copy()->endOfWeek(\Carbon\Carbon::SATURDAY);
-                                $visibleEnd = $end->lessThan($weekEnd) ? $end : $weekEnd;
+        // Determine FIRST visible day in this week
+        $weekStart = $currentDay->copy()->startOfWeek(\Carbon\Carbon::SUNDAY);
+        $weekEnd   = $currentDay->copy()->endOfWeek(\Carbon\Carbon::SATURDAY);
 
-                                $span = $currentDay->diffInDays($visibleEnd) + 1;
-                                $dayWidth = 100 / 7;
-                            @endphp
+        $renderDay = $start->greaterThan($weekStart) ? $start : $weekStart;
 
-                            <div class="absolute z-10 mt-6 md:mt-8 p-1 rounded-lg
-        border-l-8 cursor-pointer transition
-        {{ $end->isPast()
-            ? 'bg-green-200 border-green-500 text-gray-400'
-            : 'bg-green-300 border-green-600 hover:bg-green-400' }}"
-                                style="
-            left: {{ $currentDay->dayOfWeek * $dayWidth }}%;
+        // Render ONLY on first visible day
+        if (!$currentDay->isSameDay($renderDay)) continue;
+
+        // Limit span inside this week
+        $visibleEnd = $end->lessThan($weekEnd) ? $end : $weekEnd;
+        $span = $renderDay->diffInDays($visibleEnd) + 1;
+
+        $dayWidth = 100 / 7;
+    @endphp
+
+    <div class="absolute left-0 z-10 mt-6
+        h-7 rounded-full px-3 flex items-center
+        bg-green-400 text-white text-xs font-medium
+        shadow cursor-pointer hover:bg-green-500"
+        style="
+            left: {{ $renderDay->dayOfWeek * $dayWidth }}%;
             width: {{ $span * $dayWidth }}%;
         "
-                                onclick='event.stopPropagation(); openEventDetailModal(@json($event));'>
+        onclick='event.stopPropagation(); openEventDetailModal(@json($event));'>
 
-                                <div class="text-[10px] truncate">
-                                    {{ \Carbon\Carbon::parse($event->start_time)->format('g:i A') }}
-                                    {{ \Illuminate\Support\Str::limit($event->title, 30) }}
-                                </div>
-                            </div>
-                        @endforeach
+        {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }}
+        &nbsp;{{ \Illuminate\Support\Str::limit($event->title, 25) }}
+    </div>
+
+@endforeach
 
                     </div>
                     @php $currentDay->addDay(); @endphp
