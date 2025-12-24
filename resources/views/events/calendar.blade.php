@@ -45,7 +45,9 @@
                     @for ($i = 0; $i < 7; $i++)
                         <div
                             class="relative p-2 border-r border-green-300
-                             {{ $day->month !== $startOfMonth->month ? 'bg-gray-100 text-gray-400' : 'bg-white' }}">
+                                {{ $day->month !== $startOfMonth->month ? 'bg-gray-100 text-gray-400' : '' }}
+                                {{ $day->isSameDay(now()) ? 'bg-blue-50' : 'bg-white' }}
+                             ">
                             @php
                                 $isToday = $day->isSameDay(now());
                             @endphp
