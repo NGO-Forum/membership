@@ -19,76 +19,77 @@
         </div>
 
         {{-- Weekday Header --}}
-        <div class="grid grid-cols-7 bg-green-600 text-white font-semibold rounded-t-lg">
-            @foreach (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day)
-                <div class="text-center py-3 border-r border-white">{{ $day }}</div>
-            @endforeach
-        </div>
+        <div class="overflow-x-auto">
+            <div class="grid grid-cols-7 min-w-[700px] bg-green-600 text-white font-semibold rounded-t-lg">
+                @foreach (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day)
+                    <div class="text-center py-3 border-r border-white">{{ $day }}</div>
+                @endforeach
+            </div>
 
-        {{-- Calendar Body --}}
-        @php
-            $weekStart = $gridStart->copy();
-        @endphp
+            {{-- Calendar Body --}}
+            @php
+                $weekStart = $gridStart->copy();
+            @endphp
 
-        @while ($weekStart <= $gridEnd)
-            {{-- WEEK ROW --}}
-            <div class="relative grid grid-cols-7 min-h-[140px] border-b border-green-300">
+            @while ($weekStart <= $gridEnd)
+                {{-- WEEK ROW --}}
+                <div class="relative grid grid-cols-7 min-h-[140px] border-b border-green-300">
 
-                {{-- Day cells --}}
-                @php $day = $weekStart->copy(); @endphp
-                @for ($i = 0; $i < 7; $i++)
-                    <div
-                        class="relative p-2 border-r border-green-300
+                    {{-- Day cells --}}
+                    @php $day = $weekStart->copy(); @endphp
+                    @for ($i = 0; $i < 7; $i++)
+                        <div
+                            class="relative p-2 border-r border-green-300
                     {{ $day->month !== $startOfMonth->month ? 'bg-gray-100 text-gray-400' : 'bg-white' }}">
 
-                        <span class="text-sm font-semibold">{{ $day->day }}</span>
-                    </div>
-                    @php $day->addDay(); @endphp
-                @endfor
+                            <span class="text-sm font-semibold">{{ $day->day }}</span>
+                        </div>
+                        @php $day->addDay(); @endphp
+                    @endfor
 
-                {{-- Events --}}
-                @php $row = 0; @endphp
+                    {{-- Events --}}
+                    @php $row = 0; @endphp
 
-                @foreach ($events as $event)
-                    @php
-                        $start = \Carbon\Carbon::parse($event->start_date);
-                        $end = \Carbon\Carbon::parse($event->end_date);
-                        $weekEnd = $weekStart->copy()->endOfWeek(\Carbon\Carbon::SATURDAY);
+                    @foreach ($events as $event)
+                        @php
+                            $start = \Carbon\Carbon::parse($event->start_date);
+                            $end = \Carbon\Carbon::parse($event->end_date);
+                            $weekEnd = $weekStart->copy()->endOfWeek(\Carbon\Carbon::SATURDAY);
 
-                        // Skip if not in this week
-                        if ($end < $weekStart || $start > $weekEnd) {
-                            continue;
-                        }
+                            // Skip if not in this week
+                            if ($end < $weekStart || $start > $weekEnd) {
+                                continue;
+                            }
 
-                        // Clamp to week
-                        $renderStart = $start->greaterThan($weekStart) ? $start : $weekStart;
-                        $renderEnd = $end->lessThan($weekEnd) ? $end : $weekEnd;
+                            // Clamp to week
+                            $renderStart = $start->greaterThan($weekStart) ? $start : $weekStart;
+                            $renderEnd = $end->lessThan($weekEnd) ? $end : $weekEnd;
 
-                        $span = $renderStart->diffInDays($renderEnd) + 1;
-                        $dayWidth = 100 / 7;
-                    @endphp
+                            $span = $renderStart->diffInDays($renderEnd) + 1;
+                            $dayWidth = 100 / 7;
+                        @endphp
 
-                    <div class="absolute h-7 rounded-full px-3 flex items-center text-xs text-white
+                        <div class="absolute h-7 rounded-full px-3 flex items-center text-xs text-white
                             bg-green-400 hover:bg-green-500 shadow cursor-pointer"
-                        style="
+                            style="
                         top: {{ 32 + $row * 26 }}px;
                         left: {{ $renderStart->dayOfWeek * $dayWidth }}%;
                         width: {{ $span * $dayWidth }}%;
                      "
-                        onclick="openEventDetailModal(@json($event))">
+                            onclick="openEventDetailModal(@json($event))">
 
-                        {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }}
-                        &nbsp;{{ \Illuminate\Support\Str::limit($event->title, 25) }}
-                    </div>
+                            {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }}
+                            &nbsp;{{ \Illuminate\Support\Str::limit($event->title, 25) }}
+                        </div>
 
-                    @php $row++; @endphp
-                @endforeach
+                        @php $row++; @endphp
+                    @endforeach
 
-            </div>
+                </div>
 
-            @php $weekStart->addWeek(); @endphp
-        @endwhile
-
+                @php $weekStart->addWeek(); @endphp
+            @endwhile
+        </div>
     </div>
 
     {{-- Create Event Modal --}}
@@ -202,7 +203,8 @@
             <div class="bg-gradient-to-r from-green-600 to-green-800 px-6 py-4 flex justify-between items-center">
                 <h3 id="detailTitle" class="text-xl font-bold text-white flex items-center gap-2">
                 </h3>
-                <button type="button" onclick="closeEventDetailModal()" class="text-white hover:text-gray-200 transition">
+                <button type="button" onclick="closeEventDetailModal()"
+                    class="text-white hover:text-gray-200 transition">
                     ✕
                 </button>
             </div>
