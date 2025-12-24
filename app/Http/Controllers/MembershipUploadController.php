@@ -89,7 +89,7 @@ class MembershipUploadController extends Controller
 
         // ✅ Send uploaded files to n8n for OCR/Processing
         try {
-            $n8nWebhookUrl = 'https://automate.mengseu-student.site/webhook/membership-upload';
+            $n8nWebhookUrl = 'https://automate.ngoforum.site/webhook/membership-upload';
             $multipart = [
                 [
                     'name' => 'membership_id',

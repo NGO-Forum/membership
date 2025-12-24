@@ -100,4 +100,44 @@ class CalendarController extends Controller
         $event->save();
         return redirect()->route('events.calendar')->with('success', 'Event created successfully!');
     }
+
+    public function api(Request $request)
+    {
+        $month = $request->query('month', Carbon::now()->month);
+        $year = $request->query('year', Carbon::now()->year);
+
+        $startOfMonth = Carbon::create($year, $month, 1);
+        $gridStart = $startOfMonth->copy()->startOfWeek(Carbon::SUNDAY);
+        $gridEnd = $startOfMonth->copy()->endOfMonth()->endOfWeek(Carbon::SATURDAY);
+
+        $events = Event::where(function ($query) use ($gridStart, $gridEnd) {
+            $query->whereBetween('start_date', [$gridStart, $gridEnd])
+                ->orWhereBetween('end_date', [$gridStart, $gridEnd])
+                ->orWhere(function ($q) use ($gridStart, $gridEnd) {
+                    $q->where('start_date', '<=', $gridStart)
+                        ->where('end_date', '>=', $gridEnd);
+                });
+        })
+            ->orderBy('start_date')
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'title' => $event->title,
+                    'start_date' => $event->start_date,
+                    'end_date' => $event->end_date,
+                    'start_time' => $event->start_time,
+                    'end_time' => $event->end_time,
+                    'location' => $event->location,
+                ];
+            });
+
+        return response()->json([
+            'month' => (int) $month,
+            'year' => (int) $year,
+            'grid_start' => $gridStart->toDateString(),
+            'grid_end' => $gridEnd->toDateString(),
+            'events' => $events,
+        ]);
+    }
 }
