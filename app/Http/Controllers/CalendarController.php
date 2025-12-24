@@ -21,14 +21,8 @@ class CalendarController extends Controller
         $gridStart = $startOfMonth->copy()->startOfWeek(Carbon::SUNDAY);
         $gridEnd = $startOfMonth->copy()->endOfMonth()->endOfWeek(Carbon::SATURDAY);
 
-        $events = Event::where(function ($query) use ($gridStart, $gridEnd) {
-            $query->whereBetween('start_date', [$gridStart, $gridEnd])
-                ->orWhereBetween('end_date', [$gridStart, $gridEnd])
-                ->orWhere(function ($q) use ($gridStart, $gridEnd) {
-                    $q->where('start_date', '<=', $gridStart)
-                        ->where('end_date', '>=', $gridEnd);
-                });
-        })
+        $events = Event::whereDate('start_date', '<=', $gridEnd)
+            ->whereDate('end_date', '>=', $gridStart)
             ->get();
 
 
