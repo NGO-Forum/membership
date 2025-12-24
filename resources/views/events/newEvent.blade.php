@@ -229,6 +229,12 @@
                         class="border rounded-md p-2 w-full">
                 </div>
 
+                <div>
+                    <label class="block text-sm font-medium mb-1">Phone</label>
+                    <input type="text" id="phone" name="phone" class="border rounded-md p-2 w-full"
+                        placeholder="+855 12 345 678">
+                </div>
+
                 <!-- Existing Files -->
                 <div>
                     <p class="font-semibold">Current Files:</p>
@@ -328,6 +334,20 @@
                     </svg>
                     <p><span class="font-semibold mr-1">Organizer:</span> <span id="detailOrganizer"></span></p>
                 </div>
+
+                <!-- Phone -->
+                <div class="flex items-start md:items-center gap-2 md:gap-4" id="detailPhoneRow">
+                    <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.128a11.042 11.042 0 005.516 5.516l1.128-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    <p>
+                        <span class="font-semibold mr-1">Phone:</span>
+                        <span id="detailPhone"></span>
+                    </p>
+                </div>
+
 
                 <!-- Description -->
                 <div>
@@ -448,6 +468,7 @@
                     document.getElementById('location').value = event.location ?? '';
                     document.getElementById('organizer').value = event.organizer ?? '';
                     document.getElementById('organizer_email').value = event.organizer_email ?? '';
+                    document.getElementById('phone').value = event.phone ?? '';
 
                     // Populate existing files
                     let fileList = document.getElementById('existingFiles');
@@ -521,6 +542,18 @@
             } else {
                 document.getElementById('detailDate').innerText = 'N/A';
             }
+
+            // Phone
+            const phoneRow = document.getElementById('detailPhoneRow');
+            const phoneEl = document.getElementById('detailPhone');
+
+            if (event.phone) {
+                phoneEl.innerText = event.phone;
+                phoneRow.classList.remove('hidden');
+            } else {
+                phoneRow.classList.add('hidden');
+            }
+
 
             // Time
             const startTime = event.start_time ? formatTimeAMPM(event.start_time) : '';

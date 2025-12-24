@@ -180,6 +180,13 @@
                         class="border rounded-md p-2 w-full focus:ring focus:ring-blue-200">
                 </div>
 
+                <div>
+                    <label class="block text-sm font-medium mb-1">Phone</label>
+                    <input type="text" name="phone" class="border rounded-md p-2 w-full focus:ring focus:ring-blue-200"
+                        placeholder="+855 12 345 678">
+                </div>
+
+
                 <!-- Upload New Files -->
                 <div>
                     <label for="files" class="font-semibold">Upload New Files (optional):</label>
@@ -216,7 +223,8 @@
             <div class="bg-gradient-to-r from-green-600 to-green-800 px-6 py-4 flex justify-between items-center">
                 <h3 id="detailTitle" class="text-xl font-bold text-white flex items-center gap-2">
                 </h3>
-                <button type="button" onclick="closeEventDetailModal()" class="text-white hover:text-gray-200 transition">
+                <button type="button" onclick="closeEventDetailModal()"
+                    class="text-white hover:text-gray-200 transition">
                     ✕
                 </button>
             </div>
@@ -255,6 +263,18 @@
                     </svg>
                     <p><span class="font-semibold mr-2">Organizer: </span> <span id="detailOrganizer"></span></p>
                 </div>
+
+                <div class="flex items-center gap-4" id="phoneRow">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.128a11.042 11.042 0 005.516 5.516l1.128-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    <p>
+                        <span class="font-semibold mr-2">Phone:</span>
+                        <span id="detailPhone"></span>
+                    </p>
+                </div>
+
 
                 <div>
                     <div class="flex items-center gap-4 mb-2">
@@ -323,6 +343,18 @@
             } else {
                 document.getElementById('detailDate').innerText = 'N/A';
             }
+
+            // Phone
+            const phoneRow = document.getElementById('phoneRow');
+            const phoneEl = document.getElementById('detailPhone');
+
+            if (event.phone) {
+                phoneEl.innerText = event.phone;
+                phoneRow.classList.remove('hidden');
+            } else {
+                phoneRow.classList.add('hidden');
+            }
+
 
             // Time
             const startTime = event.start_time ? formatTimeAMPM(event.start_time) : '';
