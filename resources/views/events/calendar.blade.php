@@ -72,7 +72,7 @@
                         </div>
 
                         {{-- Events (Multi-Day Logic) --}}
-                        {{-- @foreach ($dayEvents as $event)
+                        @foreach ($dayEvents as $event)
                             @if (Carbon\Carbon::parse($event->start_date)->isSameDay($currentDay))
                                 @php
                                     $start = Carbon\Carbon::parse($event->start_date);
@@ -104,47 +104,6 @@
                                     </div>
                                 </div>
                             @endif
-                        @endforeach --}}
-                        @foreach ($dayEvents as $event)
-                            @php
-                                $start = Carbon\Carbon::parse($event->start_date);
-                                $end = Carbon\Carbon::parse($event->end_date);
-
-                                // Only render once per row (on visible start day)
-                                $renderDay = $currentDay->greaterThan($start) ? $currentDay : $start;
-
-                                // Skip if this day is not the render day
-                                if (!$currentDay->isSameDay($renderDay)) {
-                                    continue;
-                                }
-
-                                // Calculate visible span inside calendar grid
-                                $visibleEnd = $end->lessThan($gridEnd) ? $end : $gridEnd;
-                                $span = $renderDay->diffInDays($visibleEnd) + 1;
-
-                                // % width per day (7 days)
-                                $dayWidth = 100 / 7;
-                                $width = $span * $dayWidth;
-                            @endphp
-
-                            <div class="absolute z-10 p-1 sm:p-1.5 mt-6 md:mt-8
-                                rounded-lg cursor-pointer transition border-l-8
-                                {{ $end->isPast()
-                                    ? 'bg-green-200 border-green-500 hover:bg-green-200 text-gray-400'
-                                    : 'bg-green-300 border-green-600 hover:bg-green-400' }}"
-                                                        style="
-                                    width: {{ min($width, 100) }}%;
-                                    left: {{ $renderDay->dayOfWeek * $dayWidth }}%;
-                                "
-                                onclick='event.stopPropagation(); openEventDetailModal(@json($event));'>
-
-                                <div class="text-[6px] sm:text-xs truncate">
-                                    {{ Carbon\Carbon::parse($event->start_time)->format('g:i A') }}
-                                    <span class="font-medium">
-                                        {{ \Illuminate\Support\Str::limit($event->title, 30) }}
-                                    </span>
-                                </div>
-                            </div>
                         @endforeach
 
                     </div>
