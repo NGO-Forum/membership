@@ -16,6 +16,11 @@
             </div>
 
             <h2 class="text-2xl font-bold">{{ $startOfMonth->format('F Y') }}</h2>
+            @if (auth()->user()->role === 'admin')
+                <button onclick="openEventModal()"
+                    class="px-3 sm:px-4 py-1 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition text-sm sm:text-base">
+                    + Add Event </button>
+            @endif
         </div>
 
         {{-- Weekday Header --}}
@@ -72,7 +77,7 @@
                         <div class="absolute h-7 rounded-lg px-3 flex items-center text-xs text-white
                             bg-green-400 hover:bg-green-500 shadow cursor-pointer"
                             style="
-                        top: {{ 36 + $row * 26 }}px;
+                        top: {{ 22 + $row * 30 }}px;
                         left: {{ $renderStart->dayOfWeek * $dayWidth }}%;
                         width: {{ $span * $dayWidth }}%;
                      "
