@@ -73,14 +73,17 @@
                             $span = $renderStart->diffInDays($renderEnd) + 1;
                             $dayWidth = 100 / 7;
 
-                            $isActiveToday = now()->between($start, $end);
+                            $today = now()->startOfDay();
+                            $isActiveToday = $today->between(
+                                $renderStart->copy()->startOfDay(),
+                                $renderEnd->copy()->endOfDay(),
+                            );
                         @endphp
 
                         <div class="absolute bg-green-400 border-l-8 border-green-600 text-white hover:bg-green-500 text-[6px] md:text-xs
                         {{ $isActiveToday
                             ? 'bg-blue-600 border-l-8 border-blue-800 ring-2 ring-blue-400'
-                            : 'bg-green-400 border-l-8 border-green-600 hover:bg-green-500'
-                        }}
+                            : 'bg-green-400 border-l-8 border-green-600 hover:bg-green-500' }}
                         rounded-md md:rounded-lg px-2 py-1 shadow cursor-pointer"
                             style="
                         top: {{ 32 + $row * 32 }}px;
