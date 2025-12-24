@@ -147,6 +147,10 @@ class CalendarController extends Controller
                 'location' => $event->location,
                 'organizer' => $event->organizer,
                 'description' => $event->description,
+                
+                // ✅ REGISTER LINK (ONE BY ONE)
+                'registration_link' => $event->registration_link
+                    ?? route('events.register', $event->id),
                 'images' => $event->images->map(fn($img) => [
                     'url' => asset('storage/' . $img->image_path),
                 ]),
