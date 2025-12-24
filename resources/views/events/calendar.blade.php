@@ -94,7 +94,7 @@
                         <div class="absolute bg-green-400 border-l-8 border-green-600 text-white hover:bg-green-500 text-[6px] md:text-xs
                         rounded-md md:rounded-lg px-2 py-1 shadow cursor-pointer"
                             style="
-                        top: {{ 36 + $row * 32 }}px;
+                        top: {{ 38 + $row * 32 }}px;
                         left: {{ $renderStart->dayOfWeek * $dayWidth }}%;
                         width: {{ $span * $dayWidth }}%;
                      "
