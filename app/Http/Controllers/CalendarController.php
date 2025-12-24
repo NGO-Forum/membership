@@ -147,6 +147,7 @@ class CalendarController extends Controller
                 'end_time' => $event->end_time,
                 'location' => $event->location,
                 'organizer' => $event->organizer,
+                'organizer_email' => $event->organizer_email,
                 'phone' => $event->phone,
                 'description' => $event->description,
 
