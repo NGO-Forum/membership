@@ -21,27 +21,7 @@ class CalendarController extends Controller
         $gridStart = $startOfMonth->copy()->startOfWeek(Carbon::SUNDAY);
         $gridEnd = $startOfMonth->copy()->endOfMonth()->endOfWeek(Carbon::SATURDAY);
 
-        $events = Event::where(function ($query) use ($gridStart, $gridEnd) {
-            $query->whereBetween('start_date', [$gridStart, $gridEnd])
-                ->orWhereBetween('end_date', [$gridStart, $gridEnd])
-                ->orWhere(function ($q) use ($gridStart, $gridEnd) {
-                    $q->where('start_date', '<=', $gridStart)
-                        ->where('end_date', '>=', $gridEnd);
-                });
-        })
-            ->get();
-
-
-        return view('events.calendar', compact('events', 'startOfMonth', 'gridStart', 'gridEnd'));
-    }
-
-    private function calendarEvents(int $month, int $year)
-    {
-        $startOfMonth = Carbon::create($year, $month, 1);
-        $gridStart = $startOfMonth->copy()->startOfWeek(Carbon::SUNDAY);
-        $gridEnd = $startOfMonth->copy()->endOfMonth()->endOfWeek(Carbon::SATURDAY);
-
-        $events = Event::with('images')
+        $events = Event::with(['files', 'images'])
             ->where(function ($query) use ($gridStart, $gridEnd) {
                 $query->whereBetween('start_date', [$gridStart, $gridEnd])
                     ->orWhereBetween('end_date', [$gridStart, $gridEnd])
@@ -50,10 +30,25 @@ class CalendarController extends Controller
                             ->where('end_date', '>=', $gridEnd);
                     });
             })
-            ->orderBy('start_date')
             ->get();
 
-        return [$events, $startOfMonth, $gridStart, $gridEnd];
+
+
+        return view('events.calendar', compact('events', 'startOfMonth', 'gridStart', 'gridEnd'));
+    }
+
+    protected function calendarEvents($month, $year)
+    {
+        $startOfMonth = Carbon::create($year, $month, 1);
+        $gridStart = $startOfMonth->copy()->startOfWeek(Carbon::SUNDAY);
+        $gridEnd   = $startOfMonth->copy()->endOfMonth()->endOfWeek(Carbon::SATURDAY);
+
+        $events = Event::whereDate('end_date', '>=', $gridStart)
+            ->whereDate('start_date', '<=', $gridEnd)
+            ->with('images')
+            ->get();
+
+        return [$events, null, $gridStart, $gridEnd];
     }
 
 
