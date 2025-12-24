@@ -33,7 +33,7 @@
 
             @while ($weekStart <= $gridEnd)
                 {{-- WEEK ROW --}}
-                <div class="relative grid grid-cols-7 min-h-[140px] border-b border-green-300">
+                <div class="relative grid grid-cols-7 min-w-[700px] min-h-[140px] border-b border-green-300">
 
                     {{-- Day cells --}}
                     @php $day = $weekStart->copy(); @endphp
