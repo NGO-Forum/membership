@@ -21,7 +21,27 @@ class CalendarController extends Controller
         $gridStart = $startOfMonth->copy()->startOfWeek(Carbon::SUNDAY);
         $gridEnd = $startOfMonth->copy()->endOfMonth()->endOfWeek(Carbon::SATURDAY);
 
-        $events = Event::with('images') // 👈 load images
+        $events = Event::where(function ($query) use ($gridStart, $gridEnd) {
+            $query->whereBetween('start_date', [$gridStart, $gridEnd])
+                ->orWhereBetween('end_date', [$gridStart, $gridEnd])
+                ->orWhere(function ($q) use ($gridStart, $gridEnd) {
+                    $q->where('start_date', '<=', $gridStart)
+                        ->where('end_date', '>=', $gridEnd);
+                });
+        })
+            ->get();
+
+
+        return view('events.calendar', compact('events', 'startOfMonth', 'gridStart', 'gridEnd'));
+    }
+
+    private function calendarEvents(int $month, int $year)
+    {
+        $startOfMonth = Carbon::create($year, $month, 1);
+        $gridStart = $startOfMonth->copy()->startOfWeek(Carbon::SUNDAY);
+        $gridEnd = $startOfMonth->copy()->endOfMonth()->endOfWeek(Carbon::SATURDAY);
+
+        $events = Event::with('images')
             ->where(function ($query) use ($gridStart, $gridEnd) {
                 $query->whereBetween('start_date', [$gridStart, $gridEnd])
                     ->orWhereBetween('end_date', [$gridStart, $gridEnd])
@@ -33,9 +53,9 @@ class CalendarController extends Controller
             ->orderBy('start_date')
             ->get();
 
-
-        return view('events.calendar', compact('events', 'startOfMonth', 'gridStart', 'gridEnd'));
+        return [$events, $startOfMonth, $gridStart, $gridEnd];
     }
+
 
     public function store(Request $request)
     {
@@ -127,8 +147,6 @@ class CalendarController extends Controller
                 'location' => $event->location,
                 'organizer' => $event->organizer,
                 'description' => $event->description,
-
-                // ✅ IMAGES (PUBLIC URLs)
                 'images' => $event->images->map(fn($img) => [
                     'url' => asset('storage/' . $img->image_path),
                 ]),
