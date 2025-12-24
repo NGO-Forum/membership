@@ -36,6 +36,7 @@ class EventController extends Controller
             'location'    => 'nullable|string|max:255',
             'organizer'   => 'nullable|string|max:255',
             'organizer_email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:20',
             'files.*'     => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:5120',
             'images.*'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
@@ -114,6 +115,7 @@ class EventController extends Controller
             'location'    => 'nullable|string|max:255',
             'organizer'   => 'nullable|string|max:255',
             'organizer_email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:20',
             'files.*'     => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:5120',
             'images.*'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
@@ -128,6 +130,7 @@ class EventController extends Controller
             'location',
             'organizer',
             'organizer_email',
+            "phone",
         ]));
 
         // ✅ Files (only if new ones uploaded)
@@ -177,6 +180,7 @@ class EventController extends Controller
             'location' => $event->location,
             'organizer' => $event->organizer,
             'organizer_email' => $event->organizer_email,
+            'phone' => $event->phone,
             'files' => $event->files->map(fn($file) => [
                 'file_name' => $file->file_name,
                 'file_path' => $file->file_path,

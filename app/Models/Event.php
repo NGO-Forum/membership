@@ -18,6 +18,7 @@ class Event extends Model
         'location',
         'organizer',
         'organizer_email',
+        'phone',
     ];
 
     protected $casts = [

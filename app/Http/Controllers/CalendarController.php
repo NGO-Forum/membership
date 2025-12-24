@@ -69,6 +69,7 @@ class CalendarController extends Controller
             'location'    => 'nullable|string|max:255',
             'organizer'   => 'nullable|string|max:255',
             'organizer_email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:20',
             'files.*'     => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:5120',
             'images.*'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
@@ -146,8 +147,9 @@ class CalendarController extends Controller
                 'end_time' => $event->end_time,
                 'location' => $event->location,
                 'organizer' => $event->organizer,
+                'phone' => $event->phone,
                 'description' => $event->description,
-                
+
                 // ✅ REGISTER LINK (ONE BY ONE)
                 'registration_link' => $event->registration_link
                     ?? route('events.register', $event->id),
