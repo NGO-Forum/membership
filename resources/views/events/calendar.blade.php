@@ -45,10 +45,21 @@
                     @for ($i = 0; $i < 7; $i++)
                         <div
                             class="relative p-2 border-r border-green-300
-                    {{ $day->month !== $startOfMonth->month ? 'bg-gray-100 text-gray-400' : 'bg-white' }}">
+                             {{ $day->month !== $startOfMonth->month ? 'bg-gray-100 text-gray-400' : 'bg-white' }}">
+                            @php
+                                $isToday = $day->isSameDay(now());
+                            @endphp
 
-                            <span class="text-sm font-semibold">{{ $day->day }}</span>
+                            <span
+                                class="
+                                    inline-flex items-center justify-center
+                                    w-7 h-7 text-sm font-semibold
+                                    {{ $isToday ? 'bg-blue-600 text-white rounded-full ring-2 ring-blue-300' : '' }}
+                                ">
+                                {{ $day->day }}
+                            </span>
                         </div>
+
                         @php $day->addDay(); @endphp
                     @endfor
 
@@ -81,9 +92,6 @@
                         @endphp
 
                         <div class="absolute bg-green-400 border-l-8 border-green-600 text-white hover:bg-green-500 text-[6px] md:text-xs
-                        {{ $isActiveToday
-                            ? 'bg-blue-600 border-l-8 border-blue-800 ring-2 ring-blue-400'
-                            : 'bg-green-400 border-l-8 border-green-600 hover:bg-green-500' }}
                         rounded-md md:rounded-lg px-2 py-1 shadow cursor-pointer"
                             style="
                         top: {{ 32 + $row * 32 }}px;
