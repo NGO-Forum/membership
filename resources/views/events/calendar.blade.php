@@ -43,11 +43,11 @@
                     {{-- Day cells --}}
                     @php $day = $weekStart->copy(); @endphp
                     @for ($i = 0; $i < 7; $i++)
-                        <div
-                            class="relative p-2 border-r border-green-300
-                                {{ $day->month !== $startOfMonth->month ? 'bg-gray-200 text-gray-400' : '' }}
-                                {{ $day->isSameDay(now()) ? 'bg-blue-50' : 'bg-white' }}
-                             ">
+                        <div onclick="openEventModal('{{ $day->format('Y-m-d') }}')"
+                            class="relative z-0 p-2 border-r border-green-300 cursor-pointer
+                            {{ $day->month !== $startOfMonth->month ? 'bg-gray-200 text-gray-400' : '' }}
+                            {{ $day->isSameDay(now()) ? 'bg-blue-50' : 'bg-white' }}">
+
                             @php
                                 $isToday = $day->isSameDay(now());
                             @endphp
@@ -93,14 +93,15 @@
                             );
                         @endphp
 
-                        <div class="absolute bg-green-400 border-l-8 border-green-600 text-white hover:bg-green-500 text-[6px] md:text-xs
-                        rounded-md md:rounded-lg px-2 py-1 shadow cursor-pointer"
-                            style="
-                        top: {{ 38 + $row * 32 }}px;
-                        left: {{ $renderStart->dayOfWeek * $dayWidth }}%;
-                        width: {{ $span * $dayWidth }}%;
-                     "
-                            onclick="openEventDetailModal(@json($event))">
+                        <div class="absolute z-10 bg-green-400 border-l-8 border-green-600 text-white hover:bg-green-500 text-[6px] md:text-xs
+                            rounded-md md:rounded-lg px-2 py-1 shadow cursor-pointer"
+                                style="
+                            top: {{ 38 + $row * 32 }}px;
+                            left: {{ $renderStart->dayOfWeek * $dayWidth }}%;
+                            width: {{ $span * $dayWidth }}%;
+                            "
+                            onclick="event.stopPropagation(); openEventDetailModal(@json($event))"
+                            >
 
                             {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }}
                             &nbsp;{{ \Illuminate\Support\Str::limit($event->title, 25) }}
