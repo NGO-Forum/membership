@@ -95,13 +95,12 @@
 
                         <div class="absolute z-10 bg-green-400 border-l-8 border-green-600 text-white hover:bg-green-500 text-[6px] md:text-xs
                             rounded-md md:rounded-lg px-2 py-1 shadow cursor-pointer"
-                                style="
+                            style="
                             top: {{ 38 + $row * 32 }}px;
                             left: {{ $renderStart->dayOfWeek * $dayWidth }}%;
                             width: {{ $span * $dayWidth }}%;
                             "
-                            onclick="event.stopPropagation(); openEventDetailModal(@json($event))"
-                            >
+                            data-event='@json($event)' onclick="handleEventClick(event, this)">
 
                             {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }}
                             &nbsp;{{ \Illuminate\Support\Str::limit($event->title, 25) }}
@@ -298,6 +297,17 @@
     </div>
 
     <script>
+        function handleEventClick(e, el) {
+            e.stopPropagation();
+
+            try {
+                const eventData = JSON.parse(el.dataset.event);
+                openEventDetailModal(eventData);
+            } catch (err) {
+                console.error('Invalid event data', err);
+            }
+        }
+
         function openEventModal(date = null) {
             document.getElementById('eventDate').value = date || '';
             const startDateInput = document.querySelector('input[name="start_date"]');
