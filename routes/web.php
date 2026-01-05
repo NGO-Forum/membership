@@ -16,7 +16,12 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\AdminSystemController;
+use App\Http\Controllers\AttendantPdfController;
 
+Route::get(
+    '/events/{event}/attendant-pdf',
+    [AttendantPdfController::class, 'exportPdf']
+)->name('registrations.export.pdf');
 
 // Authentication routes
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
@@ -44,7 +49,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/newMembership', [AdminController::class, 'newMembership'])->name('newMembership');
     });
 
-    Route::prefix('admins')->group(function() {
+    Route::prefix('admins')->group(function () {
         Route::get('/', [AdminSystemController::class, 'index'])->name('admins.index');      // list all admins
         Route::get('/create', [AdminSystemController::class, 'create'])->name('admins.create'); // show create form
         Route::post('/store', [AdminSystemController::class, 'store'])->name('admins.store');   // save new admin
@@ -119,7 +124,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Event calendar routes
     Route::prefix('calendar')->name('events.')->group(function () {
-        Route::get('/', [CalendarController::class, 'index'])->name('calendar'); 
+        Route::get('/', [CalendarController::class, 'index'])->name('calendar');
         Route::post('/', [CalendarController::class, 'store'])->name('storeCalendar'); // unique
     });
 
@@ -152,5 +157,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/eventReport', [UserController::class, 'report'])->name('reports.eventReport');
 
     Route::post('/send-email', [EventController::class, 'sendEmail'])->name('send.email');
+
+//     Route::get(
+//     '/events/{event}/registrations/export-pdf',
+//     [RegistrationController::class, 'exportPdf']
+// )->name('registrations.export.pdf');
 
 });

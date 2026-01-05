@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Registration;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 use App\Models\Ngo;
 use App\Models\NewMembership;
 use App\Models\Membership;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Str;
 
 class RegistrationController extends Controller
 {
@@ -19,61 +20,79 @@ class RegistrationController extends Controller
 
     public function store(Request $request, Event $event)
     {
-        $request->validate([
-            'name'  => 'required|string|max:255',
-            'gender' => 'nullable|in:Male,Female',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'organization' => 'nullable|string|max:255',
-            'position' => 'nullable|string|max:255',
+        $validated = $request->validate([
+            'name'           => 'required|string|max:255',
+            'gender'         => 'nullable|in:Male,Female',
+            'age'            => 'nullable|integer|min:1|max:120',
+            'vulnerable'     => 'required|string|max:255',
+            'email'          => 'required|email|max:255',
+            'phone'          => 'nullable|string|max:20',
+            'organization'   => 'nullable|string|max:255',
+            'position'       => 'nullable|string|max:255',
+            'org_location'   => 'nullable|string|max:255',
+            'signature'      => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+            'allow_photos'   => 'nullable|boolean',
         ]);
 
-        $organizationInput = $request->organization;
+        /* ================= FIND ORGANIZATION ================= */
 
         $ngo = null;
         $newMembership = null;
-        $oldMembership = null;
+        $membership = null;
 
-        if ($organizationInput) {
-            // Find NGO by name or abbreviation
-            $ngo = Ngo::where('ngo_name', $organizationInput)
-                ->orWhere('abbreviation', $organizationInput)
+        if (!empty($validated['organization'])) {
+
+            $ngo = Ngo::where('ngo_name', $validated['organization'])
+                ->orWhere('abbreviation', $validated['organization'])
                 ->first();
 
-            $newMembership = NewMembership::where('org_name_en', $organizationInput)->first();
-            
-            if ($ngo) {
+            $newMembership = NewMembership::where('org_name_en', $validated['organization'])
+                ->first();
 
-                // Find old membership
-                $oldMembership = Membership::where('ngo_name', $ngo->ngo_name)
+            if ($ngo) {
+                $membership = Membership::where('ngo_name', $ngo->ngo_name)
                     ->orWhere('ngo_name', $ngo->abbreviation)
                     ->first();
             }
         }
 
-        $registration = Registration::create([
-            'event_id' => $event->id,
-            'name'     => $request->name,
-            'gender'   => $request->gender,
-            'email'    => $request->email,
-            'phone'    => $request->phone,
-            'organization' => $organizationInput,
-            'position' => $request->position,
-            'ngo_id' => $ngo ? $ngo->id : null,
-            'new_membership_id' => $newMembership ? $newMembership->id : null,
-            'membership_id' => $oldMembership ? $oldMembership->id : null,
+        /* ================= SIGNATURE UPLOAD ================= */
+
+        $signaturePath = null;
+        if ($request->hasFile('signature')) {
+            $signaturePath = $request->file('signature')
+                ->store('signatures', 'public');
+        }
+
+        /* ================= SAVE REGISTRATION ================= */
+
+        Registration::create([
+            'event_id'          => $event->id,
+            'name'              => $validated['name'],
+            'gender'            => $validated['gender'] ?? null,
+            'age'               => $validated['age'] ?? null,
+            'vulnerable'        => $validated['vulnerable'],
+            'email'             => $validated['email'],
+            'phone'             => $validated['phone'] ?? null,
+            'organization'      => $validated['organization'] ?? null,
+            'position'          => $validated['position'] ?? null,
+            'org_location'      => $validated['org_location'] ?? null,
+            'signature'         => $signaturePath,
+            'allow_photos'      => $request->boolean('allow_photos'),
+            'ngo_id'            => $ngo?->id,
+            'new_membership_id' => $newMembership?->id,
+            'membership_id'     => $membership?->id,
         ]);
 
-
-
-        return redirect()->route('registrations.thank', $event->id)
+        return redirect()
+            ->route('registrations.thank', $event->id)
             ->with('success', 'You have registered successfully!');
     }
 
-    // Admin view: list registrations
+    /* ================= ADMIN ================= */
+
     public function index()
     {
-        // Get only the last finished event
         $events = Event::with('registrations')
             ->orderBy('end_date', 'desc')
             ->get();
@@ -81,19 +100,32 @@ class RegistrationController extends Controller
         return view('registrations.index', compact('events'));
     }
 
-
     public function show($eventId)
     {
         $event = Event::with('registrations')->findOrFail($eventId);
-        $registrations = $event->registrations;
 
-        return view('registrations.showAll', compact('event', 'registrations'));
+        return view('registrations.showAll', [
+            'event' => $event,
+            'registrations' => $event->registrations
+        ]);
     }
-
 
     public function thankYou()
     {
         return view('registrations.thank');
     }
 
+    // public function exportPdf(Event $event)
+    // {
+    //     $registrations = Registration::where('event_id', $event->id)->get();
+
+    //     $fileName = 'Attendant_List_' . Str::slug($event->title) . '.pdf';
+
+    //     return Pdf::loadView('registrations.export-pdf', [
+    //         'event' => $event,
+    //         'registrations' => $registrations,
+    //     ])
+    //         ->setPaper('a4', 'landscape')
+    //         ->download($fileName);
+    // }
 }

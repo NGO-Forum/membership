@@ -56,6 +56,13 @@ class AdminSeeder extends Seeder
                 'role' => 'admin',
                 'password' => '@SeuRiti#NGOF2025'
             ],
+            [
+                'name' => 'Admin',
+                'ngo' => 'NGO Forum Cambodia',
+                'email' => 'info@ngoforum.org.kh',
+                'role' => 'admin',
+                'password' => '@info#NGOF2025Membership'
+            ],
         ];
 
         foreach ($users as $data) {

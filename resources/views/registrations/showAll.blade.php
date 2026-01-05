@@ -8,11 +8,16 @@
                     <h2 class="text-2xl font-bold text-white">All Registrations</h2>
                     <p class="text-green-100 mt-1">Total: {{ $registrations->count() }} registrants</p>
                 </div>
-                <div>
+                <div class="flex items-center justify-between">
                     <a href="{{ url()->previous() }}"
                         class="bg-white text-green-600 font-semibold px-4 py-2 rounded hover:bg-gray-100">
                         ← Back
                     </a>
+                    <a href="{{ route('registrations.export.pdf', $event->id) }}"
+                        class="px-4 py-2 bg-red-600 text-white rounded-lg ml-4">
+                        Export PDF
+                    </a>
+
                 </div>
             </div>
             <div class="overflow-x-auto">
@@ -46,8 +51,10 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $reg->phone }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $reg->organization }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $reg->position }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $reg->event->title ?? 'No Event' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $reg->created_at->format('Y-m-d H:i') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    {{ $reg->event->title ?? 'No Event' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    {{ $reg->created_at->format('Y-m-d H:i') }}</td>
                             </tr>
                         @endforeach
                         @if ($registrations->isEmpty())

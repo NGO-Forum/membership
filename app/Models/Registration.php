@@ -8,7 +8,28 @@ use Illuminate\Database\Eloquent\Model;
 class Registration extends Model
 {
     use HasFactory;
-    protected $fillable = ['event_id', 'name', 'email', 'phone', 'organization', 'gender', 'position', 'ngo_id', 'membership_id', 'new_membership_id'];
+    protected $fillable = [
+        'event_id',
+        'name',
+        'gender',
+        'age',
+        'vulnerable',
+        'position',
+        'organization',
+        'org_location',
+        'phone',
+        'email',
+        'signature',
+        'allow_photos',
+        'ngo_id',
+        'new_membership_id',
+        'membership_id',
+    ];
+
+    protected $casts = [
+        'allow_photos' => 'boolean',
+    ];
+
 
     public function event()
     {
@@ -24,7 +45,7 @@ class Registration extends Model
     {
         return $this->belongsTo(NewMembership::class, 'new_membership_id');
     }
-    
+
     public function oldMembership()
     {
         return $this->belongsTo(Membership::class, 'membership_id');
