@@ -55,33 +55,33 @@
                     @php
                         $networksOld = old('networks', []);
                     @endphp
-                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                    <label class="cursor-pointer">
                         <input type="checkbox" id="network_neccaw" name="networks[]" value="NECCAW"
                             {{ in_array('NECCAW', $networksOld) ? 'checked' : '' }}
                             class="form-checkbox text-green-600" />
-                        <span>NECCAW (Environment, Climate Change, Agriculture and Water)</span>
+                        <span class="ml-2">NECCAW (Environment, Climate Change, Agriculture and Water)</span>
                     </label>
-                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                    <label class="cursor-pointer">
                         <input type="checkbox" id="network_bwg" name="networks[]" value="BWG"
                             {{ in_array('BWG', $networksOld) ? 'checked' : '' }} class="form-checkbox text-green-600" />
-                        <span>BWG (Budget Working Group)</span>
+                        <span class="ml-2">BWG (Budget Working Group)</span>
                     </label>
-                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                    <label class="cursor-pointer">
                         <input type="checkbox" id="network_rcc" name="networks[]" value="RCC"
                             {{ in_array('RCC', $networksOld) ? 'checked' : '' }} class="form-checkbox text-green-600" />
-                        <span>RCC (Rivers Coalition of Cambodia)</span>
+                        <span class="ml-2">RCC (Rivers Coalition of Cambodia)</span>
                     </label>
-                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                    <label class="cursor-pointer">
                         <input type="checkbox" id="network_nrlg" name="networks[]" value="NRLG"
                             {{ in_array('NRLG', $networksOld) ? 'checked' : '' }}
                             class="form-checkbox text-green-600" />
-                        <span>NRLG (Natural Resources and Land Governance)</span>
+                        <span class="ml-2">NRLG (Natural Resources and Land Governance)</span>
                     </label>
-                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                    <label class="cursor-pointer">
                         <input type="checkbox" id="network_ggesi" name="networks[]" value="GGESI"
                             {{ in_array('GGESI', $networksOld) ? 'checked' : '' }}
                             class="form-checkbox text-green-600" />
-                        <span>GGESI (Gender, Governance, Environment and Social Inclusion)</span>
+                        <span class="ml-2">GGESI (Gender, Governance, Environment and Social Inclusion)</span>
                     </label>
                 </div>
             </div>
@@ -90,6 +90,80 @@
             <div id="focal-points-section" class="hidden mt-6">
                 <h2 class="text-xl font-bold text-green-600 mb-3">Focal Points for Selected Networks</h2>
                 <div id="focal-points-container" class="flex flex-col gap-4"></div>
+            </div>
+
+            <div>
+                <!-- ================= ASSESSMENT REPORT ================= -->
+                <h3 class="text-lg font-semibold text-green-700 mt-10 mb-4 border-b pb-2">
+                    <i class="fas fa-clipboard-check mr-2"></i>Assessment Report
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 md:gap-4">
+                    <!-- NGO Type -->
+                    <div class="mb-4">
+                        <label class="block font-semibold mb-1">Type of NGO *</label>
+                        <select name="ngo_type" required
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
+                            <option value="">Select type</option>
+                            <option value="Local Organization"
+                                {{ old('ngo_type') == 'Local Organization' ? 'selected' : '' }}>
+                                Local Organization
+                            </option>
+                            <option value="International Organization"
+                                {{ old('ngo_type') == 'International Organization' ? 'selected' : '' }}>
+                                International Organization
+                            </option>
+                        </select>
+                        @error('ngo_type')
+                            <p class="text-red-600 text-sm">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Established Date -->
+                    <div class="mb-4">
+                        <label class="block font-semibold mb-1">Year Established</label>
+                        <input type="date" name="established_date" value="{{ old('established_date') }}"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
+                    </div>
+
+                </div>
+                <!-- Vision -->
+                <div class="mb-4">
+                    <label class="block font-semibold mb-1">Vision</label>
+                    <textarea name="vision" rows="3" placeholder="Enter your Vision"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">{{ old('vision') }}</textarea>
+                </div>
+
+                <!-- Mission -->
+                <div class="mb-4">
+                    <label class="block font-semibold mb-1">Mission</label>
+                    <textarea name="mission" rows="3" placeholder="Enter your Mission"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">{{ old('mission') }}</textarea>
+                </div>
+
+                <!-- Address -->
+                <div class="mb-4">
+                    <label class="block font-semibold mb-1">Address</label>
+                    <textarea name="address" rows="2" placeholder="Enter your Address"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">{{ old('address') }}</textarea>
+                </div>
+
+                <!-- Key Actions -->
+                <div class="mb-4">
+                    <label class="block font-semibold mb-1">Key Actions</label>
+                    <textarea name="key_actions" rows="3" placeholder="Enter your Key Action"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
+                        placeholder="Use bullet points if possible">{{ old('key_actions') }}</textarea>
+                </div>
+
+                <!-- Membership Fee -->
+                <div class="mb-6">
+                    <label class="block font-semibold mb-1">Membership Fee (USD)</label>
+                    <input type="number" name="membership_fee" step="0.01" min="0"
+                        value="{{ old('membership_fee') }}" placeholder="Enter Value"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
+                </div>
+
             </div>
 
             <!-- Required Documents -->
@@ -134,7 +208,8 @@
                     <label class="flex items-center space-x-2">
                         <input type="checkbox" name="pledge_accept" required
                             class="h-4 w-4 text-green-600 border-gray-300 rounded">
-                        <span class="text-gray-700 text-base">I accept the pledge of commitment above. (Required)</span>
+                        <span class="text-gray-700 text-base">I accept the pledge of commitment above.
+                            (Required)</span>
                     </label>
                 </div>
 
@@ -227,6 +302,19 @@
                             <label for="focal_phone_${network}" class="block font-semibold mb-1">Phone *</label>
                             <input type="tel" id="focal_phone_${network}" name="focal_phone_${network}" required placeholder="Enter Telephone"
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                        </div>
+                        <div>
+                            <label for="network_summaries_${network}" class="block font-semibold mb-1">
+                                Why (Reason / Necessity) *
+                            </label>
+                            <textarea
+                                id="focal_summaries_${network}"
+                                name="focal_summaries_${network}"
+                                rows="3"
+                                placeholder="Explain why choose this network"
+                                class="w-full border border-gray-300 rounded-md px-3 py-2
+                                    focus:outline-none focus:ring-2 focus:ring-green-500"
+                            ></textarea>
                         </div>
                     </div>
                 `;

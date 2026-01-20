@@ -15,17 +15,20 @@
         {{-- Section 1: Summary --}}
         <h3 class="text-2xl text-green-700 font-bold mb-3">1. Summary</h3>
         <div class="mb-2">
-            <div
-                class="
-                    text-[16px]
-                    leading-[1.9]
-                    text-black
-                    text-justify
-                    space-y-6
-                    [&_p]:mb-4
-                ">
-                {!! $report->summary_html['html'] ?? '<em>Not generated yet.</em>' !!}
-            </div>
+
+            @if ($canEdit)
+                <form method="POST" action="{{ route('reports.update', $report) }}">
+                    @csrf @method('PUT')
+                    <textarea name="summary_html" rows="16" class="w-full border rounded p-4 mb-3">
+                            {{ old('summary_text', $summary_text) }}
+                        </textarea>
+                    <button class="bg-green-600 text-white px-4 py-2 rounded">
+                        Save
+                    </button>
+                </form>
+            @else
+                {!! $report->summary_html['html'] ?? '<em>Not generated yet</em>' !!}
+            @endif
         </div>
 
 
@@ -219,106 +222,126 @@
         {{-- Section 3: Conclusions --}}
         <h3 class="text-2xl text-green-700 font-bold mb-3">3. Conclusions and Recommendations</h3>
         <div class="text-[16px] leading-relaxed text-black">
-            <div
-                class="
-                    space-y-4
-                    text-justify
-                    [&_h4]:font-bold
-                    [&_h4]:mt-2
-                    [&_h4]:text-[18px]
-                    [&_ul]:list-disc
-                    [&_ul]:ml-10
-                    [&_li]:mb-2
-                    [&_strong]:font-bold
-                ">
-                {!! $report->conclusion_html['html'] ?? '<em>Not generated yet.</em>' !!}
-            </div>
-        </div>
-
-        {{-- Signatures --}}
-        <div class="mt-20 flex justify-around text-center">
-
-            {{-- MANAGER --}}
-            <div class="w-1/3">
-                <b>Reviewed by</b><br><br>
-
-                @if ($report->manager_approved_at && $manager?->signature)
-                    <img src="{{ Storage::url($manager->signature) }}" alt="Manager Signature" class="h-20 mx-auto mb-2">
-                @else
-                    <div class="h-20"></div>
-                @endif
-
-                <span class="font-bold">
-                    {{ $manager?->name ?? 'Pending' }}
-                </span><br>
-
-                Program Manager of NGO<br>
-                Forum on Cambodia<br>
-            </div>
-
-            {{-- EXECUTIVE DIRECTOR --}}
-            <div class="w-1/3">
-                <b>Submitted by</b><br><br>
-
-                @if ($report->ed_approved_at && $ed?->signature)
-                    <img src="{{ Storage::url($ed->signature) }}" alt="ED Signature" class="h-20 mx-auto mb-2">
-                @else
-                    <div class="h-20"></div>
-                @endif
-
-                <span class="font-bold">
-                    {{ $ed?->name ?? 'Mr. SOEUNG Saroeun' }}
-                </span><br>
-
-                Executive Director of NGO<br>
-                Forum on Cambodia<br>
-            </div>
-
-            {{-- BOARD --}}
-            <div class="w-1/3">
-                <b>Endorsed by</b><br><br>
-
-                @if ($report->board_approved_at && $board?->signature)
-                    <img src="{{ Storage::url($board->signature) }}" alt="Board Signature" class="h-20 mx-auto mb-2">
-                @else
-                    <div class="h-20"></div>
-                @endif
-
-                <span class="font-bold">
-                    {{ $board?->name ?? 'Mr. TOURT Chamroen' }}
-                </span><br>
-
-                Chair of Board of Directors<br>
-                NGO Forum on Cambodia<br>
-            </div>
-
-        </div>
-
-
-        <div class="flex gap-4 mt-10">
-
-            {{-- ADMIN: Back + Export --}}
-            @if (auth()->user()->role === 'admin')
-                <a href="{{ route('reports.membership') }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white 
-                  rounded-md font-medium transition-colors shadow-sm">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    Back
-                </a>
+            @if ($canEdit)
+                <form method="POST" action="{{ route('reports.update', $report) }}">
+                    @csrf @method('PUT')
+                    <textarea name="conclusion_html" rows="30" class="w-full border rounded p-4 mb-3">
+                            {{ old('conclusion_text', $conclusion_text) }}
+                        </textarea>
+                    <button class="bg-green-600 text-white px-4 py-2 rounded">
+                        Save
+                    </button>
+                </form>
+            @else
+                {!! $report->conclusion_html['html'] ?? '<em>Not generated yet</em>' !!}
             @endif
-
-            {{-- ADMIN + MANAGER: Export --}}
-            @if (in_array(auth()->user()->role, ['admin', 'manager']))
-                <a href="{{ route('reports.export', $membership->id) }}" target="_blank"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white 
-                  rounded-md shadow hover:bg-red-700">
-                    Export PDF
-                </a>
-            @endif
-
         </div>
+
+        {{-- APPROVAL BUTTONS WITH SIGNATURE --}}
+        @if ($canApproveManager || $canApproveED || $canApproveBoard)
+            <div class="mt-20 border-t pt-10">
+                {{-- Approval Cards --}}
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+
+                    {{-- MANAGER --}}
+                    @if ($canApproveManager)
+                        <form method="POST" action="{{ route('reports.approve.manager', $report) }}"
+                            enctype="multipart/form-data"
+                            class="bg-green-50 border border-green-300 rounded-xl p-6 shadow-md">
+
+                            @csrf
+
+                            <h4 class="text-lg font-bold text-green-800 mb-4 text-center">
+                                Program Manager
+                            </h4>
+
+                            {{-- <label class="block text-sm font-medium mb-2">
+                                Upload Signature
+                            </label>
+
+                            <input type="file" name="signature" accept="image/*"
+                                class="block w-full text-sm mb-5
+                                  file:mr-4 file:py-2 file:px-4
+                                  file:rounded-md file:border-0
+                                  file:text-sm file:font-semibold
+                                  file:bg-green-600 file:text-white
+                                  hover:file:bg-green-700"> --}}
+
+                            <button
+                                class="w-full bg-green-700 hover:bg-green-800
+                               text-white font-semibold py-2.5 rounded-lg transition">
+                                Approve
+                            </button>
+                        </form>
+                    @endif
+
+                    {{-- EXECUTIVE DIRECTOR --}}
+                    @if ($canApproveED)
+                        <form method="POST" action="{{ route('reports.approve.ed', $report) }}"
+                            enctype="multipart/form-data"
+                            class="bg-blue-50 border border-blue-300 rounded-xl p-6 shadow-md">
+
+                            @csrf
+
+                            <h4 class="text-lg font-bold text-blue-800 mb-4 text-center">
+                                Executive Director
+                            </h4>
+
+                            {{-- <label class="block text-sm font-medium mb-2">
+                                Upload Signature
+                            </label>
+
+                            <input type="file" name="signature" accept="image/*"
+                                class="block w-full text-sm mb-5
+                                  file:mr-4 file:py-2 file:px-4
+                                  file:rounded-md file:border-0
+                                  file:text-sm file:font-semibold
+                                  file:bg-blue-600 file:text-white
+                                  hover:file:bg-blue-700"> --}}
+
+                            <button
+                                class="w-full bg-blue-700 hover:bg-blue-800
+                               text-white font-semibold py-2.5 rounded-lg transition">
+                                Approve
+                            </button>
+                        </form>
+                    @endif
+
+                    {{-- BOARD --}}
+                    @if ($canApproveBoard)
+                        <form method="POST" action="{{ route('reports.approve.board', $report) }}"
+                            enctype="multipart/form-data"
+                            class="bg-purple-50 border border-purple-300 rounded-xl p-6 shadow-md">
+
+                            @csrf
+
+                            <h4 class="text-lg font-bold text-purple-800 mb-4 text-center">
+                                Board of Directors
+                            </h4>
+
+                            {{-- <label class="block text-sm font-medium mb-2">
+                                Upload Signature
+                            </label>
+
+                            <input type="file" name="signature" accept="image/*"
+                                class="block w-full text-sm mb-5
+                                  file:mr-4 file:py-2 file:px-4
+                                  file:rounded-md file:border-0
+                                  file:text-sm file:font-semibold
+                                  file:bg-purple-600 file:text-white
+                                  hover:file:bg-purple-700"> --}}
+
+                            <button
+                                class="w-full bg-purple-700 hover:bg-purple-800
+                               text-white font-semibold py-2.5 rounded-lg transition">
+                                Endorse
+                            </button>
+                        </form>
+                    @endif
+
+                </div>
+            </div>
+        @endif
 
     </div>
 @endsection

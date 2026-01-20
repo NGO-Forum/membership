@@ -13,49 +13,34 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         $users = [
+            [
+                'name' => 'Mr. CHAN Vicheth',
+                'ngo' => 'NGO Forum Cambodia',
+                'email' => 'vicheth@ngoforum.org.kh',
+                'role' => 'manager',
+                'password' => '@info#NGOF2025Membership'
+            ],
             // [
-            //     'name' => 'Bunna',
-            //     'ngo' => 'NGO Forum Cambodia',
-            //     'email' => 'bunna@ngoforum.org.kh',
-            //     'role' => 'admin',
-            //     'image' => null,
-            //     'password' => '@BunnaRiti#NGOF2025'
-            // ],
-            // [
-            //     'name' => 'Vicheth',
-            //     'ngo' => 'NGO Forum Cambodia',
-            //     'email' => 'vicheth@ngoforum.org.kh',
-            //     'role' => 'admin',
-            //     'password' => 'NecaAwg*2023'
-            // ],
-            // [
-            //     'name' => 'Saroeun Chhun',
+            //     'name' => 'Mr. SOEUNG Saroeun',
             //     'ngo' => 'NGO Forum Cambodia',
             //     'email' => 'saroeun@ngoforum.org.kh',
             //     'role' => 'ed',
-            //     'password' => 'NecaAwg*2023'
+            //     'password' => '@info#NGOF2025Membership'
             // ],
             // [
-            //     'name' => 'Touch Chamroeun',
+            //     'name' => 'Mr. TOURT Chamroen',
             //     'ngo' => 'NGO Forum Cambodia',
             //     'email' => 'director@vbnk.org',
             //     'role' => 'board',
-            //     'password' => 'SecureBoard*2023'
+            //     'password' => '@info#NGOF2025Membership'
             // ],
             // [
-            //     'name' => 'Chettana',
+            //     'name' => 'Mr. SOM Chettana',
             //     'ngo' => 'NGO Forum Cambodia',
             //     'email' => 'chettana@ngoforum.org.kh',
             //     'role' => 'operations',
-            //     'password' => 'SecureOps*2023'
+            //     'password' => '@info#NGOF2025Membership'
             // ],
-            [
-                'name' => 'Mengseu',
-                'ngo' => 'NGO Forum Cambodia',
-                'email' => 'mengseu@ngoforum.org.kh',
-                'role' => 'admin',
-                'password' => '@SeuRiti#NGOF2025'
-            ],
             [
                 'name' => 'Admin',
                 'ngo' => 'NGO Forum Cambodia',

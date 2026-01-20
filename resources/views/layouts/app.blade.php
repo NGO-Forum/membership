@@ -73,7 +73,7 @@
                                 Membership Reports
                             </a>
                             <a href="#"
-                                class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('reports.membership') ? 'font-semibold text-green-700' : '' }}">
+                                class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('#') ? 'font-semibold text-green-700' : '' }}">
                                 Reports
                             </a>
                         </div>

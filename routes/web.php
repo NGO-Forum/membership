@@ -18,6 +18,7 @@ use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\AdminSystemController;
 use App\Http\Controllers\AttendantPdfController;
 
+
 Route::get(
     '/events/{event}/attendant-pdf',
     [AttendantPdfController::class, 'exportPdf']
@@ -117,9 +118,34 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/membership/membershipUpload', [MembershipUploadController::class, 'form'])->name('membership.membershipUpload');
     Route::post('/membership/membershipUpload', [MembershipUploadController::class, 'store'])->name('memberships.store');
 
+
+
     //Report Data
     Route::get('/reports/membership', [MembershipReportController::class, 'index'])->name('reports.membership');
-    Route::get('/reports/show/{id}', [MembershipReportController::class, 'show'])->name('reports.show');
+    Route::get('/reports/{membership}', [MembershipReportController::class, 'show'])
+        ->name('reports.show');
+    Route::get('/reports/{membership}/index', [MembershipReportController::class, 'report'])
+        ->name('reports.index');
+    Route::put('/reports/{report}', [MembershipReportController::class, 'update'])
+        ->name('reports.update');
+
+    Route::post('/reports/{membership}/generate', [MembershipReportController::class, 'generate'])
+        ->name('reports.generate');
+
+    Route::post('/reports/{report}/approve-manager', [MembershipReportController::class, 'approveManager'])
+        ->name('reports.approve.manager');
+
+    // Route::post('/reports/{report}/approve-ed', [MembershipReportController::class, 'approveED'])
+    //     ->name('reports.approve.ed');
+
+    // Route::post('/reports/{report}/approve-board', [MembershipReportController::class, 'approveBoard'])
+    //     ->name('reports.approve.board');
+
+    Route::get(
+        '/reports/{membership}/export',
+        [MembershipReportController::class, 'export']
+    )->name('reports.export');
+
 
 
     // Event calendar routes
@@ -158,9 +184,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/send-email', [EventController::class, 'sendEmail'])->name('send.email');
 
-//     Route::get(
-//     '/events/{event}/registrations/export-pdf',
-//     [RegistrationController::class, 'exportPdf']
-// )->name('registrations.export.pdf');
+    //     Route::get(
+    //     '/events/{event}/registrations/export-pdf',
+    //     [RegistrationController::class, 'exportPdf']
+    // )->name('registrations.export.pdf');
 
 });

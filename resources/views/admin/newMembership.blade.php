@@ -19,20 +19,22 @@
                                 </th>
                             @endforeach
                             <th class="px-2 py-2 md:px-4 md:py-3 text-xs font-bold uppercase tracking-wider border">
-                                    Action
+                                Action
                             </th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @foreach ($newMemberships as $membership)
                             <tr class="hover:bg-green-50 transition">
-                                <td class="px-2 py-2 md:px-4 md:py-3 text-center border text-sm">{{ str_pad($membership->user->id, 4, '0', STR_PAD_LEFT) }}</td>
-                                <td class="px-2 py-2 md:px-6 md:py-3 border text-sm">{{ $membership->org_name_en }}</td>
-                                <td class="px-2 py-2 md:px-6 md:py-3 border text-sm">{{ $membership->director_name }}</td>
-                                <td class="px-2 py-2 md:px-6 md:py-3 border break-words text-sm">{{ $membership->director_email }}</td>
+                                <td class="px-2 py-2 md:px-4 md:py-3 text-center border text-sm">
+                                    {{ str_pad($membership->user->id, 4, '0', STR_PAD_LEFT) }}</td>
+                                <td class="px-2 py-2 md:px-3 md:py-3 border text-sm">{{ $membership->org_name_en }}</td>
+                                <td class="px-2 py-2 md:px-3 md:py-3 border text-sm">{{ $membership->director_name }}</td>
+                                <td class="px-2 py-2 md:px-3 md:py-3 border break-words text-sm">
+                                    {{ $membership->director_email }}</td>
 
                                 {{-- Networks --}}
-                                <td class="px-2 py-2 md:px-6 md:py-3 border max-w-xs text-sm">
+                                <td class="px-2 py-2 md:px-3 md:py-3 border max-w-xs text-sm">
                                     <div class="max-h-16 overflow-y-auto">
                                         @foreach ($membership->membershipUploads as $upload)
                                             @foreach ($upload->networks as $network)
@@ -46,19 +48,19 @@
                                 </td>
 
                                 {{-- Focal Points --}}
-                                <td class="px-2 py-2 md:px-6 md:py-3 text-center border max-w-xs text-sm">
+                                <td class="px-2 py-2 md:px-3 md:py-3 text-center border max-w-xs text-sm">
                                     {{ $membership->membership_type }}
                                 </td>
 
                                 {{-- Date --}}
-                                <td class="px-2 py-2 md:px-6 md:py-3 text-center border text-sm">
+                                <td class="px-2 py-2 md:px-3 md:py-3 text-center border text-sm">
                                     @foreach ($membership->membershipUploads as $upload)
                                         {{ $upload->created_at->format('d M Y') }}<br>
                                     @endforeach
                                 </td>
 
                                 {{-- Applications --}}
-                                <td class="px-2 py-2 md:px-6 md:py-3 border text-sm">
+                                <td class="px-2 py-2 md:px-3 md:py-3 border text-sm">
                                     <div class="max-h-16 overflow-y-auto space-y-2">
                                         @foreach ($membership->membershipUploads as $upload)
                                             <div class="border rounded p-2 mb-2 bg-gray-50 shadow-sm">
@@ -171,6 +173,31 @@
                                                 </svg>
                                                 Delete
                                             </button>
+
+                                            {{-- ADMIN GENERATE --}}
+                                            @if (auth()->user()->role === 'admin')
+                                                <form method="POST" action="{{ route('reports.generate', $membership->id) }}">
+                                                    @csrf
+
+                                                    <button type="submit"
+                                                        class="flex items-center px-2 py-1 text-sm text-yellow-600 hover:bg-yellow-100 rounded transition">
+                                                        {{-- Sparkles Icon --}}
+                                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                                            class="w-5 h-5 text-yellow-600 mr-1"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            stroke="currentColor">
+                                                            <path stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M12 4v16m8-8H4"/>
+                                                        </svg>
+
+                                                        Report
+                                                    </button>
+                                                </form>
+                                            @endif
+
                                         </div>
 
                                         <!-- Delete Modal -->
@@ -191,7 +218,7 @@
                                                     this membership?</p>
                                                 <div class="flex justify-end space-x-2">
                                                     <button @click="$refs.deleteModal.classList.add('hidden')"
-                                                        class="px-2 py-2 md:px-6 md:py-3 bg-orange-300 text-white rounded hover:bg-orange-400">Cancel</button>
+                                                        class="px-2 py-2 md:px-3 md:py-3 bg-orange-300 text-white rounded hover:bg-orange-400">Cancel</button>
                                                     <form action="{{ route('admin.destroy', $membership->id) }}"
                                                         method="POST">
                                                         @csrf

@@ -12,7 +12,7 @@ class AdminSystemController extends Controller
     // List all admins with roles: admin, ed, board, operations
     public function index()
     {
-        $roles = ['admin', 'ed', 'board', 'operations'];
+        $roles = ['admin', 'ed', 'board', 'operations', 'manager'];
         $admins = User::whereIn('role', $roles)->get();
 
         return view('admins.index', compact('admins'));

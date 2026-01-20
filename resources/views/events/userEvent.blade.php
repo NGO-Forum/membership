@@ -216,7 +216,7 @@
 
                     <form action="{{ route('send.email') }}" method="POST">
                         @csrf
-                        <input type="hidden" name="event_id" value="{{ $event->id }}">
+                        <input type="hidden" name="event_id" id="email_event_id">
 
                         <div class="mb-4">
                             <label class="block text-gray-700">Your Name</label>
@@ -246,6 +246,7 @@
 
     <script>
         function openEventDetailModal(event) {
+            document.getElementById('email_event_id').value = event.id;
             function formatDateWithDay(dateStr) {
                 if (!dateStr) return '';
                 const d = new Date(dateStr);

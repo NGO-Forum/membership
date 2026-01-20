@@ -50,7 +50,6 @@
                     <input type="checkbox" name="remember" class="form-checkbox text-green-600">
                     <span class="ml-2 text-gray-700">Remember me</span>
                 </label>
-                <a href="#" class="text-green-600 hover:underline text-sm">Forgot password?</a>
             </div>
             <button type="submit"
                 class="w-full bg-green-600 text-white py-2 rounded-md font-semibold hover:bg-green-700 transition">Login</button>

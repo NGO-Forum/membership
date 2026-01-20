@@ -3,7 +3,7 @@
     <div class="pt-6">
 
         {{-- Calendar Header --}}
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div class="flex flex-col items-center sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div class="flex items-center gap-2">
                 <a href="{{ route('events.calendar', ['month' => $startOfMonth->copy()->subMonth()->month, 'year' => $startOfMonth->copy()->subMonth()->year]) }}"
                     class="px-3 py-1 rounded bg-gray-300">&lt;</a>

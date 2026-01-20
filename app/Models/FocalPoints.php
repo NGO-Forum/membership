@@ -10,7 +10,7 @@ class FocalPoints extends Model
     use HasFactory;
 
     protected $fillable = [
-        'membership_upload_id','network_name','name','sex','position','email','phone'
+        'membership_upload_id','network_name','name','sex','position','email','phone', 'summaries'
     ];
 
     public function newMembership()

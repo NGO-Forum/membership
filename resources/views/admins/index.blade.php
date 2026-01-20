@@ -35,8 +35,9 @@
                                 <label class="block text-gray-700">Role</label>
                                 <select name="role" class="w-full border rounded px-3 py-2" required>
                                     <option value="admin">Admin</option>
-                                    <option value="ed">ED</option>
                                     <option value="board">Board</option>
+                                    <option value="ed">ED</option>
+                                    <option value="board">Manager</option>
                                     <option value="operations">Operations</option>
                                 </select>
                             </div>
@@ -94,9 +95,9 @@
                             <td class="px-6 py-4 text-gray-800 font-medium">
                                 @if ($admin->image)
                                     <img src="{{ asset('storage/' . $admin->image) }}" alt="{{ $admin->name }}"
-                                        class="w-8 h-8 rounded-lg object-cover">
+                                        class="w-8 h-8 rounded-full object-cover">
                                 @else
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-gray-200">
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200">
                                         <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

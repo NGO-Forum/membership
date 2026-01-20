@@ -58,4 +58,9 @@ class NewMembership extends Model
     {
         return $this->hasMany(Registration::class, 'membership_id');
     }
+
+    public function assessmentReport()
+    {
+        return $this->hasOne(AssessmentReport::class);
+    }
 }

@@ -47,11 +47,22 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        if (Auth::attempt($credentials)) {
+        $remember = $request->boolean('remember');
+
+        if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
             if (Auth::user()->role === 'admin') {
                 return redirect()->route('admin.dashboard');
+            }
+
+            if (in_array(Auth::user()->role, ['manager', 'ed', 'board'])) {
+                $membership = \App\Models\NewMembership::latest()->first();
+                // or choose the correct one based on your logic
+
+                return redirect()->route('reports.index', [
+                    'membership' => $membership->id
+                ]);
             }
 
             if (Auth::user()->role === 'user') {
