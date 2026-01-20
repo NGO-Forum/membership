@@ -110,53 +110,51 @@ class MembershipReportController extends Controller
             ['status' => 'draft']
         );
 
-        /* =======================
-     | SUMMARY (AI)
-     ======================= */
         try {
-            $summaryResponse = OpenAI::responses()->create([
-                'model' => 'gpt-4.1-mini',
-                'input' => $this->summaryPrompt($membership, $report),
+            /* ===== SUMMARY ===== */
+            $summaryResponse = OpenAI::chat()->create([
+                'model' => 'gpt-3.5-turbo',
+                'messages' => [
+                    [
+                        'role' => 'user',
+                        'content' => $this->summaryPrompt($membership, $report),
+                    ],
+                ],
             ]);
 
-            $summary = $summaryResponse->output_text;
+            $summary = $summaryResponse->choices[0]->message->content ?? '';
         } catch (\Throwable $e) {
-            Log::error('AI Summary Error: ' . $e->getMessage());
-            $summary = '<p><em>Summary generation failed. Please edit manually.</em></p>';
+            logger()->error('AI Summary Error: ' . $e->getMessage());
+            $summary = '<p><em>Summary generation failed.</em></p>';
         }
 
-        /* =======================
-     | CONCLUSION (AI)
-     ======================= */
         try {
-            $conclusionResponse = OpenAI::responses()->create([
-                'model' => 'gpt-4.1-mini',
-                'input' => $this->conclusionPrompt(),
+            /* ===== CONCLUSION ===== */
+            $conclusionResponse = OpenAI::chat()->create([
+                'model' => 'gpt-3.5-turbo',
+                'messages' => [
+                    [
+                        'role' => 'user',
+                        'content' => $this->conclusionPrompt(),
+                    ],
+                ],
             ]);
 
-            $conclusion = $conclusionResponse->output_text;
+            $conclusion = $conclusionResponse->choices[0]->message->content ?? '';
         } catch (\Throwable $e) {
-            Log::error('AI Conclusion Error: ' . $e->getMessage());
-            $conclusion = '<p><em>Conclusion generation failed. Please edit manually.</em></p>';
+            logger()->error('AI Conclusion Error: ' . $e->getMessage());
+            $conclusion = '<p><em>Conclusion generation failed.</em></p>';
         }
 
-        /* =======================
-     | CHECKLIST (LOCAL)
-     ======================= */
+        /* ===== CHECKLIST ===== */
         $checklist = $this->buildChecklist($membership);
 
-        /* =======================
-     | SAVE REPORT
-     ======================= */
         $report->update([
             'summary_html'    => ['html' => $summary],
             'checklist_json'  => $checklist,
             'conclusion_html' => ['html' => $conclusion],
         ]);
 
-        /* =======================
-     | NOTIFY MANAGER
-     ======================= */
         $this->notifyRole('manager', $report);
 
         return back()->with('success', 'Assessment report generated successfully.');
