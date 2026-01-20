@@ -111,24 +111,28 @@ class MembershipReportController extends Controller
         );
 
         /* ===== SUMMARY ===== */
-        $summary = OpenAI::chat()->create([
-            'model' => 'gpt-4o-mini',
+        $summaryResponse = OpenAI::chat()->create([
+            'model' => 'gpt-3.5-turbo', // ✅ REQUIRED
             'messages' => [[
                 'role' => 'user',
                 'content' => $this->summaryPrompt($membership, $report)
             ]]
-        ])->choices[0]->message->content;
+        ]);
+
+        $summary = $summaryResponse->choices[0]->message->content ?? '';
 
         /* ===== CONCLUSION ===== */
-        $conclusion = OpenAI::chat()->create([
-            'model' => 'gpt-4o-mini',
+        $conclusionResponse = OpenAI::chat()->create([
+            'model' => 'gpt-3.5-turbo', // ✅ REQUIRED
             'messages' => [[
                 'role' => 'user',
                 'content' => $this->conclusionPrompt()
             ]]
-        ])->choices[0]->message->content;
+        ]);
 
-        /* ===== CHECKLIST RESULT ===== */
+        $conclusion = $conclusionResponse->choices[0]->message->content ?? '';
+
+        /* ===== CHECKLIST ===== */
         $checklist = $this->buildChecklist($membership);
 
         $report->update([
@@ -139,8 +143,9 @@ class MembershipReportController extends Controller
 
         $this->notifyRole('manager', $report);
 
-        return back();
+        return back()->with('success', 'Assessment report generated successfully.');
     }
+
 
     /* ================= APPROVALS ================= */
     public function approveManager(Request $request, AssessmentReport $report)
