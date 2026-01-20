@@ -11,6 +11,7 @@ use OpenAI\Laravel\Facades\OpenAI;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReportApprovalMail;
+use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class MembershipReportController extends Controller
@@ -109,36 +110,56 @@ class MembershipReportController extends Controller
             ['status' => 'draft']
         );
 
-        /* ===== SUMMARY ===== */
-        $summary = OpenAI::chat()->create([
-            'model' => 'gpt-4o-mini',
-            'messages' => [[
-                'role' => 'user',
-                'content' => $this->summaryPrompt($membership, $report)
-            ]]
-        ])->choices[0]->message->content;
+        /* =======================
+     | SUMMARY (AI)
+     ======================= */
+        try {
+            $summaryResponse = OpenAI::responses()->create([
+                'model' => 'gpt-4.1-mini',
+                'input' => $this->summaryPrompt($membership, $report),
+            ]);
 
-        /* ===== CONCLUSION ===== */
-        $conclusion = OpenAI::chat()->create([
-            'model' => 'gpt-4o-mini',
-            'messages' => [[
-                'role' => 'user',
-                'content' => $this->conclusionPrompt()
-            ]]
-        ])->choices[0]->message->content;
+            $summary = $summaryResponse->output_text;
+        } catch (\Throwable $e) {
+            Log::error('AI Summary Error: ' . $e->getMessage());
+            $summary = '<p><em>Summary generation failed. Please edit manually.</em></p>';
+        }
 
-        /* ===== CHECKLIST RESULT ===== */
+        /* =======================
+     | CONCLUSION (AI)
+     ======================= */
+        try {
+            $conclusionResponse = OpenAI::responses()->create([
+                'model' => 'gpt-4.1-mini',
+                'input' => $this->conclusionPrompt(),
+            ]);
+
+            $conclusion = $conclusionResponse->output_text;
+        } catch (\Throwable $e) {
+            Log::error('AI Conclusion Error: ' . $e->getMessage());
+            $conclusion = '<p><em>Conclusion generation failed. Please edit manually.</em></p>';
+        }
+
+        /* =======================
+     | CHECKLIST (LOCAL)
+     ======================= */
         $checklist = $this->buildChecklist($membership);
 
+        /* =======================
+     | SAVE REPORT
+     ======================= */
         $report->update([
             'summary_html'    => ['html' => $summary],
             'checklist_json'  => $checklist,
             'conclusion_html' => ['html' => $conclusion],
         ]);
 
+        /* =======================
+     | NOTIFY MANAGER
+     ======================= */
         $this->notifyRole('manager', $report);
 
-        return back();
+        return back()->with('success', 'Assessment report generated successfully.');
     }
 
     /* ================= APPROVALS ================= */
