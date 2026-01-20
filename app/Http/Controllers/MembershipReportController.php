@@ -110,43 +110,25 @@ class MembershipReportController extends Controller
             ['status' => 'draft']
         );
 
-        try {
-            /* ===== SUMMARY ===== */
-            $summaryResponse = OpenAI::chat()->create([
-                'model' => 'gpt-3.5-turbo',
-                'messages' => [
-                    [
-                        'role' => 'user',
-                        'content' => $this->summaryPrompt($membership, $report),
-                    ],
-                ],
-            ]);
+        /* ===== SUMMARY ===== */
+        $summary = OpenAI::chat()->create([
+            'model' => 'gpt-4o-mini',
+            'messages' => [[
+                'role' => 'user',
+                'content' => $this->summaryPrompt($membership, $report)
+            ]]
+        ])->choices[0]->message->content;
 
-            $summary = $summaryResponse->choices[0]->message->content ?? '';
-        } catch (\Throwable $e) {
-            logger()->error('AI Summary Error: ' . $e->getMessage());
-            $summary = '<p><em>Summary generation failed.</em></p>';
-        }
+        /* ===== CONCLUSION ===== */
+        $conclusion = OpenAI::chat()->create([
+            'model' => 'gpt-4o-mini',
+            'messages' => [[
+                'role' => 'user',
+                'content' => $this->conclusionPrompt()
+            ]]
+        ])->choices[0]->message->content;
 
-        try {
-            /* ===== CONCLUSION ===== */
-            $conclusionResponse = OpenAI::chat()->create([
-                'model' => 'gpt-3.5-turbo',
-                'messages' => [
-                    [
-                        'role' => 'user',
-                        'content' => $this->conclusionPrompt(),
-                    ],
-                ],
-            ]);
-
-            $conclusion = $conclusionResponse->choices[0]->message->content ?? '';
-        } catch (\Throwable $e) {
-            logger()->error('AI Conclusion Error: ' . $e->getMessage());
-            $conclusion = '<p><em>Conclusion generation failed.</em></p>';
-        }
-
-        /* ===== CHECKLIST ===== */
+        /* ===== CHECKLIST RESULT ===== */
         $checklist = $this->buildChecklist($membership);
 
         $report->update([
@@ -157,7 +139,7 @@ class MembershipReportController extends Controller
 
         $this->notifyRole('manager', $report);
 
-        return back()->with('success', 'Assessment report generated successfully.');
+        return back();
     }
 
     /* ================= APPROVALS ================= */
@@ -180,10 +162,9 @@ class MembershipReportController extends Controller
             'status' => 'approved'
         ]);
 
-        return redirect()->route(
-            'reports.show',
-            $report->new_membership_id
-        );
+        return redirect()->route('reports.show', [
+            'membership' => $report->new_membership_id
+        ]);
     }
 
     // public function approveED(Request $request, AssessmentReport $report)
