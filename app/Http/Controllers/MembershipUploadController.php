@@ -162,12 +162,19 @@ class MembershipUploadController extends Controller
             ]);
         }
 
-        $admin = \App\Models\User::where('role', 'admin')->first();
+        try {
+            $admin = \App\Models\User::where('role', 'admin')->first();
 
-        if ($admin && $admin->email) {
-            Mail::to($admin->email)
-                ->send(new NewMembershipUploadedMail($newMembership));
+            if ($admin && $admin->email) {
+                Mail::to($admin->email)
+                    ->send(new NewMembershipUploadedMail($newMembership));
+            }
+        } catch (\Throwable $e) {
+            Log::error('Membership email error: ' . $e->getMessage());
         }
+
+        return redirect()->route('membership.thankyou');
+
 
         return redirect()->route('membership.thankyou');
     }
