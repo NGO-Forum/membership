@@ -111,9 +111,9 @@ class MembershipReportController extends Controller
         );
 
         /* ===== SUMMARY ===== */
-        $summaryResponse = OpenAI::responses()->create([
-            'model' => 'gpt-4.1-mini',
-            'input' => [
+        $summaryResponse = OpenAI::chat()->create([
+            'model' => 'gpt-4o-mini',
+            'messages' => [
                 [
                     'role' => 'user',
                     'content' => $this->summaryPrompt($membership, $report),
@@ -121,12 +121,12 @@ class MembershipReportController extends Controller
             ],
         ]);
 
-        $summary = $summaryResponse->output_text ?? '';
+        $summary = $summaryResponse->choices[0]->message->content ?? '';
 
         /* ===== CONCLUSION ===== */
-        $conclusionResponse = OpenAI::responses()->create([
-            'model' => 'gpt-4.1-mini',
-            'input' => [
+        $conclusionResponse = OpenAI::chat()->create([
+            'model' => 'gpt-4o-mini',
+            'messages' => [
                 [
                     'role' => 'user',
                     'content' => $this->conclusionPrompt(),
@@ -134,22 +134,22 @@ class MembershipReportController extends Controller
             ],
         ]);
 
-        $conclusion = $conclusionResponse->output_text ?? '';
+        $conclusion = $conclusionResponse->choices[0]->message->content ?? '';
 
         /* ===== CHECKLIST ===== */
         $checklist = $this->buildChecklist($membership);
 
+        // IMPORTANT: save STRINGS unless columns are JSON
         $report->update([
-            'summary_html'    => ['html' => $summary],
+            'summary_html'    => $summary,
             'checklist_json'  => $checklist,
-            'conclusion_html' => ['html' => $conclusion],
+            'conclusion_html' => $conclusion,
         ]);
 
         $this->notifyRole('manager', $report);
 
         return back()->with('success', 'Assessment report generated successfully.');
     }
-
 
 
     /* ================= APPROVALS ================= */
