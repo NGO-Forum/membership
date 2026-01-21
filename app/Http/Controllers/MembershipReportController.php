@@ -111,26 +111,30 @@ class MembershipReportController extends Controller
         );
 
         /* ===== SUMMARY ===== */
-        $summaryResponse = OpenAI::chat()->create([
-            'model' => 'gpt-3.5-turbo', // ✅ REQUIRED
-            'messages' => [[
-                'role' => 'user',
-                'content' => $this->summaryPrompt($membership, $report)
-            ]]
+        $summaryResponse = OpenAI::responses()->create([
+            'model' => 'gpt-4.1-mini',
+            'input' => [
+                [
+                    'role' => 'user',
+                    'content' => $this->summaryPrompt($membership, $report),
+                ]
+            ],
         ]);
 
-        $summary = $summaryResponse->choices[0]->message->content ?? '';
+        $summary = $summaryResponse->output_text ?? '';
 
         /* ===== CONCLUSION ===== */
-        $conclusionResponse = OpenAI::chat()->create([
-            'model' => 'gpt-3.5-turbo', // ✅ REQUIRED
-            'messages' => [[
-                'role' => 'user',
-                'content' => $this->conclusionPrompt()
-            ]]
+        $conclusionResponse = OpenAI::responses()->create([
+            'model' => 'gpt-4.1-mini',
+            'input' => [
+                [
+                    'role' => 'user',
+                    'content' => $this->conclusionPrompt(),
+                ]
+            ],
         ]);
 
-        $conclusion = $conclusionResponse->choices[0]->message->content ?? '';
+        $conclusion = $conclusionResponse->output_text ?? '';
 
         /* ===== CHECKLIST ===== */
         $checklist = $this->buildChecklist($membership);
@@ -145,6 +149,7 @@ class MembershipReportController extends Controller
 
         return back()->with('success', 'Assessment report generated successfully.');
     }
+
 
 
     /* ================= APPROVALS ================= */
