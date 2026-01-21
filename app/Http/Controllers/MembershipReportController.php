@@ -141,10 +141,11 @@ class MembershipReportController extends Controller
 
         // IMPORTANT: save STRINGS unless columns are JSON
         $report->update([
-            'summary_html'    => $summary,
+            'summary_html'    => ['html' => $summary],
             'checklist_json'  => $checklist,
-            'conclusion_html' => $conclusion,
+            'conclusion_html' => ['html' => $conclusion],
         ]);
+
 
         $this->notifyRole('manager', $report);
 
