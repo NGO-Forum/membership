@@ -53,7 +53,8 @@ class CalendarController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        // ✅ 1. ALWAYS capture validated data
+        $data = $request->validate([
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
             'start_date'  => 'required|date',
@@ -63,20 +64,36 @@ class CalendarController extends Controller
             'location'    => 'nullable|string|max:255',
             'organizer'   => 'nullable|string|max:255',
             'organizer_email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:20',
+            'phone'       => 'nullable|string|max:20',
             'files.*'     => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:5120',
             'images.*'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $event = Event::create($request->except(['files', 'images']));
+        $user = auth()->user();
 
-        // Handle files (max 10)
+        // 🔐 Program users → force program
+        if ($user->isProgram()) {
+            $data['program'] = $user->role;
+        }
+
+        // 👑 Admin → must choose program (or fallback)
+        if ($user->isAdmin()) {
+            $data['program'] = $request->program ?? 'admin';
+            // ↑ OR show program dropdown in UI
+        }
+
+        // ✅ 2. Create event (NOW WORKS)
+        $event = Event::create(
+            collect($data)->except(['files', 'images'])->toArray()
+        );
+
+        /* ---------- Files (max 10) ---------- */
         if ($request->hasFile('files')) {
-            $files = $request->file('files');
-            if (count($files) > 10) {
+            if (count($request->file('files')) > 10) {
                 return back()->with('error', 'You can upload maximum 10 files.');
             }
-            foreach ($files as $file) {
+
+            foreach ($request->file('files') as $file) {
                 $path = $file->store('events/files', 'public');
                 $event->files()->create([
                     'file_path' => $path,
@@ -86,13 +103,13 @@ class CalendarController extends Controller
             }
         }
 
-        // Handle images (max 3)
+        /* ---------- Images (max 3) ---------- */
         if ($request->hasFile('images')) {
-            $images = $request->file('images');
-            if (count($images) > 3) {
+            if (count($request->file('images')) > 3) {
                 return back()->with('error', 'You can upload maximum 3 images.');
             }
-            foreach ($images as $image) {
+
+            foreach ($request->file('images') as $image) {
                 $path = $image->store('events/images', 'public');
                 $event->images()->create([
                     'image_path' => $path,
@@ -100,23 +117,25 @@ class CalendarController extends Controller
             }
         }
 
+        /* ---------- QR Code ---------- */
         $registrationLink = route('events.register', $event->id);
         $event->registration_link = $registrationLink;
 
-        // 3. Generate QR code with Endroid
         $qr = QrCode::create($registrationLink)->setSize(300);
         $writer = new PngWriter();
         $result = $writer->write($qr);
 
-        // 4. Save QR code file in storage/public/qrcodes
         $fileName = 'qrcodes/event_' . $event->id . '.png';
         Storage::disk('public')->put($fileName, $result->getString());
 
-        // 5. Save path to DB
         $event->qr_code_path = $fileName;
         $event->save();
-        return redirect()->route('events.calendar')->with('success', 'Event created successfully!');
+
+        return redirect()
+            ->route('events.calendar')
+            ->with('success', 'Event created successfully!');
     }
+
 
     /* ================= API (REACT) ================= */
     public function api(Request $request)

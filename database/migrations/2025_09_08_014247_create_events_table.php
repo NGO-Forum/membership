@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->string('organizer')->nullable();
             $table->string('organizer_email')->nullable();
+            $table->string('program');
+            $table->string('phone')->nullable();
             $table->timestamps();
         });
 

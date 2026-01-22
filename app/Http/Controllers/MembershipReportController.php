@@ -84,6 +84,17 @@ class MembershipReportController extends Controller
 
     public function show(NewMembership $membership)
     {
+        $user = auth()->user();
+        
+        // ✅ Admin / Manager / ED / Board can see all
+        if (in_array($user->role, ['admin', 'manager', 'ed', 'board'])) {
+            // allowed
+        }
+        // ❌ Normal user: must own the membership
+        else {
+            abort_unless($membership->user_id === $user->id, 403);
+        }
+
         $report = AssessmentReport::firstOrCreate(
             ['new_membership_id' => $membership->id],
             ['status' => 'draft']

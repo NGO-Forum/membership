@@ -16,7 +16,7 @@
             </div>
 
             <h2 class="text-2xl font-bold">{{ $startOfMonth->format('F Y') }}</h2>
-            @if (auth()->user()->role === 'admin')
+            @if (auth()->user()->isAdmin() || auth()->user()->isProgram())
                 <button onclick="openEventModal()"
                     class="px-3 sm:px-4 py-1 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition text-sm sm:text-base">
                     + Add Event </button>
@@ -268,6 +268,18 @@
                     <p><span class="font-semibold mr-2">Organizer: </span> <span id="detailOrganizer"></span></p>
                 </div>
 
+                <div class="flex items-center gap-4 hidden" id="emailRow">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8h18V8H3v8z" />
+                    </svg>
+                    <p>
+                        <span class="font-semibold mr-2">Email:</span>
+                        <a id="detailEmail" class="text-blue-600 hover:underline break-all" href="#"></a>
+                    </p>
+                </div>
+
+
                 <div class="flex items-center gap-4" id="phoneRow">
                     <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -381,6 +393,20 @@
             document.getElementById('detailLocation').innerText = event.location || 'N/A';
             document.getElementById('detailOrganizer').innerText = event.organizer || 'N/A';
             document.getElementById('detailDescription').innerText = event.description || 'No description';
+
+            // 📧 Email
+            const emailRow = document.getElementById('emailRow');
+            const emailEl = document.getElementById('detailEmail');
+
+            if (event.organizer_email) {
+                emailEl.textContent = event.organizer_email;
+                emailEl.href = `mailto:${event.organizer_email}`;
+                emailRow.classList.remove('hidden');
+            } else {
+                emailEl.textContent = '';
+                emailEl.removeAttribute('href');
+                emailRow.classList.add('hidden');
+            }
 
             // Show modal
             document.getElementById('eventDetailModal').classList.remove('hidden');

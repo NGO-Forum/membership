@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,6 +8,7 @@
     <link rel="icon" href="/logo.png" type="image/png" />
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-green-600 flex items-center justify-center min-h-screen px-4">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
         <!-- Logo and Text -->
@@ -16,7 +18,7 @@
             <p class="text-gray-600 mt-1">Please login to your account</p>
         </div>
 
-        @if(session('success'))
+        @if (session('success'))
             <div class="mb-4 text-green-600 text-center">
                 {{ session('success') }}
             </div>
@@ -50,14 +52,19 @@
                     <input type="checkbox" name="remember" class="form-checkbox text-green-600">
                     <span class="ml-2 text-gray-700">Remember me</span>
                 </label>
+                <a href="{{ route('password.request') }}" class="text-sm text-green-600 hover:underline">
+                    Forgot password?
+                </a>
             </div>
             <button type="submit"
                 class="w-full bg-green-600 text-white py-2 rounded-md font-semibold hover:bg-green-700 transition">Login</button>
         </form>
 
         <p class="mt-4 text-center text-gray-600">
-            Don't have an account? <a href="{{ route('register') }}" class="text-green-600 hover:underline">Register here</a>
+            Don't have an account? <a href="{{ route('register') }}" class="text-green-600 hover:underline">Register
+                here</a>
         </p>
     </div>
 </body>
+
 </html>

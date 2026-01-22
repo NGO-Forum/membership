@@ -33,7 +33,7 @@
             </button>
 
             <!-- Desktop Menu -->
-            <nav class="hidden md:flex items-center space-x-9">
+            <nav class="hidden md:flex items-center space-x-9 md:space-x-6 lg:space-x-12">
                 @if (auth()->user()->role === 'admin')
                     <a href="{{ route('admin.dashboard') }}"
                         class="font-semibold border-b-2 py-1 text-xs md:text-lg {{ request()->routeIs('admin.dashboard') ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
@@ -70,10 +70,6 @@
                             </a>
                             <a href="{{ route('reports.membership') }}"
                                 class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('reports.membership') ? 'font-semibold text-green-700' : '' }}">
-                                Membership Reports
-                            </a>
-                            <a href="#"
-                                class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('#') ? 'font-semibold text-green-700' : '' }}">
                                 Reports
                             </a>
                         </div>
@@ -127,7 +123,11 @@
                 @elseif(auth()->user()->role === 'user')
                     @php
                         $user = Auth::user();
-                        $hasNewMembership = \App\Models\NewMembership::where('user_id', $user->id)->exists();
+
+                        // Get user's new membership once
+                        $myMembership = \App\Models\NewMembership::where('user_id', $user->id)->first();
+
+                        $hasNewMembership = (bool) $myMembership;
                         $hasMembership = \App\Models\Membership::where('user_id', $user->id)->exists();
 
                         $homeRoute = $hasNewMembership ? 'newProfile' : 'profile';
@@ -185,18 +185,57 @@
                         <!-- Dropdown Menu -->
                         <div x-show="open" @click.away="open = false"
                             class="absolute left-0 mt-1 w-40 bg-white border rounded shadow-lg z-50 flex flex-col">
-                            <a href="#"
-                                class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('') ? 'font-semibold text-green-700' : '' }}">
-                                Membership Report
-                            </a>
-
-                            <a href="#"
-                                class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('') ? 'font-semibold text-green-700' : '' }}">
-                                Reports
-                            </a>
+                            @if ($myMembership)
+                                <a href="{{ route('reports.show', $myMembership) }}"
+                                    class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('reports.show') ? 'font-semibold text-green-700' : '' }}">
+                                    Membership Report
+                                </a>
+                            @endif
                         </div>
                     </div>
+                @elseif(auth()->user()->isProgram())
+                    <a href="{{ route('events.calendar') }}"
+                        class="font-semibold border-b-2 py-1 text-sm lg:text-lg
+                            {{ request()->routeIs('events.calendar')
+                                ? 'text-green-700 border-green-700'
+                                : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
+                        Calendar
+                    </a>
+
+                    <a href="{{ route('events.newEvent') }}"
+                        class="font-semibold border-b-2 py-1 text-sm lg:text-lg
+                            {{ request()->routeIs('events.newEvent')
+                                ? 'text-green-700 border-green-700'
+                                : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
+                        Plan Events
+                    </a>
+
+                    <a href="{{ route('events.pastEvent') }}"
+                        class="font-semibold border-b-2 py-1 text-sm lg:text-lg
+                            {{ request()->routeIs('events.pastEvent')
+                                ? 'text-green-700 border-green-700'
+                                : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
+                        Past Events
+                    </a>
+
+                    <a href="{{ route('events.qr') }}"
+                        class="font-semibold border-b-2 py-1 text-sm lg:text-lg
+                            {{ request()->routeIs('events.qr')
+                                ? 'text-green-700 border-green-700'
+                                : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
+                        QR Code
+                    </a>
+
+                    <a href="{{ route('registrations.index') }}"
+                        class="font-semibold border-b-2 py-1 text-sm lg:text-lg
+                            {{ request()->routeIs('registrations.index')
+                                ? 'text-green-700 border-green-700'
+                                : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
+                        Reports
+                    </a>
+
                 @endif
+
             </nav>
             <!-- Right Section: Notification + User (Desktop Only) -->
             <div class="hidden md:flex items-center space-x-3 absolute right-6 top-8">
@@ -260,10 +299,6 @@
                         </a>
                         <a href="{{ route('reports.membership') }}"
                             class="px-3 py-2 text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('reports.membership') ? 'font-semibold text-green-700' : '' }}">
-                            Membership Reports
-                        </a>
-                        <a href="#"
-                            class="px-3 py-2 text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('reports.membership') ? 'font-semibold text-green-700' : '' }}">
                             Reports
                         </a>
                     </div>
@@ -312,11 +347,16 @@
             @elseif(auth()->user()->role === 'user')
                 @php
                     $user = Auth::user();
-                    $hasNewMembership = \App\Models\NewMembership::where('user_id', $user->id)->exists();
+
+                    // Get user's new membership once
+                    $myMembership = \App\Models\NewMembership::where('user_id', $user->id)->first();
+
+                    $hasNewMembership = (bool) $myMembership;
                     $hasMembership = \App\Models\Membership::where('user_id', $user->id)->exists();
 
                     $homeRoute = $hasNewMembership ? 'newProfile' : 'profile';
                 @endphp
+
 
                 <a href="{{ route($homeRoute) }}"
                     class="py-2 {{ request()->routeIs($homeRoute) ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
@@ -369,17 +409,36 @@
                     <!-- Dropdown Menu -->
                     <div x-show="open" @click.away="open = false"
                         class="absolute left-0 mt-1 w-44 bg-white border rounded shadow-lg z-50 flex flex-col">
-                        <a href="#"
-                            class="px-3 py-2 md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('events.calendar') ? 'font-semibold text-green-700' : '' }}">
-                            Membership Report
-                        </a>
-
-                        <a href="#"
-                            class="px-3 py-2 md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('reports.eventReport') ? 'font-semibold text-green-700' : '' }}">
-                            Reports
-                        </a>
+                        @if ($myMembership)
+                            <a href="{{ route('reports.show', $myMembership) }}"
+                                class="px-3 py-2 md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('reports.show') ? 'font-semibold text-green-700' : '' }}">
+                                Membership Report
+                            </a>
+                        @endif
                     </div>
                 </div>
+            @elseif(auth()->user()->isProgram())
+                <a href="{{ route('events.calendar') }}" class="py-2 text-gray-700 hover:text-green-600">
+                    Calendar
+                </a>
+
+                <a href="{{ route('events.newEvent') }}" class="py-2 text-gray-700 hover:text-green-600">
+                    Plan Events
+                </a>
+
+                <a href="{{ route('events.pastEvent') }}" class="py-2 text-gray-700 hover:text-green-600">
+                    Past Events
+                </a>
+
+                <a href="{{ route('events.qr') }}" class="py-2 text-gray-700 hover:text-green-600">
+                    QR Code
+                </a>
+
+                <a href="{{ route('registrations.index') }}" class="py-2 text-gray-700 hover:text-green-600">
+                    Reports
+                </a>
+
+
             @endif
 
             <!-- Mobile User + Notification -->

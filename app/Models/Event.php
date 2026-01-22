@@ -17,8 +17,11 @@ class Event extends Model
         'end_time',
         'location',
         'organizer',
-        'organizer_email',
         'phone',
+        'organizer_email',
+        'program',
+        'registration_link',
+        'qr_code_path',
     ];
 
     protected $casts = [

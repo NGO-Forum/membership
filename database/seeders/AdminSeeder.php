@@ -48,6 +48,34 @@ class AdminSeeder extends Seeder
                 'role' => 'admin',
                 'password' => '@info#NGOF2025Membership'
             ],
+            [
+                'name' => 'RITI Program',
+                'ngo' => 'NGO Forum Cambodia',
+                'email' => 'riti@ngoforum.org.kh',
+                'role' => 'riti',
+                'password' => '@riti#NGOF2025'
+            ],
+            [
+                'name' => 'SACHAS Program',
+                'ngo' => 'NGO Forum Cambodia',
+                'email' => 'schas@ngoforum.org.kh',
+                'role' => 'sachas',
+                'password' => '@sachas#NGOF2025'
+            ],
+            [
+                'name' => 'PALI Program',
+                'ngo' => 'NGO Forum Cambodia',
+                'email' => 'pali@ngoforum.org.kh',
+                'role' => 'pali',
+                'password' => '@pali#NGOF2025'
+            ],
+            [
+                'name' => 'MACOR',
+                'ngo' => 'NGO Forum Cambodia',
+                'email' => 'macor@ngoforum.org.kh',
+                'role' => 'macor',
+                'password' => '@macor#NGOF2025'
+            ],
         ];
 
         foreach ($users as $data) {

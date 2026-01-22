@@ -11,15 +11,38 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EventInterestMail;
+use App\Models\User;
 
 class EventController extends Controller
 {
+    private function authorizeProgram(Event $event)
+    {
+        $user = auth()->user();
+
+        // ✅ Admin can do EVERYTHING
+        if ($user->isAdmin()) {
+            return;
+        }
+
+        // ❌ Program users can ONLY access their own program
+        if ($user->isProgram() && $event->program !== $user->role) {
+            abort(403, 'Unauthorized access to this event.');
+        }
+    }
+
     public function index()
     {
-        // Fetch only events whose end_date is today or in the future
-        $events = Event::with(['files', 'images'])->whereDate('end_date', '>=', Carbon::today())
-            ->orderBy('id', 'desc')
-            ->get();
+        $user = auth()->user();
+
+        $query = Event::with(['files', 'images'])
+            ->whereDate('end_date', '>=', Carbon::today());
+
+        // Program sees only own
+        if ($user->isProgram()) {
+            $query->where('program', $user->role);
+        }
+
+        $events = $query->orderBy('id', 'desc')->get();
 
         return view('events.newEvent', compact('events'));
     }
@@ -41,7 +64,23 @@ class EventController extends Controller
             'images.*'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $event = Event::create($request->except(['files', 'images']));
+        $user = auth()->user();
+
+        // 🔐 Program users → force program
+        if ($user->isProgram()) {
+            $data['program'] = $user->role;
+        }
+
+        // 👑 Admin → must choose program (or fallback)
+        if ($user->isAdmin()) {
+            $data['program'] = $request->program ?? 'admin';
+            // ↑ OR show program dropdown in UI
+        }
+
+        // ✅ 2. Create event (NOW WORKS)
+        $event = Event::create(
+            collect($data)->except(['files', 'images'])->toArray()
+        );
 
         // Handle files (max 10)
         if ($request->hasFile('files')) {
@@ -94,17 +133,19 @@ class EventController extends Controller
 
     public function edit(Event $event)
     {
-        // If request is AJAX, return JSON
+        $this->authorizeProgram($event);
+
         if (request()->ajax()) {
             return response()->json($event);
         }
 
-        // Otherwise return a view (optional, if you ever want it)
         return view('events.edit', compact('event'));
     }
 
     public function update(Request $request, Event $event)
     {
+        $this->authorizeProgram($event);
+
         $request->validate([
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -160,6 +201,8 @@ class EventController extends Controller
 
     public function destroy(Event $event)
     {
+        $this->authorizeProgram($event);
+
         $event->delete();
         return redirect()->route('events.newEvent')->with('success', 'Event deleted successfully.');
     }
@@ -195,9 +238,16 @@ class EventController extends Controller
 
     public function showPast()
     {
-        $events = Event::with(['files', 'images'])->whereDate('end_date', '<', Carbon::today())
-            ->orderBy('id', 'desc')
-            ->get();
+        $user = auth()->user();
+
+        $query = Event::with(['files', 'images'])
+            ->whereDate('end_date', '<', Carbon::today());
+
+        if ($user->isProgram()) {
+            $query->where('program', $user->role);
+        }
+
+        $events = $query->orderBy('id', 'desc')->get();
 
         return view('events.pastEvent', compact('events'));
     }
@@ -210,6 +260,8 @@ class EventController extends Controller
 
     public function downloadQr(Event $event)
     {
+        $this->authorizeProgram($event);
+
         if (!$event->qr_code_path || !Storage::disk('public')->exists($event->qr_code_path)) {
             return redirect()->back()->with('error', 'QR code not available for this event.');
         }
@@ -293,17 +345,16 @@ class EventController extends Controller
         $event = Event::findOrFail($request->event_id);
 
         // Organizer email: from DB or a default
-        $organizerEmail = $event->organizer_email ?? 'vicheth@ngoforum.org.kh';
+        $organizerEmail = $event->organizer_email;
 
-        Mail::to($organizerEmail)->send(
-            new EventInterestMail(
+        Mail::to($event->organizer_email ?? 'info@ngoforum.org.kh')
+            ->send(new EventInterestMail(
                 $event,
                 $request->name,
                 $request->email,
                 $request->message
-            )
-        );
+            ));
 
-        return back()->with('success', 'Your interest has been sent to the organizer!');
+        return back()->with('success', 'Message sent successfully.');
     }
 }

@@ -95,7 +95,7 @@
             <div>
                 <!-- ================= ASSESSMENT REPORT ================= -->
                 <h3 class="text-lg font-semibold text-green-700 mt-10 mb-4 border-b pb-2">
-                    <i class="fas fa-clipboard-check mr-2"></i>Assessment Report
+                    <i class="fas fa-clipboard-check mr-2"></i>Basic Organazational Information
                 </h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 md:gap-4">
@@ -150,7 +150,7 @@
 
                 <!-- Key Actions -->
                 <div class="mb-4">
-                    <label class="block font-semibold mb-1">Key Actions</label>
+                    <label class="block font-semibold mb-1">Key Activity</label>
                     <textarea name="key_actions" rows="3" placeholder="Enter your Key Action"
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
                         placeholder="Use bullet points if possible">{{ old('key_actions') }}</textarea>
@@ -158,7 +158,7 @@
 
                 <!-- Membership Fee -->
                 <div class="mb-6">
-                    <label class="block font-semibold mb-1">Membership Fee (USD)</label>
+                    <label class="block font-semibold mb-1">Your NGO Annual Budget (USD)</label>
                     <input type="number" name="membership_fee" step="0.01" min="0"
                         value="{{ old('membership_fee') }}" placeholder="Enter Value"
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">

@@ -17,6 +17,24 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\AdminSystemController;
 use App\Http\Controllers\AttendantPdfController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])
+    ->middleware('guest')
+    ->name('password.request');
+
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+    ->middleware('guest')
+    ->name('password.email');
+
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
+    ->middleware('guest')
+    ->name('password.reset');
+
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
+    ->middleware('guest')
+    ->name('password.update');
 
 
 Route::get(
@@ -41,6 +59,52 @@ Route::get('/registrations/thank', [RegistrationController::class, 'thankYou'])-
 Route::get('/events/qr', [EventController::class, 'register'])->name('events.qr');
 
 Route::middleware(['auth'])->group(function () {
+
+    Route::middleware(['auth', 'program'])->group(function () {
+
+        // Calendar
+        Route::prefix('calendar')->name('events.')->group(function () {
+            Route::get('/', [CalendarController::class, 'index'])->name('calendar');
+            Route::post('/', [CalendarController::class, 'store'])->name('storeCalendar');
+        });
+
+        // Events CRUD
+        Route::prefix('newEvent')->name('events.')->group(function () {
+            Route::get('/', [EventController::class, 'index'])->name('newEvent');
+            Route::post('/', [EventController::class, 'store'])->name('store');
+            Route::get('/{event}/edit', [EventController::class, 'edit'])->name('edit');
+            Route::put('/{event}', [EventController::class, 'update'])->name('update');
+            Route::delete('/{event}', [EventController::class, 'destroy'])->name('destroy');
+            Route::get('/{event}/json', [EventController::class, 'getEvent'])->name('json');
+        });
+
+        // Past events
+        Route::get('/events/pastEvent', [EventController::class, 'showPast'])
+            ->name('events.pastEvent');
+
+        // QR
+        Route::get('/events/{event}/download-qr', [EventController::class, 'downloadQr'])
+            ->name('events.downloadQr');
+
+        // Registrations (Reports)
+        Route::get('/registrations/index', [RegistrationController::class, 'index'])
+            ->name('registrations.index');
+
+        Route::get('/registrations/{eventId}', [RegistrationController::class, 'showAll'])
+            ->name('registrations.showAll');
+
+        // Event uploads
+        Route::post('/events/{event}/files', [EventController::class, 'addFiles'])
+            ->name('events.addFiles');
+
+        Route::post('/events/{event}/images', [EventController::class, 'addImages'])
+            ->name('events.addImages');
+
+        // Send email
+        Route::post('/send-email', [EventController::class, 'sendEmail'])
+            ->name('send.email');
+    });
+
 
     // Admin routes (just examples)
     Route::prefix('admin')->name('admin.')->group(function () {
@@ -173,6 +237,18 @@ Route::middleware(['auth'])->group(function () {
     // Admin view of attendees
     Route::get('/registrations/index', [RegistrationController::class, 'index'])->name('registrations.index');
     Route::get('/registrations/{eventId}', [RegistrationController::class, 'show'])->name('registrations.showAll');
+    Route::get('/registrations/{event}/create', [RegistrationController::class, 'create'])
+        ->name('registrations.create');
+    Route::get('/registrations/{registration}/edit', [RegistrationController::class, 'edit']);
+    // AJAX Registration CRUD
+    Route::post('/registrations/{event}', [RegistrationController::class, 'storeAjax'])
+        ->name('registrations.store.ajax');
+
+    Route::put('/registrations/{registration}', [RegistrationController::class, 'updateAjax'])
+        ->name('registrations.update.ajax');
+
+    Route::delete('/registrations/{registration}', [RegistrationController::class, 'destroy'])
+    ->name('registrations.destroy');
 
     // Event files upload
     Route::post('/events/{event}/files', [EventController::class, 'addFiles'])->name('events.addFiles');

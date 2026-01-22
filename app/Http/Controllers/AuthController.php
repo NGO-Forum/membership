@@ -56,6 +56,9 @@ class AuthController extends Controller
                 return redirect()->route('admin.dashboard');
             }
 
+            if (Auth::user()->isProgram()) {
+                return redirect()->route('events.calendar');
+            }
             if (in_array(Auth::user()->role, ['manager', 'ed', 'board'])) {
                 $membership = \App\Models\NewMembership::latest()->first();
                 // or choose the correct one based on your logic
