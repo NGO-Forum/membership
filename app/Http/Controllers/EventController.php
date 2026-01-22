@@ -49,7 +49,7 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
             'start_date'  => 'required|date',
@@ -59,28 +59,27 @@ class EventController extends Controller
             'location'    => 'nullable|string|max:255',
             'organizer'   => 'nullable|string|max:255',
             'organizer_email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:20',
+            'phone'       => 'nullable|string|max:20',
             'files.*'     => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:5120',
             'images.*'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $user = auth()->user();
 
-        // 🔐 Program users → force program
+        // program logic
         if ($user->isProgram()) {
             $data['program'] = $user->role;
         }
 
-        // 👑 Admin → must choose program (or fallback)
         if ($user->isAdmin()) {
             $data['program'] = $request->program ?? 'admin';
-            // ↑ OR show program dropdown in UI
         }
 
-        // ✅ 2. Create event (NOW WORKS)
+        // ✅ NOW title exists
         $event = Event::create(
             collect($data)->except(['files', 'images'])->toArray()
         );
+
 
         // Handle files (max 10)
         if ($request->hasFile('files')) {

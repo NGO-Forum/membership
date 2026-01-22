@@ -71,21 +71,20 @@ class CalendarController extends Controller
 
         $user = auth()->user();
 
-        // 🔐 Program users → force program
+        // program logic
         if ($user->isProgram()) {
             $data['program'] = $user->role;
         }
 
-        // 👑 Admin → must choose program (or fallback)
         if ($user->isAdmin()) {
             $data['program'] = $request->program ?? 'admin';
-            // ↑ OR show program dropdown in UI
         }
 
-        // ✅ 2. Create event (NOW WORKS)
+        // ✅ NOW title exists
         $event = Event::create(
             collect($data)->except(['files', 'images'])->toArray()
         );
+
 
         /* ---------- Files (max 10) ---------- */
         if ($request->hasFile('files')) {
