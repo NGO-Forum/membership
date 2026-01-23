@@ -220,12 +220,12 @@
 
 
     {{-- Event Detail Modal --}}
-    <div id="eventDetailModal" class="fixed inset-0 flex items-center justify-center bg-black/50 hidden z-50 p-2">
+    <div id="eventDetailModal" class="fixed inset-0 flex items-center justify-center bg-black/50 hidden z-50 p-1 md:p-2">
         <div
-            class="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative overflow-hidden transform transition-all duration-300">
+            class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl relative overflow-auto h-auto lg:h-[80vh] transform transition-all duration-300">
 
             <div class="bg-gradient-to-r from-green-600 to-green-800 px-6 py-4 flex justify-between items-center">
-                <h3 id="detailTitle" class="text-xl font-bold text-white flex items-center gap-2">
+                <h3 id="detailTitle" class="text-lg md:text-xl font-bold text-white flex items-center gap-2">
                 </h3>
                 <button type="button" onclick="closeEventDetailModal()"
                     class="text-white hover:text-gray-200 transition">
@@ -233,9 +233,17 @@
                 </button>
             </div>
 
-            <div class="p-6 space-y-5 text-gray-700">
+            <div class="p-3 md:p-6 space-y-5 text-gray-700 text-xs md:text-base">
 
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 md:gap-4">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a4 4 0 00-4-4h-1m-4 6H1v-2a4 4 0 014-4h6m3-4a4 4 0 11-8 0 4 4 0 018 0zm6 4a3 3 0 10-6 0 3 3 0 006 0z" />
+                    </svg>
+                    <p><span class="font-semibold mr-2">Program: </span> <span id="detailProgram"></span></p>
+                </div>
+
+                <div class="flex items-center gap-2 md:gap-4">
                     <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -243,7 +251,7 @@
                     <p><span class="font-semibold mr-2">Date: </span> <span id="detailDate"></span></p>
                 </div>
 
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 md:gap-4">
                     <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -251,7 +259,7 @@
                     <p><span class="font-semibold mr-2">Time: </span> <span id="detailTime"></span></p>
                 </div>
 
-                <div class="flex items-start gap-3">
+                <div class="flex items-center md:items-start gap-2 md:gap-4">
                     <svg class="w-6 h-6 text-red-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
                             d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zm4.95 2.45a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"
@@ -260,7 +268,7 @@
                     <p><span class="font-semibold mr-2">Location:</span> <span id="detailLocation"></span></p>
                 </div>
 
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 md:gap-4">
                     <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M5.121 17.804A4 4 0 018 16h8a4 4 0 012.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -268,7 +276,7 @@
                     <p><span class="font-semibold mr-2">Organizer: </span> <span id="detailOrganizer"></span></p>
                 </div>
 
-                <div class="flex items-center gap-4 hidden" id="emailRow">
+                <div class="flex items-center gap-2 md:gap-4 hidden" id="emailRow">
                     <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8h18V8H3v8z" />
@@ -280,7 +288,7 @@
                 </div>
 
 
-                <div class="flex items-center gap-4" id="phoneRow">
+                <div class="flex items-center gap-2 md:gap-4" id="phoneRow">
                     <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.128a11.042 11.042 0 005.516 5.516l1.128-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -293,7 +301,7 @@
 
 
                 <div>
-                    <div class="flex items-center gap-4 mb-2">
+                    <div class="flex items-center gap-2 md:gap-4 mb-2">
                         <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 12h6m-6 4h6M9 8h6m2-6H7a2 2 0 00-2 2v16a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2z" />
@@ -304,6 +312,33 @@
                         class="whitespace-pre-wrap p-3 rounded-lg bg-gray-100 border text-sm text-gray-600">
                     </p>
                 </div>
+
+                <div id="filesSection" class="hidden">
+                    <div class="flex items-center gap-2 md:gap-4 mb-2">
+                        <svg class="w-5 h-5 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6M3 7l9-6 9 6" />
+                        </svg>
+                        <span class="font-semibold">Files:</span>
+                    </div>
+                    <ul id="detailFiles" class="list-disc list-inside text-sm text-blue-600 space-y-1"></ul>
+                </div>
+
+                <div id="imagesSection" class="hidden">
+                    <div class="flex items-center gap-2 md:gap-4 mb-2">
+                        <svg class="w-5 h-5 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6M3 7l9-6 9 6" />
+                        </svg>
+                        <span class="font-semibold">Images:</span>
+                    </div>
+
+                    <div id="detailImages" class="grid grid-cols-3 gap-4"></div>
+                </div>
+
+
             </div>
         </div>
     </div>
@@ -407,6 +442,81 @@
                 emailEl.removeAttribute('href');
                 emailRow.classList.add('hidden');
             }
+
+            // 🎯 Program / creator role
+            const programEl = document.getElementById('detailProgram');
+
+            const programMap = {
+                riti: {
+                    label: 'RITI Program',
+                    cls: 'bg-green-100 text-green-700'
+                },
+                macor: {
+                    label: 'MACOR Program',
+                    cls: 'bg-blue-100 text-blue-700'
+                },
+                sachas: {
+                    label: 'SACHAS Program',
+                    cls: 'bg-purple-100 text-purple-700'
+                },
+                pali: {
+                    label: 'PALI Program',
+                    cls: 'bg-yellow-100 text-yellow-700'
+                },
+                admin: {
+                    label: 'Admin',
+                    cls: 'bg-red-100 text-red-700'
+                },
+            };
+
+            if (event.program && programMap[event.program]) {
+                programEl.textContent = programMap[event.program].label;
+                programEl.className =
+                    'px-2 py-0.5 text-xs font-semibold rounded-full ' +
+                    programMap[event.program].cls;
+                programEl.classList.remove('hidden');
+            } else {
+                programEl.classList.add('hidden');
+            }
+
+            const filesSection = document.getElementById('filesSection');
+            const filesList = document.getElementById('detailFiles');
+
+            filesList.innerHTML = '';
+
+            if (event.files && event.files.length > 0) {
+                event.files.forEach(file => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+            <a href="/storage/${file.file_path}" target="_blank" class="hover:underline">
+                ${file.file_name}
+            </a>
+        `;
+                    filesList.appendChild(li);
+                });
+                filesSection.classList.remove('hidden');
+            } else {
+                filesSection.classList.add('hidden');
+            }
+
+            const imagesSection = document.getElementById('imagesSection');
+            const imagesGrid = document.getElementById('detailImages');
+
+            imagesGrid.innerHTML = '';
+
+            if (event.images && event.images.length > 0) {
+                event.images.forEach(img => {
+                    const imgEl = document.createElement('img');
+                    imgEl.src = `/storage/${img.image_path}`;
+                    imgEl.className = 'rounded-lg shadow border h-20 md:h-36';
+                    imagesGrid.appendChild(imgEl);
+                });
+                imagesSection.classList.remove('hidden');
+            } else {
+                imagesSection.classList.add('hidden');
+            }
+
+
 
             // Show modal
             document.getElementById('eventDetailModal').classList.remove('hidden');

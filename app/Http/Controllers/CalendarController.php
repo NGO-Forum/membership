@@ -8,6 +8,8 @@ use Carbon\Carbon;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EventCreatedMail;
 
 
 class CalendarController extends Controller
@@ -21,9 +23,11 @@ class CalendarController extends Controller
         $gridStart = $startOfMonth->copy()->startOfWeek(Carbon::SUNDAY);
         $gridEnd = $startOfMonth->copy()->endOfMonth()->endOfWeek(Carbon::SATURDAY);
 
-        $events = Event::whereDate('start_date', '<=', $gridEnd)
+        $events = Event::with(['files', 'images'])
+            ->whereDate('start_date', '<=', $gridEnd)
             ->whereDate('end_date', '>=', $gridStart)
             ->get();
+
 
 
         return view('events.calendar', compact('events', 'startOfMonth', 'gridStart', 'gridEnd'));
@@ -129,6 +133,12 @@ class CalendarController extends Controller
 
         $event->qr_code_path = $fileName;
         $event->save();
+
+        // ✉️ Send email to organizer
+        if ($event->organizer_email) {
+            Mail::to($event->organizer_email)
+                ->send(new EventCreatedMail($event));
+        }
 
         return redirect()
             ->route('events.calendar')

@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EventInterestMail;
 use App\Models\User;
+use App\Mail\EventCreatedMail;
 
 class EventController extends Controller
 {
@@ -126,6 +127,12 @@ class EventController extends Controller
         // 5. Save path to DB
         $event->qr_code_path = $fileName;
         $event->save();
+
+        // ✉️ Send email to organizer
+        if ($event->organizer_email) {
+            Mail::to($event->organizer_email)
+                ->send(new EventCreatedMail($event));
+        }
 
         return redirect()->route('events.newEvent')->with('success', 'Event created successfully.');
     }
