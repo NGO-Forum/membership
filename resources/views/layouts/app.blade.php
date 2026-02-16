@@ -56,13 +56,9 @@
                         <!-- Dropdown Menu -->
                         <div x-show="open" @click.away="open = false"
                             class="absolute left-0 mt-1 w-40 bg-white border rounded shadow-lg z-50 flex flex-col">
-                            <a href="{{ route('admin.newMembership') }}"
-                                class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('admin.newMembership') ? 'font-semibold text-green-700' : '' }}">
-                                New Membership
-                            </a>
                             <a href="{{ route('admin.membership') }}"
                                 class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('admin.membership') ? 'font-semibold text-green-700' : '' }}">
-                                Old Membership
+                                Membership
                             </a>
                             <a href="{{ route('admin.user') }}"
                                 class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('admin.user') ? 'font-semibold text-green-700' : '' }}">
@@ -121,21 +117,9 @@
                         Admin
                     </a>
                 @elseif(auth()->user()->role === 'user')
-                    @php
-                        $user = Auth::user();
-
-                        // Get user's new membership once
-                        $myMembership = \App\Models\NewMembership::where('user_id', $user->id)->first();
-
-                        $hasNewMembership = (bool) $myMembership;
-                        $hasMembership = \App\Models\Membership::where('user_id', $user->id)->exists();
-
-                        $homeRoute = $hasNewMembership ? 'newProfile' : 'profile';
-                    @endphp
-
-                    <a href="{{ route($homeRoute) }}"
+                    <a href="{{ route('user.newProfile') }}"
                         class="font-semibold border-b-2 py-1 text-xs md:text-lg flex items-center space-x-2
-                        {{ request()->routeIs($homeRoute) ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
+                        {{ request()->routeIs('user.newProfile') ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
                         Home
                     </a>
 

@@ -83,21 +83,6 @@ class AuthController extends Controller
                     }
                     return redirect()->route('membership.menbershipDetail');
                 }
-
-                // If NGO exists, continue with existing logic
-                $hasMembership = \App\Models\Membership::where('user_id', Auth::id())->exists();
-
-                $hasApp = \App\Models\MembershipApplication::whereHas('membership', function ($query) {
-                    $query->where('user_id', Auth::id());
-                })->exists();
-
-                if ($hasApp && $hasMembership) {
-                    return redirect()->route('profile');
-                } elseif ($hasMembership) {
-                    return redirect()->route('membership.formUpload');
-                } else {
-                    return redirect()->route('membership.form');
-                }
             }
         }
 

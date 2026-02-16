@@ -123,50 +123,19 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{admin}', [AdminSystemController::class, 'destroy'])->name('admins.destroy'); // delete admin
     });
 
-    //edit and delete old memberships
-    Route::get('/memberships/{id}/edit', [MembershipController::class, 'edit'])->name('admin.edit');
-    Route::put('/memberships/{id}', [MembershipController::class, 'update'])->name('admin.update');
-    Route::delete('/memberships/{id}', [MembershipController::class, 'destroy'])->name('admin.destroy');
-
-
     //edit and delete New Memberships
     Route::get('/newMemberships/{id}/edit', [NewMembershipController::class, 'edit'])->name('admin.editNewMembership');
     Route::put('/newMemberships/{id}', [NewMembershipController::class, 'newUpdate'])->name('admin.newUpdate');
     Route::delete('/newMemberships/{id}', [NewMembershipController::class, 'delete'])->name('admin.delete');
 
-    // User profile routes
-    Route::get('/profile', [UserController::class, 'profile'])
-        ->name('profile');
     Route::get('/newProfile', [UserController::class, 'newProfile'])
         ->name('newProfile');
-
-
-    // Membership main form routes
-    Route::get('/membership/form', [MembershipController::class, 'showForm'])->name('membership.form');
-    Route::post('/membership/form', [MembershipController::class, 'submitReconfirmation'])->name('membership.submit');
-
-    // Membership application upload routes
-    Route::get('/membership/formUpload', [MembershipApplicationController::class, 'showForm'])->name('membership.formUpload');
-    Route::post('/membership/formUpload', [MembershipApplicationController::class, 'submit'])->name('membership.submitUpload');
-    Route::get('/membership/formUpload/{id}', [MembershipApplicationController::class, 'showForm'])->name('membership.formUpload.id');
-
-    // Membership reconfirmation routes (if different from main form)
-    Route::get('/membership/reconfirm', [MembershipController::class, 'showFormReconfirm'])->name('membership.reconfirm.form');
-    Route::post('/membership/reconfirm', [MembershipController::class, 'submitReconfirmation'])->name('membership.reconfirm.submit');
-
-    // Thank you page
-    Route::get('/membership/thankyou', [MembershipController::class, 'thankyou'])->name('membership.thankyou');
 
     // Membership management routes
     Route::get('/admin/show/{id}', [AdminController::class, 'show'])->name('admin.show');
     Route::get('/admin/newShowMembership/{id}', [AdminController::class, 'newShowMembership'])
         ->name('admin.newShowMembership');
 
-
-    // Membership export routes
-    Route::get('/admin/export/excel', [MembershipController::class, 'exportExcel'])->name('memberships.exportExcel');
-    Route::get('/admin/export/pdf', [MembershipController::class, 'exportPDF'])->name('memberships.exportPDF');
-    Route::get('/admin/export/word', [MembershipController::class, 'exportWord'])->name('memberships.exportWord');
     Route::get('/file-view/{path}', [FileViewController::class, 'viewFile'])
         ->where('path', '.*')
         ->name('file.view');
