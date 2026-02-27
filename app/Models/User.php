@@ -49,11 +49,6 @@ class User extends Authenticatable
         return in_array($this->role, ['riti', 'macor', 'sachas', 'pali']);
     }
 
-    public function membership()
-    {
-        return $this->hasOne(Membership::class);
-    }
-
     public function newMemberships()
     {
         return $this->hasOne(NewMembership::class);

@@ -8,18 +8,30 @@ use Illuminate\Support\Facades\Auth;
 
 class NewMembershipController extends Controller
 {
-    public function form() {
+    public function form()
+    {
         return view('membership.membershipForm');
     }
 
-    public function storeForm(Request $request) {
+    public function storeForm(Request $request)
+    {
         $request->validate([
             'org_name_en' => 'required|string|max:255',
             'org_name_kh' => 'required|string|max:255',
-            'membership_type' => 'required',
+            'org_name_abbreviation' => 'required|string|max:255',
+
+            'address' => 'nullable|string|max:1000',
+            'alt_phone' => 'nullable|string|max:20',
+            'website' => 'nullable|url|max:255',
+            'facebook' => 'nullable|url|max:255',
+            'linkedin' => 'nullable|url|max:255',
+
+            'membership_type' => 'required|in:Full member,Associate member',
+
             'director_name' => 'required|string|max:255',
             'director_email' => 'required|email',
             'director_phone' => 'required|string|max:20',
+
             'representative_name' => 'required|string|max:255',
             'representative_email' => 'required|email',
             'representative_phone' => 'required|string|max:20',
@@ -47,30 +59,31 @@ class NewMembershipController extends Controller
         $membership = NewMembership::findOrFail($id);
 
         // Validation
-        $request->validate([
+        $validated = $request->validate([
             'ngo_name_en' => 'required|string|max:255',
             'ngo_name_kh' => 'required|string|max:255',
+            'org_name_abbreviation' => 'required|string|max:255',
+
             'director_name' => 'required|string|max:255',
             'director_email' => 'required|email',
+
+            'address' => 'nullable|string|max:1000',
+            'alt_phone' => 'nullable|string|max:20',
+            'website' => 'nullable|url|max:255',
+            'facebook' => 'nullable|url|max:255',
+            'linkedin' => 'nullable|url|max:255',
+
+            'membership_type' => 'required|in:Full member,Associate member',
+
             'director_phone' => 'required|string|max:20',
+
             'representative_name' => 'required|string|max:255',
             'representative_email' => 'required|email',
             'representative_phone' => 'required|string|max:20',
             'representative_position' => 'required|string|max:100',
         ]);
 
-        // Update fields
-        $membership->org_name_en = $request->input('ngo_name_en');
-        $membership->org_name_kh = $request->input('ngo_name_kh'); 
-        $membership->director_name = $request->input('director_name');
-        $membership->director_phone = $request->input('director_phone');
-        $membership->director_email = $request->input('director_email');
-        $membership->representative_name = $request->input('representative_name');
-        $membership->representative_phone = $request->input('representative_phone');
-        $membership->representative_email = $request->input('representative_email');
-        $membership->representative_position = $request->input('representative_position');
-
-        $membership->save();
+        $membership->update($validated);
 
         return redirect()->route('admin.newMembership');
     }
@@ -81,6 +94,6 @@ class NewMembershipController extends Controller
         $membership->delete();
 
         return redirect()->route('admin.newMembership')
-                         ->with('success', 'Membership deleted successfully.');
+            ->with('success', 'Membership deleted successfully.');
     }
 }

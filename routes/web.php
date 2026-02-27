@@ -2,10 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\MembershipApplicationController;
 use App\Http\Controllers\FileViewController;
 use App\Http\Controllers\homeController;
 use App\Http\Controllers\MembershipDetailController;
@@ -19,6 +17,7 @@ use App\Http\Controllers\AdminSystemController;
 use App\Http\Controllers\AttendantPdfController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+
 
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])
     ->middleware('guest')
@@ -132,7 +131,6 @@ Route::middleware(['auth'])->group(function () {
         ->name('newProfile');
 
     // Membership management routes
-    Route::get('/admin/show/{id}', [AdminController::class, 'show'])->name('admin.show');
     Route::get('/admin/newShowMembership/{id}', [AdminController::class, 'newShowMembership'])
         ->name('admin.newShowMembership');
 
@@ -217,7 +215,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('registrations.update.ajax');
 
     Route::delete('/registrations/{registration}', [RegistrationController::class, 'destroy'])
-    ->name('registrations.destroy');
+        ->name('registrations.destroy');
 
     // Event files upload
     Route::post('/events/{event}/files', [EventController::class, 'addFiles'])->name('events.addFiles');
@@ -234,4 +232,7 @@ Route::middleware(['auth'])->group(function () {
     //     [RegistrationController::class, 'exportPdf']
     // )->name('registrations.export.pdf');
 
+    Route::get('/membership/thankyou', function () {
+        return view('membership.thankyou');
+    })->name('membership.thankyou');
 });

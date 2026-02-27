@@ -70,19 +70,12 @@ class AuthController extends Controller
 
             if (Auth::user()->role === 'user') {
                 $user = Auth::user(); // <-- define $user first
-                $userInput = $user->ngo;
 
-                $ngoExists = \App\Models\Ngo::where('ngo_name', $userInput)
-                    ->orWhere('abbreviation', $userInput)
-                    ->exists();
-
-                if (!$ngoExists) {
-                    $hasMembership = \App\Models\NewMembership::where('user_id', $user->id)->exists();
-                    if ($hasMembership) {
-                        return redirect()->route('newProfile');
-                    }
-                    return redirect()->route('membership.menbershipDetail');
+                $hasMembership = \App\Models\NewMembership::where('user_id', $user->id)->exists();
+                if ($hasMembership) {
+                    return redirect()->route('newProfile');
                 }
+                return redirect()->route('membership.menbershipDetail');
             }
         }
 

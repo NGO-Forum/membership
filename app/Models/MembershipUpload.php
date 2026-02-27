@@ -11,7 +11,7 @@ class MembershipUpload extends Model
 
     protected $fillable = [
         'letter',
-        'mission_vision',
+        'board',
         'constitution',
         'activities',
         'funding',

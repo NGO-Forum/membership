@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Membership Application Form</title>
+    <title>Membership Form</title>
     <link rel="icon" href="/logo.png" type="image/png" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
@@ -15,12 +15,12 @@
     <div class="max-w-4xl mx-auto bg-white rounded-lg p-8 shadow-md">
 
         <h1 class="text-base md:text-lg text-gray-800 mb-4 leading-relaxed">
-            The NGO Forum currently organizes network activities for the following issues. Member organizations are
-            received information and are invited to participate in the regular network meetings organized by the NGO
-            Forum. Please list the network meetings your NGO intends to regularly attend.
+            The NGO Forum currently serves as the secretariat for the following CSO working groups/networks. Each
+            network plays a critical role in capacity development, information exchange, and advocacy on the issues
+            reflected in its name.
         </h1>
 
-        <p class="text-lg text-gray-700 mb-2">Click on each network to view the ToR:</p>
+        <p class="text-lg text-gray-700 mb-2">Please Click on each network to learn more about it:</p>
 
         <!-- Network Links -->
         <ul class="list-disc ml-6 mb-4 text-blue-600 text-base space-y-1">
@@ -50,7 +50,8 @@
                     <i class="fas fa-network-wired"></i> Network Participation
                 </h3>
 
-                <label class="block font-semibold mb-2">Select networks you're interested in:</label>
+                <label class="block font-semibold mb-2">Please join one or many of these networks that you think are
+                    serving the best to your mandate and program focuses:</label>
                 <div class="flex flex-col gap-6">
                     @php
                         $networksOld = old('networks', []);
@@ -92,13 +93,55 @@
                 <div id="focal-points-container" class="flex flex-col gap-4"></div>
             </div>
 
+            <div class="mt-6">
+                <!-- Ministries Partners -->
+                <div class="mb-4">
+                    <label class="block font-semibold mb-1">
+                        Please list down ministries your Organization is partnering with
+                    </label>
+                    <textarea name="ministries_partners" rows="5"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
+                        placeholder="Please list down">{{ old('ministries_partners') }}</textarea>
+                    @error('ministries_partners')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Development Partners -->
+                <div class="mb-4">
+                    <label class="block font-semibold mb-1">
+                        Please list down development partners your Organization is partnering with
+                    </label>
+                    <textarea name="development_partners" rows="5"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
+                        placeholder="Please list down">{{ old('development_partners') }}</textarea>
+                    @error('development_partners')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Private Sector Partners -->
+                <div class="mb-6">
+                    <label class="block font-semibold mb-1">
+                        Please list down private sector your Organization is partnering with
+                    </label>
+                    <textarea name="private_sector_partners" rows="5"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
+                        placeholder="Please list down">{{ old('private_sector_partners') }}</textarea>
+                    @error('private_sector_partners')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+
             <div>
                 <!-- ================= ASSESSMENT REPORT ================= -->
                 <h3 class="text-lg font-semibold text-green-700 mt-10 mb-4 border-b pb-2">
                     <i class="fas fa-clipboard-check mr-2"></i>Basic Organazational Information
                 </h3>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 md:gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 md:gap-6">
                     <!-- NGO Type -->
                     <div class="mb-4">
                         <label class="block font-semibold mb-1">Type of NGO *</label>
@@ -141,28 +184,283 @@
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">{{ old('mission') }}</textarea>
                 </div>
 
-                <!-- Address -->
-                <div class="mb-4">
-                    <label class="block font-semibold mb-1">Address</label>
-                    <textarea name="address" rows="2" placeholder="Enter your Address"
-                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">{{ old('address') }}</textarea>
-                </div>
-
                 <!-- Key Actions -->
                 <div class="mb-4">
                     <label class="block font-semibold mb-1">Key Activity</label>
-                    <textarea name="key_actions" rows="3" placeholder="Enter your Key Action"
+                    <textarea name="key_actions" rows="3" placeholder="Enter your Key Action is point"
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
                         placeholder="Use bullet points if possible">{{ old('key_actions') }}</textarea>
                 </div>
 
-                <!-- Membership Fee -->
-                <div class="mb-6">
-                    <label class="block font-semibold mb-1">Your NGO Annual Budget (USD)</label>
-                    <input type="number" name="membership_fee" step="0.01" min="0"
-                        value="{{ old('membership_fee') }}" placeholder="Enter Value"
-                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
+                <div class="mb-4">
+                    <label class="block font-semibold mb-2">
+                        Key Program Focuses
+                    </label>
+
+                    <div class="space-y-2 grid grid-cols-2 md:grid-cols-4 md:gap-4">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" name="key_program_focuses[]" value="Environment">
+                            Environment
+                        </label>
+
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" name="key_program_focuses[]" value="Education">
+                            Education
+                        </label>
+
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" name="key_program_focuses[]" value="Health">
+                            Health
+                        </label>
+
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" name="key_program_focuses[]" value="Human Rights">
+                            Human Rights
+                        </label>
+
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" name="key_program_focuses[]" value="Gender Equality">
+                            Gender Equality
+                        </label>
+
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" name="key_program_focuses[]" value="Climate Change">
+                            Climate Change
+                        </label>
+
+                        <!-- 👇 Other Checkbox -->
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="otherFocusCheckbox" value="Other">
+                            Other
+                        </label>
+                    </div>
                 </div>
+
+                <!-- 👇 Hidden Other Input -->
+                <div id="otherFocusWrapper" class="mt-3 hidden">
+                    <label class="block font-semibold mb-1">
+                        Please specify other program focus
+                    </label>
+
+                    <input type="text" id="otherFocusInput" name="other_program_focus"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
+                        placeholder="Enter other program focus">
+                </div>
+
+
+                <!-- Staff Information -->
+                <div class="mt-6">
+                    <h3 class="text-md font-semibold text-gray-900 mb-3">
+                        Staff Information
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                        <!-- Total Staff -->
+                        <div>
+                            <label class="block mb-1">
+                                Total Staff
+                            </label>
+                            <input type="number" name="staff_total" min="0"
+                                value="{{ old('staff_total') }}"
+                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
+                                placeholder="Enter total staff">
+                            @error('staff_total')
+                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Female Staff -->
+                        <div>
+                            <label class="block mb-1">
+                                Female Staff
+                            </label>
+                            <input type="number" name="staff_female" min="0"
+                                value="{{ old('staff_female') }}"
+                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
+                                placeholder="Enter female staff">
+                            @error('staff_female')
+                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Staff with Disability -->
+                        <div>
+                            <label class="block mb-1">
+                                Staff with Disability (PWD)
+                            </label>
+                            <input type="number" name="staff_pwd" min="0" value="{{ old('staff_pwd') }}"
+                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
+                                placeholder="Enter number">
+                            @error('staff_pwd')
+                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Annual Budget Information -->
+                <div class="mt-6">
+                    <h4 class="text-md font-semibold text-gray-900 mb-3">
+                        Annual Budget Information
+                    </h4>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 text-gray-700 gap-6">
+
+                        <!-- Budget Year -->
+                        <div>
+                            <label class="block mb-1">
+                                Budget Year
+                            </label>
+                            <input type="number" name="budget_year" min="1900" max="2100"
+                                value="{{ old('budget_year') }}" placeholder="e.g. 2024"
+                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
+                            @error('budget_year')
+                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Annual Budget -->
+                        <div>
+                            <label class="block mb-1">
+                                Annual Budget (USD)
+                            </label>
+                            <input type="number" name="annual_budget" step="0.01" min="0"
+                                value="{{ old('annual_budget') }}" placeholder="Enter amount"
+                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
+                            @error('annual_budget')
+                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div class="mb-6">
+                    <h2 class="font-semibold text-gray-900 mt-4 mb-2 pb-2">
+                        Target Program Location
+                    </h2>
+
+                    <p class="text-sm text-gray-500 mb-6">
+                        Please indicate the total number of administrative areas where your organization operates.
+                        These numbers help measure program coverage and impact.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+
+                        <!-- Provinces -->
+                        <div class="bg-white border rounded-lg p-4 shadow-sm">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                Total Provinces
+                            </label>
+                            <input type="number" name="province" min="0" placeholder="e.g. 4"
+                                value="{{ old('province') }}" class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
+                            <p class="text-xs text-gray-400 mt-1">Number of provinces covered</p>
+                        </div>
+
+                        <!-- Districts -->
+                        <div class="bg-white border rounded-lg p-4 shadow-sm">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                Total Districts
+                            </label>
+                            <input type="number" name="district" min="0" placeholder="e.g. 47"
+                                value="{{ old('district') }}" class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
+                            <p class="text-xs text-gray-400 mt-1">District/Krong/Khan</p>
+                        </div>
+
+                        <!-- Communes -->
+                        <div class="bg-white border rounded-lg p-4 shadow-sm">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                Total Communes
+                            </label>
+                            <input type="number" name="commune" min="0" placeholder="e.g. 54"
+                                value="{{ old('commune') }}" class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
+                            <p class="text-xs text-gray-400 mt-1">Commune/Sangkat</p>
+                        </div>
+
+                        <!-- Villages -->
+                        <div class="bg-white border rounded-lg p-4 shadow-sm">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                Total Villages
+                            </label>
+                            <input type="number" name="village" min="0" placeholder="e.g. 107"
+                                value="{{ old('village') }}" class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
+                            <p class="text-xs text-gray-400 mt-1">Villages reached</p>
+                        </div>
+                    </div>
+
+                    <!-- File Upload -->
+                    <div class="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
+                        <label class="block font-semibold text-green-800 mb-2">
+                            📎 Supporting Document
+                        </label>
+
+                        <p class="text-sm text-gray-600 mb-1">
+                            Upload program maps, coverage reports, or any evidence supporting your coverage numbers.
+                        </p>
+                        <p class="text-sm text-gray-600 mb-3">
+                            Example: Tropeang Chhuk Village, Stung Meanchey Commune (Sangkat), Meanchey District (Khan), Phnom Penh.
+                        </p>
+
+                        <input type="file" name="file"
+                            class="block w-full text-sm text-gray-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-md file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-green-600 file:text-white
+                                hover:file:bg-green-700">
+                    </div>
+                </div>
+
+
+                <div class="mb-4">
+                    <label class="block font-semibold mb-2">
+                        Target Groups Focuses
+                    </label>
+
+                    <div class="space-y-2 grid grid-cols-2 md:grid-cols-3 gap-6">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" name="target_groups[]" value="Women">
+                            Women
+                        </label>
+
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" name="target_groups[]" value="Children">
+                            Children
+                        </label>
+
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" name="target_groups[]" value="Youth">
+                            Youth
+                        </label>
+
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" name="target_groups[]" value="Elderly">
+                            Elderly
+                        </label>
+
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" name="target_groups[]" value="PWD">
+                            Persons with Disabilities (PWD)
+                        </label>
+
+                        <!-- Other -->
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="otherTargetCheckbox">
+                            Other
+                        </label>
+                    </div>
+                </div>
+
+                <div id="otherTargetWrapper" class="mt-3 hidden">
+                    <label class="block font-semibold mb-1">Please specify other target group</label>
+                    <input type="text" id="otherTargetInput" name="other_target_group"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
+                        placeholder="Enter other target group">
+                </div>
+
 
             </div>
 
@@ -171,11 +469,11 @@
                 <i class="fas fa-file-alt text-green-600 mr-2"></i>Required Documents
             </h3>
             @foreach ([
-        'letter' => 'Letter explaining why your organization wishes to join NGOF',
-        'mission_vision' => "The Organization's Mission and/or Vision Statement (where these exist)",
+        'letter' => 'Letter of interest to join NGOF',
         'constitution' => "The Organization's Constitution and/or By-Laws (where these exist)",
-        'activities' => 'List or summary of current activities in Cambodia; brochures or other explanatory documents',
-        'funding' => 'A list of the Organisation’s funding sources, and list of Board Members or other decision-making body',
+        'activities' => 'List or summary of current activities in Cambodia, brochures or other explanatory documents',
+        'funding' => 'A list of the Organisation’s funding sources',
+        'board' => 'A list of Board Members or other decision-making body',
         'authorization' => 'Official authorization/Registration with MoI to operate in Cambodia',
         'strategic_plan' => 'The organization strategic plan (if available)',
         'fundraising_strategy' => 'The fundraising strategy (Optional)',
@@ -201,8 +499,9 @@
             <div class="mt-8">
                 <h2 class="text-xl font-bold text-green-600 mb-3">Pledge of commitment:</h2>
                 <p class="text-gray-800 mb-4 leading-relaxed">
-                    On behalf of my organization, I accept the Mission statement and Values of the NGO Forum on Cambodia
-                    and agree to abide by the By-Laws governing membership...
+                    On behalf of my organization, I accept the Mission Statement and Values of the NGO Forum on Cambodia
+                    and agree to abide by the By-Laws governing membership. I strongly commit to actively participating
+                    in regular related events and joint efforts of the NGO Forum.
                 </p>
                 <div class="mb-4">
                     <label class="flex items-center space-x-2">
@@ -238,7 +537,7 @@
 
             <!-- Buttons -->
             <div class="flex justify-between mt-6">
-                <a href="{{ route('membership.form') }}"
+                <a href="{{ route('membership.membershipForm') }}"
                     class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Back</a>
                 <button type="submit"
                     class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Submit</button>
@@ -328,6 +627,40 @@
             );
 
             updateFocalPoints(); // Initialize on page load
+
+
+            const otherFocusCheckbox = document.getElementById("otherFocusCheckbox");
+            const otherFocusWrapper = document.getElementById("otherFocusWrapper");
+            const otherFocusInput = document.getElementById("otherFocusInput");
+
+            otherFocusCheckbox.addEventListener("change", function() {
+                if (this.checked) {
+                    otherFocusWrapper.classList.remove("hidden");
+                    otherFocusInput.setAttribute("required", "required");
+                } else {
+                    otherFocusWrapper.classList.add("hidden");
+                    otherFocusInput.removeAttribute("required");
+                    otherFocusInput.value = "";
+                }
+            });
+
+            const otherTargetCheckbox = document.getElementById("otherTargetCheckbox");
+            const otherTargetWrapper = document.getElementById("otherTargetWrapper");
+            const otherTargetInput = document.getElementById("otherTargetInput");
+
+            otherTargetCheckbox.addEventListener("change", function() {
+                if (this.checked) {
+                    otherTargetWrapper.classList.remove("hidden");
+                    otherTargetInput.setAttribute("required", "required");
+                } else {
+                    otherTargetWrapper.classList.add("hidden");
+                    otherTargetInput.removeAttribute("required");
+                    otherTargetInput.value = "";
+                }
+            });
+
+
+
         });
 
         // Signature Pad

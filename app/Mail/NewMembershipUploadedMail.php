@@ -21,7 +21,7 @@ class NewMembershipUploadedMail extends Mailable
     public function build()
     {
         return $this
-            ->subject('New Membership Application Submitted')
-            ->view('emails.membership_uploaded');
+            ->subject('Membership Form Submitted')
+            ->view('emails.membership_admin');
     }
 }

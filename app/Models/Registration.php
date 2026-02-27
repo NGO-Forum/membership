@@ -36,18 +36,9 @@ class Registration extends Model
         return $this->belongsTo(Event::class);
     }
 
-    public function ngo()
-    {
-        return $this->belongsTo(Ngo::class);
-    }
-
     public function membership()
     {
         return $this->belongsTo(NewMembership::class, 'new_membership_id');
     }
 
-    public function oldMembership()
-    {
-        return $this->belongsTo(Membership::class, 'membership_id');
-    }
 }

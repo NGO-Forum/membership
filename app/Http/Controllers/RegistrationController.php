@@ -152,7 +152,7 @@ class RegistrationController extends Controller
 
         $validated = $request->validate([
             'name'         => 'required|string|max:255',
-            'email'        => 'required|email|max:255',
+            'email'        => 'nullable|email|max:255',
             'phone'        => 'nullable|string|max:20',
             'organization' => 'nullable|string|max:255',
             'position'     => 'nullable|string|max:255',
@@ -178,7 +178,7 @@ class RegistrationController extends Controller
 
         $validated = $request->validate([
             'name'         => 'required|string|max:255',
-            'email'        => 'required|email|max:255',
+            'email'        => 'nullable|email|max:255',
             'phone'        => 'nullable|string|max:20',
             'organization' => 'nullable|string|max:255',
             'position'     => 'nullable|string|max:255',

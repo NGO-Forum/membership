@@ -13,13 +13,16 @@ class NewMembership extends Model
     protected $fillable = [
         'org_name_en',
         'org_name_kh',
+        'org_name_abbreviation',
         'membership_type',
         'director_name',
         'director_email',
         'director_phone',
         'alt_phone',
         'website',
-        'social_media',
+        'address',
+        'facebook',
+        'linkedin',
         'representative_name',
         'representative_email',
         'representative_phone',
@@ -56,11 +59,16 @@ class NewMembership extends Model
 
     public function registrations()
     {
-        return $this->hasMany(Registration::class, 'membership_id');
+        return $this->hasMany(Registration::class);
     }
 
     public function assessmentReport()
     {
         return $this->hasOne(AssessmentReport::class);
+    }
+
+    public function basicInformation()
+    {
+        return $this->hasOne(BasicOrganizationalInformation::class);
     }
 }

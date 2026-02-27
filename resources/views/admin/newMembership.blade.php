@@ -5,7 +5,7 @@
 @section('content')
     <div class="max-w-full mx-auto">
         <div class="flex justify-between items-center mb-3 md:mb-6">
-            <h1 class="text-2xl md:text-3xl font-semibold text-green-700">New Memberships</h1>
+            <h1 class="text-2xl md:text-3xl font-semibold text-green-700">All Memberships</h1>
         </div>
 
         @if ($newMemberships->count())
@@ -27,7 +27,7 @@
                         @foreach ($newMemberships as $membership)
                             <tr class="hover:bg-green-50 transition">
                                 <td class="px-2 py-2 md:px-4 md:py-3 text-center border text-sm">
-                                    {{ str_pad($membership->user->id, 4, '0', STR_PAD_LEFT) }}</td>
+                                    {{ $membership->id }}</td>
                                 <td class="px-2 py-2 md:px-3 md:py-3 border text-sm">{{ $membership->org_name_en }}</td>
                                 <td class="px-2 py-2 md:px-3 md:py-3 border text-sm">{{ $membership->director_name }}</td>
                                 <td class="px-2 py-2 md:px-3 md:py-3 border break-words text-sm">
@@ -67,15 +67,15 @@
                                                 <ul class="list-disc list-inside space-y-1 text-green-700">
                                                     @foreach ([
                                                         'letter' => 'Letter',
-                                                        'mission_vision' => 'Mission & Vision',
                                                         'constitution' => 'Constitution',
                                                         'activities' => 'Activities',
                                                         'funding' => 'Funding',
+                                                        'board' => 'Board Members',
                                                         'authorization' => 'Authorization',
                                                         'strategic_plan' => 'Strategic Plan',
                                                         'fundraising_strategy' => 'Fundraising Strategy',
-                                                        'signature' => 'Signature',
                                                         'audit_report' => 'Audit Report',
+                                                        'signature' => 'Signature',
                                                     ] as $field => $label)
                                                         @if (!empty($upload->$field))
                                                             @php
@@ -175,22 +175,19 @@
                                             </button>
 
                                             {{-- ADMIN GENERATE --}}
-                                            @if (auth()->user()->role === 'admin')
-                                                <form method="POST" action="{{ route('reports.generate', $membership->id) }}">
+                                            @if (auth()->user()->role === 'admin' && !$membership->assessmentReport)
+                                                <form method="POST"
+                                                    action="{{ route('reports.generate', $membership->id) }}">
                                                     @csrf
 
                                                     <button type="submit"
                                                         class="flex items-center px-2 py-1 text-sm text-yellow-600 hover:bg-yellow-100 rounded transition">
                                                         {{-- Sparkles Icon --}}
                                                         <svg xmlns="http://www.w3.org/2000/svg"
-                                                            class="w-5 h-5 text-yellow-600 mr-1"
-                                                            fill="none"
-                                                            viewBox="0 0 24 24"
-                                                            stroke="currentColor">
-                                                            <path stroke-linecap="round"
-                                                                stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M12 4v16m8-8H4"/>
+                                                            class="w-5 h-5 text-yellow-600 mr-1" fill="none"
+                                                            viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M12 4v16m8-8H4" />
                                                         </svg>
 
                                                         Report
@@ -219,7 +216,7 @@
                                                 <div class="flex justify-end space-x-2">
                                                     <button @click="$refs.deleteModal.classList.add('hidden')"
                                                         class="px-2 py-2 md:px-3 md:py-3 bg-orange-300 text-white rounded hover:bg-orange-400">Cancel</button>
-                                                    <form action="{{ route('admin.destroy', $membership->id) }}"
+                                                    <form action="{{ route('admins.destroy', $membership->id) }}"
                                                         method="POST">
                                                         @csrf
                                                         @method('DELETE')

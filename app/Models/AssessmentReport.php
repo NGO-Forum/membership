@@ -12,13 +12,6 @@ class AssessmentReport extends Model
 
     protected $fillable = [
         'new_membership_id',
-        'ngo_type',
-        'established_date',
-        'vision',
-        'mission',
-        'address',
-        'key_actions',
-        'membership_fee',
         'summary_html',
         'checklist_json',
         'conclusion_html',
@@ -30,9 +23,6 @@ class AssessmentReport extends Model
 
 
     protected $casts = [
-        'established_date' => 'date',
-        'membership_fee'   => 'decimal:2',
-        'key_actions' => 'array',
         'summary_html'   => 'array',
         'checklist_json'=> 'array',
         'conclusion_html'=> 'array',

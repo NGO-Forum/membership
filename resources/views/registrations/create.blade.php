@@ -130,7 +130,7 @@
             <!-- EMAIL -->
             <div>
                 <label class="block text-gray-700 font-semibold mb-2">Email</label>
-                <input type="email" name="email" required value="{{ old('email') }}" placeholder="you@example.com"
+                <input type="email" name="email" value="{{ old('email') }}" placeholder="you@example.com"
                     class="w-full rounded-lg border px-4 py-3 focus:ring-green-300 focus:border-green-500" />
             </div>
 

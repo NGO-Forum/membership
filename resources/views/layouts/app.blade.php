@@ -12,7 +12,7 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    @stack('styles')
 
 </head>
 
@@ -34,7 +34,7 @@
 
             <!-- Desktop Menu -->
             <nav class="hidden md:flex items-center space-x-9 md:space-x-6 lg:space-x-12">
-                @if (auth()->user()->role === 'admin')
+                @if (in_array(auth()->user()->role, ['admin', 'ed']))
                     <a href="{{ route('admin.dashboard') }}"
                         class="font-semibold border-b-2 py-1 text-xs md:text-lg {{ request()->routeIs('admin.dashboard') ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
                         Dashboard
@@ -55,14 +55,10 @@
 
                         <!-- Dropdown Menu -->
                         <div x-show="open" @click.away="open = false"
-                            class="absolute left-0 mt-1 w-40 bg-white border rounded shadow-lg z-50 flex flex-col">
-                            <a href="{{ route('admin.membership') }}"
+                            class="absolute left-0 mt-1 w-32 bg-white border rounded shadow-lg z-50 flex flex-col">
+                            <a href="{{ route('admin.newMembership') }}"
                                 class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('admin.membership') ? 'font-semibold text-green-700' : '' }}">
                                 Membership
-                            </a>
-                            <a href="{{ route('admin.user') }}"
-                                class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('admin.user') ? 'font-semibold text-green-700' : '' }}">
-                                Non Membership
                             </a>
                             <a href="{{ route('reports.membership') }}"
                                 class="px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('reports.membership') ? 'font-semibold text-green-700' : '' }}">
@@ -117,9 +113,9 @@
                         Admin
                     </a>
                 @elseif(auth()->user()->role === 'user')
-                    <a href="{{ route('user.newProfile') }}"
+                    <a href="{{ route('newProfile') }}"
                         class="font-semibold border-b-2 py-1 text-xs md:text-lg flex items-center space-x-2
-                        {{ request()->routeIs('user.newProfile') ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
+                        {{ request()->routeIs('newProfile') ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
                         Home
                     </a>
 
@@ -158,7 +154,7 @@
                         <button @click="open = !open"
                             class="font-semibold border-b-2 py-1 text-xs md:text-lg flex items-center space-x-2
                                 {{ request()->routeIs('') || request()->routeIs('') ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
-                            <span>Memberships</span>
+                            <span>Reports</span>
                             <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -248,7 +244,7 @@
         <!-- Mobile & Tablet Dropdown -->
         <div x-show="open" @click.away="open = false"
             class="absolute top-16 left-0 w-full bg-white shadow-md flex flex-col space-y-2 px-6 py-4 md:hidden z-50">
-            @if (auth()->user()->role === 'admin')
+            @if (in_array(auth()->user()->role, ['admin', 'ed']))
                 <a href="{{ route('admin.dashboard') }}"
                     class="py-2 {{ request()->routeIs('admin.dashboard') ? 'text-green-700 font-semibold' : 'text-gray-700 hover:text-green-600' }}">
                     Dashboard
@@ -271,16 +267,9 @@
                         class="absolute left-0 mt-1 w-44 bg-white border rounded shadow-lg z-50 flex flex-col">
                         <a href="{{ route('admin.newMembership') }}"
                             class="px-3 py-2 text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('admin.newMembership') ? 'font-semibold text-green-700' : '' }}">
-                            New Membership
+                            Membership
                         </a>
-                        <a href="{{ route('admin.membership') }}"
-                            class="px-3 py-2 text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('admin.membership') ? 'font-semibold text-green-700' : '' }}">
-                            Old Membership
-                        </a>
-                        <a href="{{ route('admin.user') }}"
-                            class="px-3 py-2 text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('admin.user') ? 'font-semibold text-green-700' : '' }}">
-                            Non Membership
-                        </a>
+
                         <a href="{{ route('reports.membership') }}"
                             class="px-3 py-2 text-gray-700 hover:bg-green-100 hover:text-green-700 {{ request()->routeIs('reports.membership') ? 'font-semibold text-green-700' : '' }}">
                             Reports
@@ -329,21 +318,8 @@
                     Admin
                 </a>
             @elseif(auth()->user()->role === 'user')
-                @php
-                    $user = Auth::user();
-
-                    // Get user's new membership once
-                    $myMembership = \App\Models\NewMembership::where('user_id', $user->id)->first();
-
-                    $hasNewMembership = (bool) $myMembership;
-                    $hasMembership = \App\Models\Membership::where('user_id', $user->id)->exists();
-
-                    $homeRoute = $hasNewMembership ? 'newProfile' : 'profile';
-                @endphp
-
-
-                <a href="{{ route($homeRoute) }}"
-                    class="py-2 {{ request()->routeIs($homeRoute) ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
+                <a href="{{ route('newProfile') }}"
+                    class="py-2 {{ request()->routeIs('newProfile') ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
                     Home
                 </a>
 
@@ -382,7 +358,7 @@
                     <button @click="open = !open"
                         class="font-semibold border-b-2 py-1 md:text-lg flex items-center space-x-2
                                 {{ request()->routeIs('') || request()->routeIs('') ? 'text-green-700 border-green-700' : 'text-gray-600 border-transparent hover:text-green-600 hover:border-green-600' }}">
-                        <span>Memberships</span>
+                        <span>Reports</span>
                         <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -457,7 +433,7 @@
     </header>
 
     <!-- Page Content -->
-    <main class="flex-grow px-2 py-2 md:px-6 md:py-6">
+    <main class="flex-grow px-2 py-2 md:px-6 md:py-6 h-auto md:h-[87vh] overflow-auto custom-scrollbar">
         @yield('content')
     </main>
 
@@ -475,21 +451,21 @@
         }
 
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #9ca3af;
+            background-color: #f4f4f4;
             /* Tailwind gray-400 */
             border-radius: 9999px;
             /* Fully rounded */
         }
 
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background-color: #6b7280;
+            background-color: #f4f4f4 transparent;
             /* Darker on hover (gray-500) */
         }
 
         /* Firefox support */
         .custom-scrollbar {
             scrollbar-width: thin;
-            scrollbar-color: #9ca3af transparent;
+            scrollbar-color: #f4f4f4 transparent;
         }
     </style>
 </body>

@@ -20,13 +20,13 @@ class AdminSeeder extends Seeder
                 'role' => 'manager',
                 'password' => '@info#NGOF2025Membership'
             ],
-            // [
-            //     'name' => 'Mr. SOEUNG Saroeun',
-            //     'ngo' => 'NGO Forum Cambodia',
-            //     'email' => 'saroeun@ngoforum.org.kh',
-            //     'role' => 'ed',
-            //     'password' => '@info#NGOF2025Membership'
-            // ],
+            [
+                'name' => 'Mr. SOEUNG Saroeun',
+                'ngo' => 'NGO Forum Cambodia',
+                'email' => 'saroeun@ngoforum.org.kh',
+                'role' => 'ed',
+                'password' => '@info#NGOF2025Membership'
+            ],
             // [
             //     'name' => 'Mr. TOURT Chamroen',
             //     'ngo' => 'NGO Forum Cambodia',

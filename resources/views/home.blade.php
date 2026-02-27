@@ -22,7 +22,7 @@
                 <span class="text-green-700 font-bold">Check it out</span>
             </h2>
             <p class="mt-4 text-gray-600 text-sm md:text-base">
-                As of the first quarter of 2024, there are {{ $membersCount }} organizations have became our members.
+                As of the first quarter of <span class="font-semibold text-green-700">{{ $currentYear }}</span>, there are <span class="font-semibold text-green-700">{{ $membersCount }}</span> organizations have became our members.
             </p>
             <a href="{{ route('register') }}"
                 class="mt-6 inline-block py-2 bg-green-600 text-center text-white font-medium rounded-md hover:bg-green-700 w-28 md:w-32">

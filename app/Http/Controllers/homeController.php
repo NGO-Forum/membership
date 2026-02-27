@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\NewMembership;
 
-class homeController extends Controller
+class HomeController extends Controller
 {
     public function index()
     {
-        $membersCount = 70;
-        return view('/home', compact('membersCount'));
+        $currentYear = now()->year; // auto year
+
+        // approved members in current year only
+        $membersCount = NewMembership::where('status', 'approved')
+            ->whereYear('created_at', $currentYear)
+            ->count();
+        return view('/home', compact('membersCount', 'currentYear'));
     }
 }

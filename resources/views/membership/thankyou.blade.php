@@ -25,15 +25,14 @@
 <div class="text-center">
 
     <!-- Header -->
-    <div class="flex items-center justify-center text-white mb-4 sm:mb-6">
-        <i class="fas fa-handshake text-yellow-400 text-3xl sm:text-5xl mr-6"></i>
+    <div class="flex items-center justify-center text-white mb-4">
         <h1 class="text-2xl sm:text-5xl lg:text-4xl font-bold">
-            NGOF Membership
+            NGO Forum Membership
         </h1>
     </div>
 
     <!-- Subtitle -->
-    <p class="text-lg sm:text-xl mb-8 sm:mb-10 text-white">
+    <p class="text-lg sm:text-xl mb-8 text-white">
         Please review and update your organization’s membership information
     </p>
 

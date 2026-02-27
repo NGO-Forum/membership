@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ReportApprovalMail;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Ngo;
 
 class MembershipReportController extends Controller
 {
@@ -28,6 +29,8 @@ class MembershipReportController extends Controller
             in_array(auth()->user()->role, ['manager', 'ed', 'board']),
             403
         );
+
+        $membership->load(['basicInformation', 'assessmentReport', 'membershipUploads.focalPoints']);
 
         $report = AssessmentReport::firstOrCreate(
             ['new_membership_id' => $membership->id],
@@ -85,7 +88,7 @@ class MembershipReportController extends Controller
     public function show(NewMembership $membership)
     {
         $user = auth()->user();
-        
+
         // ✅ Admin / Manager / ED / Board can see all
         if (in_array($user->role, ['admin', 'manager', 'ed', 'board'])) {
             // allowed
@@ -94,6 +97,7 @@ class MembershipReportController extends Controller
         else {
             abort_unless($membership->user_id === $user->id, 403);
         }
+        $membership->load(['basicInformation', 'assessmentReport', 'membershipUploads.focalPoints']);
 
         $report = AssessmentReport::firstOrCreate(
             ['new_membership_id' => $membership->id],
@@ -115,6 +119,15 @@ class MembershipReportController extends Controller
     public function generate(NewMembership $membership)
     {
         abort_unless(Auth::user()->role === 'admin', 403);
+
+        // ✅ Check NGO exists in your seed table
+        $orgName = strtolower(trim($membership->org_name_en));
+        $abbr    = strtolower(trim($membership->org_name_abbreviation));
+
+        $isExistingNgo = Ngo::query()
+            ->whereRaw('LOWER(name) = ?', [$orgName])
+            ->orWhereRaw('LOWER(abbreviation) = ?', [$abbr])
+            ->exists();
 
         $report = AssessmentReport::updateOrCreate(
             ['new_membership_id' => $membership->id],
@@ -157,6 +170,15 @@ class MembershipReportController extends Controller
             'conclusion_html' => ['html' => $conclusion],
         ]);
 
+        if ($isExistingNgo) {
+
+            // ✅ Approve membership automatically
+            $membership->update([
+                'status' => 'approved',
+            ]);
+
+            return back()->with('success', 'Report generated. Existing NGO → auto-approved. No email sent.');
+        }
 
         $this->notifyRole('manager', $report);
 
@@ -270,6 +292,7 @@ class MembershipReportController extends Controller
             ->setOptions([
                 'defaultFont' => 'DejaVu Sans',
                 'isRemoteEnabled' => true,
+                'isPhpEnabled'     => true,
             ]);
 
         return $pdf->download(
@@ -360,7 +383,7 @@ class MembershipReportController extends Controller
             to collective civil society efforts in Cambodia.
             </p>
 
-            <h4>Key Strengths of the Application:</h4>
+            <h4>3.1 Key Strengths of the Application:</h4>
 
             <ul>
             <li><strong>Clear Mission and Vision:</strong> Describe how the organization’s mission and vision provide strategic clarity and alignment with NGO Forum values.</li>
@@ -377,14 +400,14 @@ class MembershipReportController extends Controller
             should be addressed to further strengthen organizational readiness.
             </p>
 
-            <h4>Recommendation:</h4>
+            <h4>3.2 Recommendation:</h4>
             <p>
             State clearly whether the membership should be approved or approved with conditions. If conditions
             apply, specify them clearly and concisely, ensuring that the recommendation is suitable for formal
             Board endorsement.
             </p>
 
-            <h4>Conclusion:</h4>
+            <h4>3.3 Conclusion:</h4>
             <p>
             Provide a final concluding paragraph affirming the organization’s suitability for membership in NGO
             Forum on Cambodia and outlining the anticipated positive contribution to the Forum’s mission, networks,
@@ -402,6 +425,19 @@ class MembershipReportController extends Controller
         $upload = $membership->membershipUploads()->latest()->first();
         $templates = $this->checklistTemplates();
 
+        // ✅ Friendly labels
+        $labels = [
+            'letter' => 'Letter of Interest',
+            'constitution' => 'Constitution / By-Laws',
+            'activities' => 'Key Activities',
+            'funding' => 'Funding Sources',
+            'board' => 'Board Members',
+            'authorization' => 'Authorization to Operate',
+            'strategic_plan' => 'Strategic Plan',
+            'fundraising_strategy' => 'Fundraising Strategy',
+            'audit_report' => 'Audit Report / Financial Report',
+        ];
+
         $orgName = $membership->org_name_en ?? 'The organization';
 
         $results = [];
@@ -416,7 +452,7 @@ class MembershipReportController extends Controller
 
             $results[] = [
                 'field'   => $field,
-                'label'   => ucwords(str_replace('_', ' ', $field)),
+                'label'   => $labels[$field] ?? $field,
                 'rating'  => $hasFile ? 5 : 3,
                 'comment' => str_replace('{ORG}', $orgName, $commentTemplate),
                 'file_url' => $hasFile ? Storage::url($upload->$field) : null,
@@ -435,11 +471,6 @@ class MembershipReportController extends Controller
                 'no'  => '{ORG} did not submit a formal letter of intent outlining their interest in joining the NGO Forum, which is considered a minor documentation gap in the membership application.'
             ],
 
-            'mission_vision' => [
-                'yes' => '{ORG} provided a clear mission and/or vision statement that outlines the organization’s long-term goals, values, and strategic direction, which aligns with the principles of the NGO Forum.',
-                'no'  => '{ORG} did not provide a mission and/or vision statement, making it difficult to assess the organization’s strategic direction and long-term objectives.'
-            ],
-
             'constitution' => [
                 'yes' => '{ORG} submitted their constitution and/or by-laws as per membership requirements, demonstrating a clearly defined governance structure, organizational mandate, and internal management framework.',
                 'no'  => '{ORG} did not submit their constitution and/or by-laws, which limits the ability to assess the organization’s governance structure and legal framework.'
@@ -453,6 +484,11 @@ class MembershipReportController extends Controller
             'funding' => [
                 'yes' => '{ORG} listed their funding sources and board members, indicating a level of financial transparency and organizational accountability required for NGO Forum membership.',
                 'no'  => '{ORG} did not clearly list their funding sources and decision-makers, which limits the assessment of financial transparency and governance arrangements.'
+            ],
+
+            'board' => [
+                'yes' => '{ORG} submitted a list of board members, demonstrating transparency in governance structure and leadership oversight within the organization.',
+                'no'  => '{ORG} did not submit a list of board members, which limits the assessment of governance oversight and organizational leadership.'
             ],
 
             'authorization' => [
