@@ -13,17 +13,24 @@ class AttendantPdfController extends Controller
     {
         $registrations = Registration::where('event_id', $event->id)->get();
 
+        $tempDir = storage_path('app/mpdf');
+
+        if (!is_dir($tempDir)) {
+            mkdir($tempDir, 0775, true);
+        }
+
         $mpdf = new Mpdf([
             'mode' => 'utf-8',
             'format' => 'A4-L',
             'margin_left'   => 12,
             'margin_right'  => 12,
+            'tempDir'       => $tempDir,
 
-            // ✅ Khmer language mode
+            // Khmer language mode
             'autoScriptToLang' => true,
             'autoLangToFont'   => true,
 
-            // ✅ BEST Khmer font
+            // Khmer font
             'default_font' => 'khmeros',
         ]);
 

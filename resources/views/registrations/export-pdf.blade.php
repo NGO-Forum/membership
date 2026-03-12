@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: hanuman, sans-serif;
-            font-size: 9px;
+            font-size: 8px;
         }
 
 
@@ -16,12 +16,12 @@
             background-image:
                 linear-gradient(to right, #dcdcdc 1px, transparent 1px),
                 linear-gradient(to bottom, #dcdcdc 1px, transparent 1px);
-            background-size: 26px 26px;
+            background-size: 10px 10px;
         }
 
         header {
             position: fixed;
-            top: -140px;
+            top: -160px;
             left: 0;
             right: 0;
         }
@@ -62,7 +62,7 @@
         }
 
         .small {
-            font-size: 10px;
+            font-size: 8px;
         }
 
         .title-kh {
@@ -86,14 +86,14 @@
         <header>
             <table style="border:none;">
                 <tr>
-                    <td style="border:none;width:25%;">
+                    <td style="border:none; width:25%;">
                         <img src="{{ public_path('logo.png') }}" class="logo">
                     </td>
-                    <td style="border:none;width:65%; text-align:center; vertical-align:middle;">
+                    <td style="border:none; width:65%; text-align:center; vertical-align:middle;">
                         <div class="title-kh" style="line-height:1.5;">បញ្ជីវត្តមាន</div>
                         <div class="title-en">Attendant List</div>
                     </td>
-                    <td style="border:none;width:10%;"></td>
+                    <td style="border:none; width:10%;"></td>
                 </tr>
             </table>
 
@@ -118,7 +118,7 @@
                 </tr>
             </table>
 
-            <div style="margin-top:6px;font-size:12px;">
+            <div style="margin-top:4px;font-size:12px;">
                 <strong>អាយុ:</strong> A. &lt;30 &nbsp;&nbsp; B. 30-60 &nbsp;&nbsp; C. &gt;60
             </div>
 
@@ -132,14 +132,14 @@
             <thead>
                 <tr>
                     <th width="3%">ល.រ<br><span class="small">No.</span></th>
-                    <th width="12%">ឈ្មោះ<br><span class="small">Name</span></th>
+                    <th width="8%">ឈ្មោះ<br><span class="small">Name</span></th>
                     <th width="5%">ភេទ<br><span class="small">Gender</span></th>
                     <th width="4%">អាយុ<br><span class="small">Age</span></th>
                     <th width="8%">ភាពងាយរងគ្រោះ<br><span class="small">Vulnerable</span></th>
-                    <th width="9%">មុខតំណែង<br><span class="small">Position</span></th>
-                    <th width="11%">អង្គភាព<br><span class="small">Organization</span></th>
+                    <th width="10%">មុខតំណែង<br><span class="small">Position</span></th>
+                    <th width="15%">អង្គភាព<br><span class="small">Organization</span></th>
                     <th width="9%">ទីតាំងអង្គភាព<br><span class="small">Org. Location</span></th>
-                    <th width="9%">លេខទូរស័ព្ទ<br><span class="small">Phone</span></th>
+                    <th width="8%">លេខទូរស័ព្ទ<br><span class="small">Phone</span></th>
                     <th width="15%">អ៊ីមែល<br><span class="small">Email</span></th>
                     <th width="8%">អនុញ្ញាតថតរូប<br><span class="small">Allow photo</span></th>
                     <th width="9%">ហត្ថលេខា<br><span class="small">Signature</span></th>
