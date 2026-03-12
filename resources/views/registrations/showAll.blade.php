@@ -52,9 +52,6 @@
                                 class="px-6 py-3 text-left text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Position</th>
                             <th
-                                class="px-6 py-3 text-left text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Date</th>
-                            <th
                                 class="px-6 py-3 text-center text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Action
                             </th>
@@ -69,9 +66,6 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $reg->phone }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $reg->organization }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $reg->position }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    {{ $reg->created_at->format('Y-m-d H:i') }}</td>
-
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                     @if (auth()->user()->isAdmin() || auth()->user()->role === $event->program)
                                         <div class="flex items-center justify-center gap-2">

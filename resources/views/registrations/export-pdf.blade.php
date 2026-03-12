@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: hanuman, sans-serif;
-            font-size: 8px;
+            font-size: 9px;
         }
 
 
@@ -17,6 +17,7 @@
                 linear-gradient(to right, #dcdcdc 1px, transparent 1px),
                 linear-gradient(to bottom, #dcdcdc 1px, transparent 1px);
             background-size: 10px 10px;
+            page-break-after: always;
         }
 
         header {
@@ -62,7 +63,7 @@
         }
 
         .small {
-            font-size: 8px;
+            font-size: 10px;
         }
 
         .title-kh {
@@ -81,124 +82,151 @@
 </head>
 
 <body>
-    <div class="page">
+    @php
+        $chunkedRegistrations = $registrations->chunk(10)->map->values(); // Laravel Collection chunk method
+    @endphp
 
-        <header>
-            <table style="border:none;">
-                <tr>
-                    <td style="border:none; width:25%;">
-                        <img src="{{ public_path('logo.png') }}" class="logo">
-                    </td>
-                    <td style="border:none; width:65%; text-align:center; vertical-align:middle;">
-                        <div class="title-kh" style="line-height:1.5;">បញ្ជីវត្តមាន</div>
-                        <div class="title-en">Attendant List</div>
-                    </td>
-                    <td style="border:none; width:10%;"></td>
-                </tr>
-            </table>
+    @foreach ($chunkedRegistrations as $chunk)
+        <div class="page">
 
-            <table style="border:none;margin-top:6px;font-size:12px;">
-                <tr>
-                    <td style="border:none;">
-                        <strong>កាលបរិច្ឆេទ / Date:</strong>
-                        <span class="red">{{ \Carbon\Carbon::parse($event->start_date)->format('d F Y') }}</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="border:none;">
-                        <strong>សកម្មភាព / Activities:</strong>
-                        <span class="red">{{ $event->title }}</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="border:none;">
-                        <strong>ទីកន្លែង / Venue:</strong>
-                        <span class="red">{{ $event->location }}</span>
-                    </td>
-                </tr>
-            </table>
-
-            <div style="margin-top:4px;font-size:12px;">
-                <strong>អាយុ:</strong> A. &lt;30 &nbsp;&nbsp; B. 30-60 &nbsp;&nbsp; C. &gt;60
-            </div>
-
-            <div style="margin-top:4px;font-size:12px;">
-                <strong>ភាពងាយរងគ្រោះ:</strong>
-                1. ក្រុម​ LGBTQIA+ &nbsp;&nbsp; 2. ជនជាតិដើមភាគតិច &nbsp;&nbsp; 3. ជនពិការភាព &nbsp;&nbsp; 4. ផ្សេងៗ
-            </div>
-        </header>
-
-        <table style="margin-top:10px;">
-            <thead>
-                <tr>
-                    <th width="3%">ល.រ<br><span class="small">No.</span></th>
-                    <th width="8%">ឈ្មោះ<br><span class="small">Name</span></th>
-                    <th width="5%">ភេទ<br><span class="small">Gender</span></th>
-                    <th width="4%">អាយុ<br><span class="small">Age</span></th>
-                    <th width="8%">ភាពងាយរងគ្រោះ<br><span class="small">Vulnerable</span></th>
-                    <th width="10%">មុខតំណែង<br><span class="small">Position</span></th>
-                    <th width="15%">អង្គភាព<br><span class="small">Organization</span></th>
-                    <th width="9%">ទីតាំងអង្គភាព<br><span class="small">Org. Location</span></th>
-                    <th width="8%">លេខទូរស័ព្ទ<br><span class="small">Phone</span></th>
-                    <th width="15%">អ៊ីមែល<br><span class="small">Email</span></th>
-                    <th width="8%">អនុញ្ញាតថតរូប<br><span class="small">Allow photo</span></th>
-                    <th width="9%">ហត្ថលេខា<br><span class="small">Signature</span></th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @php $rows = max(15, count($registrations)); @endphp
-                @for ($i = 0; $i < $rows; $i++)
+            <header>
+                <table style="border:none;">
                     <tr>
-                        <td class="center">{{ $i + 1 }}</td>
-                        <td>{{ $registrations[$i]->name ?? '' }}</td>
-                        <td class="center">{{ $registrations[$i]->gender ?? '' }}</td>
-                        <td class="center">
-                            @if (isset($registrations[$i]) && is_numeric($registrations[$i]->age))
-                                @php $age = $registrations[$i]->age; @endphp
-
-                                @if ($age < 30)
-                                    A
-                                @elseif ($age <= 60)
-                                    B
-                                @else
-                                    C
-                                @endif
-                            @endif
+                        <td style="border:none; width:25%;">
+                            <img src="{{ public_path('logo.png') }}" class="logo">
                         </td>
-                        <td class="center">
-                            @if (isset($registrations[$i]) && !empty($registrations[$i]->vulnerable))
-                                @php $v = $registrations[$i]->vulnerable; @endphp
-
-                                @if ($v === 'LGBTQIA+')
-                                    1
-                                @elseif ($v === 'Indigenous')
-                                    2
-                                @elseif ($v === 'Disability')
-                                    3
-                                @else
-                                    4
-                                @endif
-                            @endif
+                        <td style="border:none; width:65%; text-align:center; vertical-align:middle;">
+                            <div class="title-kh" style="line-height:1.5;">បញ្ជីវត្តមាន</div>
+                            <div class="title-en">Attendant List</div>
                         </td>
-
-                        <td class="center">{{ $registrations[$i]->position ?? '' }}</td>
-                        <td class="center">{{ $registrations[$i]->organization ?? '' }}</td>
-                        <td class="center">{{ $registrations[$i]->org_location ?? '' }}</td>
-                        <td class="center">{{ $registrations[$i]->phone ?? '' }}</td>
-                        <td>{{ $registrations[$i]->email ?? '' }}</td>
-                        <td class="center">
-                            @if (isset($registrations[$i]))
-                                {{ $registrations[$i]->allow_photos ? 'Yes' : 'No' }}
-                            @endif
-                        </td>
-                        <td></td>
+                        <td style="border:none; width:10%;"></td>
                     </tr>
-                @endfor
-            </tbody>
-        </table>
+                </table>
 
-    </div>
+                <table style="border:none;margin-top:6px;font-size:10px;">
+                    <tr>
+                        <td style="border:none;">
+                            <strong>កាលបរិច្ឆេទ / Date:</strong>
+                            <span class="red">{{ \Carbon\Carbon::parse($event->start_date)->format('d F Y') }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;">
+                            <strong>សកម្មភាព / Activities:</strong>
+                            <span class="red">{{ $event->title }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;">
+                            <strong>ទីកន្លែង / Venue:</strong>
+                            <span class="red">{{ $event->location }}</span>
+                        </td>
+                    </tr>
+                </table>
+
+                <div style="margin-top:4px;font-size:10px;">
+                    <strong>អាយុ:</strong> A. &lt;30 &nbsp;&nbsp; B. 30-60 &nbsp;&nbsp; C. &gt;60
+                </div>
+
+                <div style="margin-top:4px;font-size:10px;">
+                    <strong>ភាពងាយរងគ្រោះ:</strong>
+                    1. ក្រុម​ LGBTQIA+ &nbsp;&nbsp; 2. ជនជាតិដើមភាគតិច &nbsp;&nbsp; 3. ជនពិការភាព &nbsp;&nbsp; 4. ផ្សេងៗ
+                </div>
+            </header>
+
+            <table style="margin-top:10px;">
+                <thead>
+                    <tr>
+                        <th width="3%">ល.រ<br><span class="small">No.</span></th>
+                        <th width="8%">ឈ្មោះ<br><span class="small">Name</span></th>
+                        <th width="5%">ភេទ<br><span class="small">Gender</span></th>
+                        <th width="4%">អាយុ<br><span class="small">Age</span></th>
+                        <th width="8%">ភាពងាយរងគ្រោះ<br><span class="small">Vulnerable</span></th>
+                        <th width="10%">មុខតំណែង<br><span class="small">Position</span></th>
+                        <th width="15%">អង្គភាព<br><span class="small">Organization</span></th>
+                        <th width="9%">ទីតាំងអង្គភាព<br><span class="small">Org. Location</span></th>
+                        <th width="8%">លេខទូរស័ព្ទ<br><span class="small">Phone</span></th>
+                        <th width="15%">អ៊ីមែល<br><span class="small">Email</span></th>
+                        <th width="8%">អនុញ្ញាតថតរូប<br><span class="small">Allow photo</span></th>
+                        <th width="9%">ហត្ថលេខា<br><span class="small">Signature</span></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @for ($i = 0; $i < 10; $i++)
+                        <tr>
+                            <td class="center">{{ $i + 1 }}</td>
+                            <td>{{ $chunk[$i]->name ?? '' }}</td>
+                            <td class="center">{{ $chunk[$i]->gender ?? '' }}</td>
+                            <td class="center">
+                                @if (isset($chunk[$i]) && is_numeric($chunk[$i]->age))
+                                    @php $age = $chunk[$i]->age; @endphp
+
+                                    @if ($age < 30)
+                                        A
+                                    @elseif ($age <= 60)
+                                        B
+                                    @else
+                                        C
+                                    @endif
+                                @endif
+                            </td>
+                            <td class="center">
+                                @if (isset($chunk[$i]) && !empty($chunk[$i]->vulnerable))
+                                    @php $v = $chunk[$i]->vulnerable; @endphp
+
+                                    @if ($v === 'LGBTQIA+')
+                                        1
+                                    @elseif ($v === 'Indigenous')
+                                        2
+                                    @elseif ($v === 'Disability')
+                                        3
+                                    @else
+                                        4
+                                    @endif
+                                @endif
+                            </td>
+
+                            <td class="center">{{ $chunk[$i]->position ?? '' }}</td>
+                            <td class="center">{{ $chunk[$i]->organization ?? '' }}</td>
+                            <td class="center">{{ $chunk[$i]->org_location ?? '' }}</td>
+                            <td class="center">{{ $chunk[$i]->phone ?? '' }}</td>
+                            <td>{{ $chunk[$i]->email ?? '' }}</td>
+                            <td class="center">
+                                @if (isset($chunk[$i]))
+                                    {{ $chunk[$i]->allow_photos ? 'Yes' : 'No' }}
+                                @endif
+                            </td>
+                            <td></td>
+                        </tr>
+                    @endfor
+                </tbody>
+            </table>
+
+            <table style="margin-top:30px; width:100%; border:none; font-size:10px;">
+                <tr>
+                    <td style="border:none; width:80%; vertical-align:top;">
+                        <div style="font-weight:bold;">រៀបចំដោយ / Prepared by:</div>
+                        <br><br><br><br>
+                        <div style="margin-top:6px; border:none;"><strong>Name:</strong></div>
+                        <br>
+                        <div><strong>Position:</strong></div>
+                    </td>
+
+                    <td style="border:none; width:20%;"></td>
+
+                    <td style="border:none; width:40%; vertical-align:top;">
+                        <div style="font-weight:bold;">អនុម័តដោយ / Approved by:</div>
+                        <br><br><br><br>
+                        <div style="margin-top:6px; border:none;"><strong>Name:</strong></div>
+                        <br>
+                        <div><strong>Position:</strong></div>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+    @endforeach
 </body>
 
 </html>
