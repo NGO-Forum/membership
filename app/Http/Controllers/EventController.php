@@ -351,8 +351,6 @@ class EventController extends Controller
         $event = Event::findOrFail($request->event_id);
 
         // Organizer email: from DB or a default
-        $organizerEmail = $event->organizer_email;
-
         Mail::to($event->organizer_email ?? 'info@ngoforum.org.kh')
             ->send(new EventInterestMail(
                 $event,

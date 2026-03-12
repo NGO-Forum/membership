@@ -7,7 +7,6 @@ use App\Models\Registration;
 use Illuminate\Http\Request;
 use App\Models\Ngo;
 use App\Models\NewMembership;
-use App\Models\Membership;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
 
@@ -59,18 +58,13 @@ class RegistrationController extends Controller
 
         if (!empty($validated['organization'])) {
 
-            $ngo = Ngo::where('ngo_name', $validated['organization'])
+            $ngo = Ngo::where('name', $validated['organization'])
                 ->orWhere('abbreviation', $validated['organization'])
                 ->first();
 
             $newMembership = NewMembership::where('org_name_en', $validated['organization'])
+                ->orWhere('org_name_abbreviation', $validated['organization'])
                 ->first();
-
-            if ($ngo) {
-                $membership = Membership::where('ngo_name', $ngo->ngo_name)
-                    ->orWhere('ngo_name', $ngo->abbreviation)
-                    ->first();
-            }
         }
 
         /* ================= SIGNATURE UPLOAD ================= */
