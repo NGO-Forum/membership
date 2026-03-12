@@ -89,9 +89,7 @@ class RegistrationController extends Controller
             'org_location'      => $validated['org_location'] ?? null,
             'signature'         => $signaturePath,
             'allow_photos'      => $request->boolean('allow_photos'),
-            'ngo_id'            => $ngo?->id,
             'new_membership_id' => $newMembership?->id,
-            'membership_id'     => $membership?->id,
         ]);
 
         return redirect()
