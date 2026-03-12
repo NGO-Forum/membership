@@ -54,7 +54,6 @@ class RegistrationController extends Controller
 
         $ngo = null;
         $newMembership = null;
-        $membership = null;
 
         if (!empty($validated['organization'])) {
 
