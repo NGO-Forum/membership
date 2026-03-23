@@ -28,14 +28,33 @@ class RegistrationController extends Controller
         }
     }
 
+    private function ensureRegistrationOpen(Event $event)
+    {
+        if ($event->registration_close_date && now()->gte($event->registration_close_date)) {
+            return redirect()
+                ->route('registrations.thank', $event->id)
+                ->with('closed', true);
+        }
+
+        return null;
+    }
+
 
     public function create(Event $event)
     {
+        if ($response = $this->ensureRegistrationOpen($event)) {
+            return $response;
+        }
+
         return view('registrations.create', compact('event'));
     }
 
     public function store(Request $request, Event $event)
     {
+        if ($response = $this->ensureRegistrationOpen($event)) {
+            return $response;
+        }
+
         $validated = $request->validate([
             'name'           => 'required|string|max:255',
             'gender'         => 'nullable|in:Male,Female',

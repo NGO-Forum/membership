@@ -30,7 +30,11 @@
 
         <!-- Subtitle -->
         <p class="text-lg sm:text-xl mb-8 sm:mb-10 text-white">
-            Thank you for registering for our event! Your information has been successfully submitted.
+            @if (session('closed'))
+                Thank you for your interest in this event.
+            @else
+                Thank you for registering for our event! Your information has been successfully submitted.
+            @endif
         </p>
 
         <!-- Main Content Card -->
@@ -39,23 +43,36 @@
                 <h2 class="text-left text-green-600 mb-4 text-xl">
                     Dear Participant,
                 </h2>
-                <p class="text-left text-gray-700 leading-relaxed">
-                    Your registration has been successfully recorded. We look forward to seeing you at the event.
-                    If you have any questions, please contact our support team.
-                </p>
+                @if (session('closed'))
+                    <p class="text-left text-gray-700 leading-relaxed">
+                        Thank you for your interest in this event. Unfortunately, registration is now closed.
+                        We hope to see you in future events.
+                    </p>
+                @else
+                    <p class="text-left text-gray-700 leading-relaxed">
+                        Your registration has been successfully recorded. We look forward to seeing you at the event.
+                        If you have any questions, please contact our support team.
+                    </p>
+                @endif
             </div>
 
             <!-- Thank You Section -->
-            <div class="flex flex-col items-center justify-center p-8 sm:p-14 bg-white rounded-lg border-t border-gray-100">
+            <div
+                class="flex flex-col items-center justify-center p-8 sm:p-14 bg-white rounded-lg border-t border-gray-100">
                 <!-- Checkmark Icon -->
-                <div class="bg-green-100 rounded-full mb-6 sm:mb-8 p-4 sm:p-6">
-                    <i class="fas fa-check-circle text-green-500 text-4xl sm:text-8xl"></i>
+                <div class="{{ session('closed') ? 'bg-yellow-100' : 'bg-green-100' }} rounded-full mb-6 sm:mb-8 p-4 sm:p-6">
+                    <i class="fas {{ session('closed') ? 'fa-exclamation-circle text-yellow-500' : 'fa-check-circle text-green-500' }} text-4xl sm:text-8xl"></i>
                 </div>
-                <h2 class="text-xl sm:text-4xl font-semibold text-green-600 mb-4">
-                    Thank You!
+                <h2 class="text-xl sm:text-4xl font-semibold mb-4 {{ session('closed') ? 'text-yellow-600' : 'text-green-600' }}">
+                    {{ session('closed') ? 'Registration Closed' : 'Thank You!' }}
                 </h2>
-                <p class="text-md sm:text-lg text-green-700 text-center">
-                    Your registration has been successfully submitted. We are excited to welcome you to the event!
+                <p
+                    class="text-md sm:text-lg text-center {{ session('closed') ? 'text-yellow-700' : 'text-green-700' }}">
+                    @if (session('closed'))
+                        Registration is now closed, but we appreciate your interest.
+                    @else
+                        Your registration has been successfully submitted. We are excited to welcome you to the event!
+                    @endif
                 </p>
             </div>
         </div>

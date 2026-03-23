@@ -69,8 +69,12 @@ class CalendarController extends Controller
             'organizer'   => 'nullable|string|max:255',
             'organizer_email' => 'nullable|email|max:255',
             'phone'       => 'nullable|string|max:20',
-            'files.*'     => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:5120',
-            'images.*'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'registration_close_date' => 'nullable|date',
+            'files' => 'nullable|array|max:10',
+            'files.*' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:5120',
+
+            'images' => 'nullable|array|max:3',
+            'images.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $user = auth()->user();
@@ -171,6 +175,7 @@ class CalendarController extends Controller
                 'organizer' => $event->organizer,
                 'organizer_email' => $event->organizer_email,
                 'phone' => $event->phone,
+                'registration_close_date' => $event->registration_close_date,
                 'description' => $event->description,
 
                 // ✅ REGISTER LINK (ONE BY ONE)

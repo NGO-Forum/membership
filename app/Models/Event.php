@@ -22,11 +22,13 @@ class Event extends Model
         'program',
         'registration_link',
         'qr_code_path',
+        'registration_close_date',
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'end_date'   => 'date',
+        'registration_close_date' => 'datetime',
     ];
     
     public function registrations()

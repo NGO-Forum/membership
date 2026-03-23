@@ -162,6 +162,23 @@
                             </svg>
                             <p><span class="font-semibold">Organizer:</span> {{ $event->organizer ?? '-' }}</p>
                         </div>
+
+                        <!-- Registration Close Date -->
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p>
+                                <span class="font-semibold">Register Close:</span>
+                                @if ($event->registration_close_date)
+                                    {{ \Carbon\Carbon::parse($event->registration_close_date)->format('M d, Y h:i A') }}
+                                @else
+                                    -
+                                @endif
+                            </p>
+                        </div>
                     </div>
                 </div>
             @endforeach
@@ -173,7 +190,7 @@
 
     <!-- Modal -->
     <div id="eventModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-2 sm:p-0">
-        <div class="bg-white rounded-xl p-4 sm:p-6 w-full sm:max-w-lg max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-xl p-4 sm:p-6 w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
                 <h3 id="modalTitle" class="text-lg sm:text-xl font-bold text-green-600">Add Event</h3>
                 <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
@@ -190,7 +207,7 @@
                     <label class="block text-sm font-medium mb-1">Description</label>
                     <textarea id="description" name="description" class="border rounded-md p-2 w-full text-sm sm:text-base"></textarea>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                         <label class="block text-sm font-medium mb-1">Start Date</label>
                         <input type="date" id="start_date" name="start_date" class="border rounded-md p-2 w-full"
@@ -200,6 +217,11 @@
                         <label class="block text-sm font-medium mb-1">End Date</label>
                         <input type="date" id="end_date" name="end_date" class="border rounded-md p-2 w-full"
                             required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Registration Close Date</label>
+                        <input type="datetime-local" id="registration_close_date" name="registration_close_date"
+                            class="border rounded-md p-2 w-full">
                     </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -469,6 +491,7 @@
                     document.getElementById('organizer').value = event.organizer ?? '';
                     document.getElementById('organizer_email').value = event.organizer_email ?? '';
                     document.getElementById('phone').value = event.phone ?? '';
+                    document.getElementById('registration_close_date').value = event.registration_close_date ?? '';
 
                     // Populate existing files
                     let fileList = document.getElementById('existingFiles');

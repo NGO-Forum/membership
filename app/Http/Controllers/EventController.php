@@ -61,6 +61,7 @@ class EventController extends Controller
             'organizer'   => 'nullable|string|max:255',
             'organizer_email' => 'nullable|email|max:255',
             'phone'       => 'nullable|string|max:20',
+            'registration_close_date' => 'nullable|date',
             'files.*'     => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:5120',
             'images.*'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
@@ -163,6 +164,7 @@ class EventController extends Controller
             'organizer'   => 'nullable|string|max:255',
             'organizer_email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:20',
+            'registration_close_date' => 'nullable|date',
             'files.*'     => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:5120',
             'images.*'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
@@ -178,6 +180,7 @@ class EventController extends Controller
             'organizer',
             'organizer_email',
             "phone",
+            'registration_close_date'
         ]));
 
         // ✅ Files (only if new ones uploaded)
@@ -230,6 +233,7 @@ class EventController extends Controller
             'organizer' => $event->organizer,
             'organizer_email' => $event->organizer_email,
             'phone' => $event->phone,
+            'registration_close_date' => $event->registration_close_date,
             'files' => $event->files->map(fn($file) => [
                 'file_name' => $file->file_name,
                 'file_path' => $file->file_path,
@@ -260,7 +264,10 @@ class EventController extends Controller
 
     public function register()
     {
-        $events = Event::orderBy('id', 'desc')->get();
+        $events = Event::whereDate('end_date', '>=', Carbon::today())
+            ->orderBy('start_date', 'asc')
+            ->get();
+
         return view('events.qr', compact('events'));
     }
 

@@ -125,7 +125,8 @@
 
             <h3 class="text-lg text-green-600 font-semibold mb-3">Add Event</h3>
 
-            <form action="{{ route('events.storeCalendar') }}" method="POST" class="space-y-3">
+            <form action="{{ route('events.storeCalendar') }}" method="POST" enctype="multipart/form-data"
+                class="space-y-3">
                 @csrf
                 <input type="hidden" name="date" id="eventDate">
 
@@ -140,7 +141,7 @@
                     <textarea name="description" class="border rounded-md p-2 w-full focus:ring focus:ring-blue-200"></textarea>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div onclick="this.querySelector('input').showPicker()">
                         <label class="block text-sm font-medium mb-1">Start Date</label>
                         <input type="date" name="start_date"
@@ -150,6 +151,11 @@
                         <label class="block text-sm font-medium mb-1">End Date</label>
                         <input type="date" name="end_date"
                             class="border rounded-md p-2 w-full focus:ring focus:ring-blue-200" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Registration Close Date</label>
+                        <input type="datetime-local" name="registration_close_date"
+                            class="border rounded-md p-2 w-full focus:ring focus:ring-blue-200">
                     </div>
                 </div>
 
@@ -201,7 +207,7 @@
                 <!-- Upload New Images -->
                 <div>
                     <label for="images" class="font-semibold">Upload New Images (optional):</label>
-                    <input type="file" name="images[]" id="images" multiple
+                    <input type="file" name="images[]" id="images" multiple accept="image/*"
                         class="block w-full mt-1 border p-2 rounded">
                 </div>
 
@@ -210,7 +216,8 @@
                         class="px-3 py-1 rounded-md bg-orange-400 text-white hover:bg-orange-500 transition">
                         Cancel
                     </button>
-                    <button type="submit" class="px-4 py-1 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition">
+                    <button type="submit"
+                        class="px-4 py-1 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition">
                         Save
                     </button>
                 </div>
@@ -257,6 +264,21 @@
                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <p><span class="font-semibold mr-2">Time: </span> <span id="detailTime"></span></p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p>
+                        <span class="font-semibold">Register Close:</span>
+                        @if ($event->registration_close_date)
+                            {{ \Carbon\Carbon::parse($event->registration_close_date)->format('M d, Y h:i A') }}
+                        @else
+                            -
+                        @endif
+                    </p>
                 </div>
 
                 <div class="flex items-center md:items-start gap-2 md:gap-4">
