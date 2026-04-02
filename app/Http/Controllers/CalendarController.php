@@ -180,6 +180,7 @@ class CalendarController extends Controller
 
 
                 'files' => $event->files->map(fn($file) => [
+                    'file_name' => $file->file_name,
                     'url' => asset('storage/' . $file->file_path),
                 ]),
             ]),
