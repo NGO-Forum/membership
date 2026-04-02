@@ -26,33 +26,36 @@
                 </div>
             </div>
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+                <table class="w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
                             <th
-                                class="px-6 py-3 text-left text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-4 py-3 text-left text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 #
                             </th>
                             <th
-                                class="px-6 py-3 text-left text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-4 py-3 text-left text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Name
                             </th>
                             <th
-                                class="px-6 py-3 text-left text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-4 py-3 text-left text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Email
                             </th>
                             <th
-                                class="px-6 py-3 text-left text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-4 py-3 text-left text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Phone
                             </th>
                             <th
-                                class="px-6 py-3 text-left text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-4 py-3 text-left text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Organization</th>
                             <th
-                                class="px-6 py-3 text-left text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-4 py-3 text-left text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                DSA</th>
+                            <th
+                                class="px-4 py-3 text-left text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Position</th>
                             <th
-                                class="px-6 py-3 text-center text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-4 py-3 text-center text-[8px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Action
                             </th>
                         </tr>
@@ -60,25 +63,51 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($registrations as $i => $reg)
                             <tr class="hover:bg-green-50 transition-colors">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $i + 1 }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $reg->name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $reg->email }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $reg->phone }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $reg->organization }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $reg->position }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $i + 1 }}</td>
+
+                                <td class="px-4 py-3 max-w-[150px] truncate" text-sm font-medium text-gray-800">
+                                    {{ $reg->name }}
+                                </td>
+
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                                    {{ $reg->email }}
+                                </td>
+
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                                    {{ $reg->phone }}
+                                </td>
+
+                                <td class="px-4 py-3 text-sm text-gray-600 max-w-[250px] truncate">
+                                    {{ $reg->organization ?? '-' }}
+                                </td>
+
+                                <!-- ✅ DSA -->
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                    <span
+                                        class="px-2 py-1 rounded-full text-xs font-semibold
+                                        {{ $reg->dsa_covered_by === 'ngof' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700' }}">
+
+                                        {{ $reg->dsa_covered_by === 'ngof' ? 'NGOF' : ($reg->dsa_covered_by === 'own' ? 'No Need' : '-') }}
+
+                                    </span>
+                                </td>
+
+                                <!-- ✅ Position -->
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                                    {{ $reg->position ?? '-' }}
+                                </td>
+
+                                <!-- ✅ Action -->
+                                <td class="px-4 py-3 whitespace-nowrap text-center">
                                     @if (auth()->user()->isAdmin() || auth()->user()->role === $event->program)
                                         <div class="flex items-center justify-center gap-2">
 
-                                            {{-- Edit --}}
                                             <button
                                                 onclick='openRegistrationForm({{ $event->id }}, @json($reg))'
                                                 class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs">
                                                 Edit
                                             </button>
 
-
-                                            {{-- Delete --}}
                                             <form action="{{ route('registrations.destroy', $reg->id) }}" method="POST"
                                                 class="delete-form">
                                                 @csrf
@@ -89,13 +118,11 @@
                                                 </button>
                                             </form>
 
-
                                         </div>
                                     @else
                                         <span class="text-gray-400 text-xs">No access</span>
                                     @endif
                                 </td>
-
                             </tr>
                         @endforeach
                         @if ($registrations->isEmpty())

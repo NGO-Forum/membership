@@ -5,11 +5,14 @@
     <meta charset="UTF-8">
 
     <style>
+        @page {
+            margin: 20px;
+        }
+
         body {
             font-family: hanuman, sans-serif;
             font-size: 9px;
         }
-
 
         /* PAGE WRAPPER (Excel grid) */
         .page {
@@ -40,7 +43,7 @@
         td {
             border: 1px solid #000;
             padding: 4px;
-            height: 24px;
+            height: 28px;
             vertical-align: middle;
         }
 
@@ -125,12 +128,15 @@
                 </table>
 
                 <div style="margin-top:4px;font-size:10px;">
-                    <strong>អាយុ:</strong> A. &lt;30 &nbsp;&nbsp; B. 30-60 &nbsp;&nbsp; C. &gt;60
+                    <strong>អាយុ:</strong> A. &lt;18 &nbsp;&nbsp; B. 30-60 &nbsp;&nbsp; C. 60&gt;; (Range of age: &lt;18
+                    &nbsp;&nbsp; B. 30-60 &nbsp;&nbsp; C. 60&gt;)
                 </div>
 
                 <div style="margin-top:4px;font-size:10px;">
                     <strong>ភាពងាយរងគ្រោះ:</strong>
-                    1. ក្រុម​ LGBTQIA+ &nbsp;&nbsp; 2. ជនជាតិដើមភាគតិច &nbsp;&nbsp; 3. ជនពិការភាព &nbsp;&nbsp; 4. ផ្សេងៗ
+                    1. ក្រុម​ LGBTQIA+ &nbsp;&nbsp; 2. ជនជាតិដើមភាគតិច &nbsp;&nbsp; 3. ជនពិការភាព &nbsp;&nbsp; 4.
+                    .ព្រះសង្ឃ &nbsp;&nbsp; 5. មិនមាន; (Type of Participants): 1. LGBTQIA+ group 2. Indigenous people 3.
+                    People with disabilities 4. Monks 5. None)
                 </div>
             </header>
 
@@ -171,20 +177,20 @@
                                     @endif
                                 @endif
                             </td>
-                            <td class="center">
-                                @if (isset($chunk[$i]) && !empty($chunk[$i]->vulnerable))
-                                    @php $v = $chunk[$i]->vulnerable; @endphp
+                            @php
+                                $vulnerableMap = [
+                                    'lgbtqia' => 1,
+                                    'indigenous' => 2,
+                                    'disability' => 3,
+                                    'monks' => 4,
+                                    // 'women' => 5,
+                                    // 'poor' => 6,
+                                    'other' => 5,
+                                ];
+                            @endphp
 
-                                    @if ($v === 'LGBTQIA+')
-                                        1
-                                    @elseif ($v === 'Indigenous')
-                                        2
-                                    @elseif ($v === 'Disability')
-                                        3
-                                    @else
-                                        4
-                                    @endif
-                                @endif
+                            <td class="center">
+                                {{ $vulnerableMap[$chunk[$i]->vulnerable ?? ''] ?? '' }}
                             </td>
 
                             <td class="center">{{ $chunk[$i]->position ?? '' }}</td>

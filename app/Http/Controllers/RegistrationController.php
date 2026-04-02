@@ -57,12 +57,17 @@ class RegistrationController extends Controller
 
         $validated = $request->validate([
             'name'           => 'required|string|max:255',
-            'gender'         => 'nullable|in:Male,Female',
+            'gender'         => 'nullable|in:Male,Female,Other',
             'age'            => 'nullable|integer|min:1|max:120',
             'vulnerable'     => 'required|string|max:255',
             'email'          => 'required|email|max:255',
             'phone'          => 'nullable|string|max:20',
             'organization'   => 'nullable|string|max:255',
+            'village'        => 'nullable|string|max:255',
+            'commune'        => 'nullable|string|max:255',
+            'district'       => 'nullable|string|max:255',
+            'residence_type' => 'nullable|in:phnom_penh,community',
+            'dsa_covered_by' => 'nullable|in:own,ngof',
             'position'       => 'nullable|string|max:255',
             'org_location'   => 'nullable|string|max:255',
             'signature'      => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
@@ -106,9 +111,15 @@ class RegistrationController extends Controller
             'organization'      => $validated['organization'] ?? null,
             'position'          => $validated['position'] ?? null,
             'org_location'      => $validated['org_location'] ?? null,
+            'village'           => $validated['village'] ?? null,
+            'commune'           => $validated['commune'] ?? null,
+            'district'          => $validated['district'] ?? null,
+            'residence_type'    => $validated['residence_type'] ?? null,
+            'dsa_covered_by'    => $validated['dsa_covered_by'] ?? null,
             'signature'         => $signaturePath,
             'allow_photos'      => $request->boolean('allow_photos'),
             'new_membership_id' => $newMembership?->id,
+            'ngo_id'            => $ngo?->id,
         ]);
 
         return redirect()
@@ -170,6 +181,11 @@ class RegistrationController extends Controller
             'gender'       => 'nullable|in:Male,Female',
             'vulnerable'   => 'nullable|string|max:255',
             'org_location' => 'nullable|string|max:255',
+            'village'      => 'nullable|string|max:255',
+            'commune'      => 'nullable|string|max:255',
+            'district'     => 'nullable|string|max:255',
+            'residence_type' => 'nullable|in:phnom_penh,community',
+            'dsa_covered_by' => 'nullable|in:own,ngof',
             'allow_photos'   => 'nullable|boolean',
         ]);
 
@@ -196,6 +212,11 @@ class RegistrationController extends Controller
             'gender'       => 'nullable|in:Male,Female',
             'vulnerable'   => 'nullable|string|max:255',
             'org_location' => 'nullable|string|max:255',
+            'village'      => 'nullable|string|max:255',
+            'commune'      => 'nullable|string|max:255',
+            'district'     => 'nullable|string|max:255',
+            'residence_type' => 'nullable|in:phnom_penh,community',
+            'dsa_covered_by' => 'nullable|in:own,ngof',
             'allow_photos'   => 'nullable|boolean',
         ]);
 

@@ -17,6 +17,11 @@ class Registration extends Model
         'position',
         'organization',
         'org_location',
+        'village',
+        'commune',
+        'district',
+        'residence_type',
+        'dsa_covered_by',
         'phone',
         'email',
         'signature',
@@ -36,9 +41,12 @@ class Registration extends Model
         return $this->belongsTo(Event::class);
     }
 
-    public function membership()
+    public function newMembership()
     {
         return $this->belongsTo(NewMembership::class, 'new_membership_id');
     }
-
+    public function ngo()
+    {
+        return $this->belongsTo(Ngo::class);
+    }
 }
