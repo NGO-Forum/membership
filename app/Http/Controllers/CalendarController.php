@@ -178,11 +178,9 @@ class CalendarController extends Controller
                 'registration_close_date' => $event->registration_close_date,
                 'description' => $event->description,
 
-                // ✅ REGISTER LINK (ONE BY ONE)
-                'registration_link' => $event->registration_link
-                    ?? route('events.register', $event->id),
-                'images' => $event->images->map(fn($img) => [
-                    'url' => asset('storage/' . $img->image_path),
+
+                'files' => $event->files->map(fn($file) => [
+                    'url' => asset('storage/' . $file->file_path),
                 ]),
             ]),
         ]);
