@@ -37,7 +37,7 @@
                     target="_blank" class="hover:underline">GGESI (Gender, Governance, Environment and Social
                     Inclusion)</a></li>
             <li><a href="https://53786707-5124-4ac6-84ff-9389bf387232.usrfiles.com/ugd/537867_68a4cd24ef0b41bbb90a208c73540256.pdf"
-                    target="_blank" class="hover:underline">METRI Youth Ambassador Platform for Positive Change</a></li>
+                    target="_blank" class="hover:underline">METRI Youth Ambassador Platform for Positive Change (Pasted of GGESI)</a></li>
         </ul>
 
         <form action="{{ route('memberships.store') }}" method="POST" enctype="multipart/form-data">
@@ -110,7 +110,7 @@
                 <!-- Development Partners -->
                 <div class="mb-4">
                     <label class="block font-semibold mb-1">
-                        Please list down development partners your Organization is partnering with
+                        Please list down development partners (Donors) your Organization is partnering with
                     </label>
                     <textarea name="development_partners" rows="5"
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"

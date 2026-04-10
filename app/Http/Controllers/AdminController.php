@@ -255,10 +255,6 @@ class AdminController extends Controller
         ])
             ->where('id', $id)
             ->firstOrFail();
-        if (!$membership->read_at) {
-            $membership->update(['read_at' => now()]);
-        }
-
         return view('admin.newShowMembership', compact('membership'));
     }
 }

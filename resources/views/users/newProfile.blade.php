@@ -194,10 +194,12 @@
                     <div class="max-w-8xl mx-auto py-4">
                         <!-- Overview Cards -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-                            <div class="overview-card rounded-xl card-shadow border border-gray-200 p-3 md:p-6 animate-fade-in">
+                            <div
+                                class="overview-card rounded-xl card-shadow border border-gray-200 p-3 md:p-6 animate-fade-in">
                                 <div class="flex items-center gap-4">
                                     <div class="p-3 icon-dark-green rounded-lg">
-                                        <svg class="w-4 md:w-8 h-4 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 md:w-8 h-4 md:h-8" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
                                             </path>
@@ -215,7 +217,8 @@
                                 class="overview-card rounded-xl card-shadow border border-gray-200 p-3 md:p-6 animate-fade-in animate-delay-1">
                                 <div class="flex items-center gap-4">
                                     <div class="p-3 icon-medium-green rounded-lg">
-                                        <svg class="w-4 md:w-8 h-4 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 md:w-8 h-4 md:h-8" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
                                             </path>
@@ -233,7 +236,8 @@
                                 class="overview-card rounded-xl card-shadow border border-gray-200 p-3 md:p-6 animate-fade-in animate-delay-2">
                                 <div class="flex items-center gap-4">
                                     <div class="p-3 icon-earthy-green rounded-lg">
-                                        <svg class="w-4 md:w-8 h-4 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 md:w-8 h-4 md:h-8" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M19 11H5m14-7H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z">
                                             </path>
@@ -492,25 +496,29 @@
                                                 </h4>
                                             </div>
                                             <div>
-                                                <a href="{{ asset('storage/' . $membership->basicInformation->file) }}"
-                                                    target="_blank"
-                                                    class="file-link inline-flex items-center gap-2 px-3 py-2 text-gray-700 rounded-lg text-sm font-medium">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                                        </path>
-                                                    </svg>
-                                                    Location File
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14">
-                                                        </path>
-                                                    </svg>
-                                                </a>
+                                                @if (!empty($membership->basicInformation?->file))
+                                                    <a href="{{ asset('storage/' . $membership->basicInformation->file) }}"
+                                                        target="_blank"
+                                                        class="file-link inline-flex items-center gap-2 px-3 py-2 text-gray-700 rounded-lg text-sm font-medium">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                                            </path>
+                                                        </svg>
+                                                        Location File
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14">
+                                                            </path>
+                                                        </svg>
+                                                    </a>
+                                                @else
+                                                    <span class="text-gray-400 italic">No location file available</span>
+                                                @endif
                                             </div>
                                         </div>
 
@@ -531,17 +539,17 @@
                                                     </div>
                                                     <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                                                         @foreach ([
-                                                            'letter' => 'Letter',
-                                                            'constitution' => 'Constitution',
-                                                            'activities' => 'Activities',
-                                                            'funding' => 'Funding',
-                                                            'board' => 'Borad',
-                                                            'authorization' => 'Authorization',
-                                                            'strategic_plan' => 'Strategic Plan',
-                                                            'fundraising_strategy' => 'Fundraising Strategy',
-                                                            'audit_report' => 'Audit Report',
-                                                            'signature' => 'Signature',
-                                                        ] as $field => $label)
+            'letter' => 'Letter',
+            'constitution' => 'Constitution',
+            'activities' => 'Activities',
+            'funding' => 'Funding',
+            'board' => 'Borad',
+            'authorization' => 'Authorization',
+            'strategic_plan' => 'Strategic Plan',
+            'fundraising_strategy' => 'Fundraising Strategy',
+            'audit_report' => 'Audit Report',
+            'signature' => 'Signature',
+        ] as $field => $label)
                                                             @if (!empty($app->$field))
                                                                 <a href="{{ asset('storage/' . $app->$field) }}"
                                                                     target="_blank"

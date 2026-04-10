@@ -49,6 +49,8 @@ class AuthController extends Controller
 
         $remember = $request->boolean('remember');
 
+        $user = Auth::user();
+
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
@@ -63,20 +65,32 @@ class AuthController extends Controller
                 $membership = \App\Models\NewMembership::latest()->first();
                 // or choose the correct one based on your logic
 
-                return redirect()->route('reports.index', [
-                    'membership' => $membership->id
-                ]);
-            }
-
-            if (Auth::user()->role === 'user') {
-                $user = Auth::user(); // <-- define $user first
-
-                $hasMembership = \App\Models\NewMembership::where('user_id', $user->id)->exists();
-                if ($hasMembership) {
-                    return redirect()->route('newProfile');
+                if ($membership) {
+                    return redirect()->route('reports.index', [
+                        'membership' => $membership->id
+                    ]);
                 }
-                return redirect()->route('membership.menbershipDetail');
+
+                return redirect()->route('home');
             }
+
+            if ($user->role === 'user') {
+                $membership = \App\Models\NewMembership::where('user_id', $user->id)->first();
+
+                if (!$membership) {
+                    return redirect()->route('membership.membershipForm');
+                }
+
+                $hasUpload = \App\Models\MembershipUpload::where('new_membership_id', $membership->id)->exists();
+
+                if (!$hasUpload) {
+                    return redirect()->route('membership.membershipUpload');
+                }
+
+                return redirect()->route('newProfile');
+            }
+
+            return redirect()->route('home');
         }
 
         return back()->withErrors([
