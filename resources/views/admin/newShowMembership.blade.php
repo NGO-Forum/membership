@@ -169,18 +169,21 @@
 
                         @foreach ($membership->membershipUploads as $app)
                             @if (!empty($app->logo))
-                                <a href="{{ asset('storage/' . $app->logo) }}" download
+                                @php
+                                    // normalize path
+                                    $file = ltrim(preg_replace('#^(public/|storage/)#', '', $app->logo), '/');
+                                @endphp
+
+                                <a href="{{ asset('storage/' . $file) }}" download
                                     class="inline-flex items-center gap-2 px-1 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition shadow-sm">
 
-                                    <!-- Download Icon -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" 
+                                        class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"> 
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" /> 
                                     </svg>
                                 </a>
                             @else
-                                <span class="text-gray-400 text-xs italic">No Logo</span>
+                                <span>No Logo</span>
                             @endif
                         @endforeach
 

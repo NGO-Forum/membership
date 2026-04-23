@@ -42,15 +42,45 @@
                     <td class="border px-2 py-2">{{ $membership->org_name_en ?? 'N/A' }} (
                         {{ $membership->org_name_abbreviation ?? ' ' }} )</td>
                 </tr>
+                @php
+                    $upload = $membership->membershipUploads->first();
+                    $file = $upload?->logo;
+
+                    // normalize path (important)
+                    $file = $file ? ltrim(preg_replace('#^(public/|storage/)#', '', $file), '/') : null;
+
+                    $ext = $file ? strtolower(pathinfo($file, PATHINFO_EXTENSION)) : null;
+                @endphp
+
                 <tr>
                     <td class="border w-44 px-2 py-2 font-semibold">Logo</td>
                     <td class="border px-2 py-2">
-                        @if ($membership->membershipUploads->first() && $membership->membershipUploads->first()->logo)
-                            <img src="{{ Storage::url($membership->membershipUploads->first()->logo) }}" alt="Logo"
-                                width="200">
+
+                        @if ($file)
+                            {{-- IMAGE --}}
+                            @if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']))
+                                <img src="{{ asset('storage/' . $file) }}" width="200">
+
+                                {{-- PDF --}}
+                            @elseif ($ext === 'pdf')
+                                <iframe src="{{ asset('storage/' . $file) }}" width="220" height="200"
+                                    style="border:1px solid #ccc;"></iframe>
+
+                                <br>
+                                <a href="{{ asset('storage/' . $file) }}" target="_blank" class="text-blue-600 underline">
+                                    Open PDF
+                                </a>
+
+                                {{-- OTHER --}}
+                            @else
+                                <a href="{{ asset('storage/' . $file) }}" target="_blank" class="text-blue-600 underline">
+                                    Download File
+                                </a>
+                            @endif
                         @else
                             <span class="text-gray-500 italic">No logo uploaded</span>
                         @endif
+
                     </td>
                 </tr>
                 <tr>
