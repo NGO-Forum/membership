@@ -37,7 +37,7 @@
                                     <option value="admin">Admin</option>
                                     <option value="board">Board</option>
                                     <option value="ed">ED</option>
-                                    <option value="board">Manager</option>
+                                    <option value="manager">Manager</option>
                                     <option value="operations">Operations</option>
                                 </select>
                             </div>
@@ -189,6 +189,9 @@
                                                         <option value="board"
                                                             {{ $admin->role == 'board' ? 'selected' : '' }}>
                                                             Board</option>
+                                                        <option value="board"
+                                                            {{ $admin->role == 'manager' ? 'selected' : '' }}>
+                                                            Manager</option>
                                                         <option value="operations"
                                                             {{ $admin->role == 'operations' ? 'selected' : '' }}>Operations
                                                         </option>
