@@ -31,7 +31,7 @@ class AdminSystemController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'ngo' => 'required|string|max:255',
-            'role' => 'required|in:admin,ed,board,operations',
+            'role' => 'required|in:admin,manager,ed,board,operations',
             'password' => 'required|string|min:6|confirmed',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // validate image
         ]);
@@ -67,7 +67,7 @@ class AdminSystemController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $admin->id,
             'ngo' => 'required|string|max:255',
-            'role' => 'required|in:admin,manger,ed,board,operations',
+            'role' => 'required|in:admin,manager,ed,board,operations',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
