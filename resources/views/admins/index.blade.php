@@ -189,7 +189,7 @@
                                                         <option value="board"
                                                             {{ $admin->role == 'board' ? 'selected' : '' }}>
                                                             Board</option>
-                                                        <option value="board"
+                                                        <option value="manager"
                                                             {{ $admin->role == 'manager' ? 'selected' : '' }}>
                                                             Manager</option>
                                                         <option value="operations"
