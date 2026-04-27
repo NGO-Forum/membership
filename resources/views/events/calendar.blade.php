@@ -308,7 +308,7 @@
                     <p><span class="font-semibold mr-2">Location:</span> <span id="detailLocation"></span></p>
                 </div>
 
-                <div class="flex items-center gap-2 md:gap-4 hidden" id="inviteOrganizationRow">
+                <div class="flex items-start md:items-center gap-2 md:gap-4 hidden" id="inviteOrganizationRow">
                     <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3" />
