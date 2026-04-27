@@ -53,6 +53,8 @@ class EventController extends Controller
         $data = $request->validate([
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
+            'event_type' => 'required|in:ngof,invite',
+            'organization_invite' => 'nullable|string|max:255',
             'start_date'  => 'required|date',
             'end_date'    => 'required|date|after_or_equal:start_date',
             'start_time'  => 'required',
@@ -113,24 +115,30 @@ class EventController extends Controller
             }
         }
 
-        $registrationLink = route('events.register', $event->id);
-        $event->registration_link = $registrationLink;
+        if ($event->event_type === 'ngof') {
+            $registrationLink = route('events.register', $event->id);
+            $event->registration_link = $registrationLink;
 
-        // 3. Generate QR code with Endroid
-        $qr = QrCode::create($registrationLink)->setSize(300);
-        $writer = new PngWriter();
-        $result = $writer->write($qr);
+            // 3. Generate QR code with Endroid
+            $qr = QrCode::create($registrationLink)->setSize(300);
+            $writer = new PngWriter();
+            $result = $writer->write($qr);
 
-        // 4. Save QR code file in storage/public/qrcodes
-        $fileName = 'qrcodes/event_' . $event->id . '.png';
-        Storage::disk('public')->put($fileName, $result->getString());
+            // 4. Save QR code file in storage/public/qrcodes
+            $fileName = 'qrcodes/event_' . $event->id . '.png';
+            Storage::disk('public')->put($fileName, $result->getString());
 
-        // 5. Save path to DB
-        $event->qr_code_path = $fileName;
+            // 5. Save path to DB
+            $event->qr_code_path = $fileName;
+        } else {
+            $event->registration_link = null;
+            $event->qr_code_path = null;
+            $event->registration_close_date = null;
+        }
         $event->save();
 
         // ✉️ Send email to organizer
-        if ($event->organizer_email) {
+        if ($event->event_type === 'ngof' && $event->organizer_email) {
             Mail::to($event->organizer_email)
                 ->send(new EventCreatedMail($event));
         }
@@ -156,6 +164,8 @@ class EventController extends Controller
         $request->validate([
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
+            'event_type' => 'required|in:ngof,invite',
+            'organization_invite' => 'nullable|string|max:255',
             'start_date'  => 'required|date',
             'end_date'    => 'required|date|after_or_equal:start_date',
             'start_time'  => 'required',
@@ -172,6 +182,8 @@ class EventController extends Controller
         $event->update($request->only([
             'title',
             'description',
+            'event_type',
+            'organization_invite',
             'start_date',
             'end_date',
             'start_time',
@@ -225,6 +237,8 @@ class EventController extends Controller
             'id' => $event->id,
             'title' => $event->title,
             'description' => $event->description,
+            'event_type' => $event->event_type,
+            'organization_invite' => $event->organization_invite,
             'start_date' => $event->start_date,
             'end_date' => $event->end_date,
             'start_time' => $event->start_time,
@@ -264,7 +278,8 @@ class EventController extends Controller
 
     public function register()
     {
-        $events = Event::whereDate('end_date', '>=', Carbon::today())
+        $events = Event::where('event_type', 'ngof') // ❗ only NGOF
+            ->whereDate('end_date', '>=', Carbon::today())
             ->orderBy('start_date', 'asc')
             ->get();
 

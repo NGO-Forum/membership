@@ -23,6 +23,8 @@ class Event extends Model
         'registration_link',
         'qr_code_path',
         'registration_close_date',
+        'event_type',
+        'organization_invite',
     ];
 
     protected $casts = [
@@ -30,7 +32,7 @@ class Event extends Model
         'end_date'   => 'date',
         'registration_close_date' => 'datetime',
     ];
-    
+
     public function registrations()
     {
         return $this->hasMany(Registration::class);

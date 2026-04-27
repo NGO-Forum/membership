@@ -141,6 +141,24 @@
                     <textarea name="description" class="border rounded-md p-2 w-full focus:ring focus:ring-blue-200"></textarea>
                 </div>
 
+                <div>
+                    <label class="block text-sm font-medium mb-2">Event Type (required)</label>
+
+                    <div class="flex gap-6">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="event_type" value="ngof" onchange="handleEventTypeChange()"
+                                required>
+                            NGOF
+                        </label>
+
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="event_type" value="invite" onchange="handleEventTypeChange()"
+                                required>
+                            Invite by Organization
+                        </label>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div onclick="this.querySelector('input').showPicker()">
                         <label class="block text-sm font-medium mb-1">Start Date</label>
@@ -152,9 +170,9 @@
                         <input type="date" name="end_date"
                             class="border rounded-md p-2 w-full focus:ring focus:ring-blue-200" required>
                     </div>
-                    <div>
+                    <div id="registerCloseBox">
                         <label class="block text-sm font-medium mb-1">Registration Close Date</label>
-                        <input type="datetime-local" name="registration_close_date"
+                        <input type="datetime-local" name="registration_close_date" id="registration_close_date"
                             class="border rounded-md p-2 w-full focus:ring focus:ring-blue-200">
                     </div>
                 </div>
@@ -178,22 +196,26 @@
                         class="border rounded-md p-2 w-full focus:ring focus:ring-blue-200">
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium mb-1">Organizer</label>
-                    <input type="text" name="organizer"
-                        class="border rounded-md p-2 w-full focus:ring focus:ring-blue-200">
+                <div id="organizerBox">
+                    <label class="block text-sm font-medium mb-1">Organizer / Name</label>
+                    <input type="text" name="organizer" id="organizerInput" class="border rounded-md p-2 w-full">
+                </div>
+
+                <div id="inviteBox" class="hidden">
+                    <label class="block text-sm font-medium mb-1">Invite by Organization</label>
+                    <input type="text" name="organization_invite" id="inviteInput" class="border rounded-md p-2 w-full">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium mb-1">Organizer Email</label>
+                    <label class="block text-sm font-medium mb-1">Email</label>
                     <input type="email" name="organizer_email"
                         class="border rounded-md p-2 w-full focus:ring focus:ring-blue-200">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium mb-1">Phone</label>
-                    <input type="text" name="phone" class="border rounded-md p-2 w-full focus:ring focus:ring-blue-200"
-                        placeholder="+855 12 345 678">
+                    <input type="text" name="phone"
+                        class="border rounded-md p-2 w-full focus:ring focus:ring-blue-200" placeholder="+855 12 345 678">
                 </div>
 
 
@@ -266,18 +288,14 @@
                     <p><span class="font-semibold mr-2">Time: </span> <span id="detailTime"></span></p>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 hidden" id="registerCloseRow">
                     <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     <p>
                         <span class="font-semibold">Register Close:</span>
-                        @if ($event->registration_close_date)
-                            {{ \Carbon\Carbon::parse($event->registration_close_date)->format('M d, Y h:i A') }}
-                        @else
-                            -
-                        @endif
+                        <span id="detailRegisterClose"></span>
                     </p>
                 </div>
 
@@ -290,12 +308,23 @@
                     <p><span class="font-semibold mr-2">Location:</span> <span id="detailLocation"></span></p>
                 </div>
 
+                <div class="flex items-center gap-2 md:gap-4 hidden" id="inviteOrganizationRow">
+                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3" />
+                    </svg>
+                    <p>
+                        <span class="font-semibold mr-2">Invite by Organization:</span>
+                        <span id="detailInviteOrganization"></span>
+                    </p>
+                </div>
+
                 <div class="flex items-center gap-2 md:gap-4">
                     <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M5.121 17.804A4 4 0 018 16h8a4 4 0 012.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    <p><span class="font-semibold mr-2">Organizer: </span> <span id="detailOrganizer"></span></p>
+                    <p><span class="font-semibold mr-2">Organizer / Name: </span> <span id="detailOrganizer"></span></p>
                 </div>
 
                 <div class="flex items-center gap-2 md:gap-4 hidden" id="emailRow">
@@ -374,6 +403,41 @@
                 openEventDetailModal(eventData);
             } catch (err) {
                 console.error('Invalid event data', err);
+            }
+        }
+
+        function handleEventTypeChange() {
+            const selected = document.querySelector('input[name="event_type"]:checked');
+
+            const organizerBox = document.getElementById('organizerBox');
+            const inviteBox = document.getElementById('inviteBox');
+
+            const organizerInput = document.getElementById('organizerInput');
+            const inviteInput = document.getElementById('inviteInput');
+
+            const registerCloseBox = document.getElementById('registerCloseBox');
+            const registerCloseInput = document.getElementById('registration_close_date');
+
+            if (!selected) return;
+
+            organizerBox.classList.remove('hidden');
+
+            if (selected.value === 'ngof') {
+                inviteBox.classList.add('hidden');
+                registerCloseBox.classList.remove('hidden');
+
+                organizerInput.required = true;
+                inviteInput.required = false;
+                inviteInput.value = '';
+            }
+
+            if (selected.value === 'invite') {
+                inviteBox.classList.remove('hidden');
+                registerCloseBox.classList.add('hidden');
+
+                organizerInput.required = true;
+                inviteInput.required = true;
+                registerCloseInput.value = '';
             }
         }
 
@@ -536,6 +600,38 @@
                 imagesSection.classList.remove('hidden');
             } else {
                 imagesSection.classList.add('hidden');
+            }
+
+            const registerCloseRow = document.getElementById('registerCloseRow');
+            const registerCloseText = document.getElementById('detailRegisterClose');
+
+            if (event.event_type === 'ngof' && event.registration_close_date) {
+                const d = new Date(event.registration_close_date);
+
+                registerCloseText.innerText = d.toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+
+                registerCloseRow.classList.remove('hidden');
+            } else {
+                registerCloseText.innerText = '';
+                registerCloseRow.classList.add('hidden');
+            }
+
+            const inviteOrganizationRow = document.getElementById('inviteOrganizationRow');
+            const inviteOrganizationText = document.getElementById('detailInviteOrganization');
+
+            if (event.event_type === 'invite' && event.organization_invite) {
+                inviteOrganizationText.innerText = event.organization_invite;
+                inviteOrganizationRow.classList.remove('hidden');
+            } else {
+                inviteOrganizationText.innerText = '';
+                inviteOrganizationRow.classList.add('hidden');
             }
 
 

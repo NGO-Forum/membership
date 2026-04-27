@@ -160,25 +160,47 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M5.121 17.804A4 4 0 018 16h8a4 4 0 012.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
-                            <p><span class="font-semibold">Organizer:</span> {{ $event->organizer ?? '-' }}</p>
-                        </div>
 
-                        <!-- Registration Close Date -->
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
                             <p>
-                                <span class="font-semibold">Register Close:</span>
-                                @if ($event->registration_close_date)
-                                    {{ \Carbon\Carbon::parse($event->registration_close_date)->format('M d, Y h:i A') }}
-                                @else
-                                    -
-                                @endif
+                                <span class="font-semibold">Organizer / Name:</span>
+                                {{ $event->organizer ?? '-' }}
                             </p>
                         </div>
+
+                        @if ($event->event_type === 'invite')
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3" />
+                                </svg>
+
+                                <p>
+                                    <span class="font-semibold">Invite by Organization:</span>
+                                    {{ $event->organization_invite ?? '-' }}
+                                </p>
+                            </div>
+                        @endif
+
+                        <!-- Registration Close Date -->
+                        @if ($event->event_type === 'ngof')
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+
+                                <p>
+                                    <span class="font-semibold">Register Close:</span>
+                                    @if ($event->registration_close_date)
+                                        {{ \Carbon\Carbon::parse($event->registration_close_date)->format('M d, Y h:i A') }}
+                                    @else
+                                        -
+                                    @endif
+                                </p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             @endforeach
@@ -188,7 +210,7 @@
     @endif
 
 
-    <!-- Modal -->
+    <!-- Modal Create -->
     <div id="eventModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-2 sm:p-0">
         <div class="bg-white rounded-xl p-4 sm:p-6 w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
@@ -207,6 +229,23 @@
                     <label class="block text-sm font-medium mb-1">Description</label>
                     <textarea id="description" name="description" class="border rounded-md p-2 w-full text-sm sm:text-base"></textarea>
                 </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Event Type (required)</label>
+
+                    <div class="flex gap-6">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="event_type" value="ngof" onchange="handleEventTypeChange()"
+                                required>
+                            NGOF
+                        </label>
+
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="event_type" value="invite" onchange="handleEventTypeChange()"
+                                required>
+                            Invite by Organization
+                        </label>
+                    </div>
+                </div>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                         <label class="block text-sm font-medium mb-1">Start Date</label>
@@ -218,7 +257,7 @@
                         <input type="date" id="end_date" name="end_date" class="border rounded-md p-2 w-full"
                             required>
                     </div>
-                    <div>
+                    <div id="registerCloseBox">
                         <label class="block text-sm font-medium mb-1">Registration Close Date</label>
                         <input type="datetime-local" id="registration_close_date" name="registration_close_date"
                             class="border rounded-md p-2 w-full">
@@ -240,9 +279,17 @@
                     <label class="block text-sm font-medium mb-1">Location</label>
                     <input type="text" id="location" name="location" class="border rounded-md p-2 w-full">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">Organizer</label>
-                    <input type="text" id="organizer" name="organizer" class="border rounded-md p-2 w-full">
+                {{-- Organizer (NGOF + Invite both can use) --}}
+                <div id="organizerBox">
+                    <label class="block text-sm font-medium mb-1">Organizer / Name</label>
+                    <input type="text" id="organizerInput" name="organizer" class="border rounded-md p-2 w-full">
+                </div>
+
+                {{-- Invite only --}}
+                <div id="inviteBox" class="hidden">
+                    <label class="block text-sm font-medium mb-1">Invite by Organization</label>
+                    <input type="text" id="inviteInput" name="organization_invite"
+                        class="border rounded-md p-2 w-full">
                 </div>
 
                 <div>
@@ -337,6 +384,19 @@
                     <p><span class="font-semibold mr-1">Time:</span> <span id="detailTime"></span></p>
                 </div>
 
+                <div class="flex items-start md:items-center gap-2 md:gap-4 hidden" id="detailRegisterCloseRow">
+                    <svg class="w-5 h-5 text-orange-500 flex-shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+
+                    <p>
+                        <span class="font-semibold mr-1">Register Close:</span>
+                        <span id="detailRegisterClose"></span>
+                    </p>
+                </div>
+
                 <!-- Location -->
                 <div class="flex gap-2 md:gap-4">
                     <svg class="w-6 h-6 text-red-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -354,7 +414,33 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M5.121 17.804A4 4 0 018 16h8a4 4 0 012.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    <p><span class="font-semibold mr-1">Organizer:</span> <span id="detailOrganizer"></span></p>
+                    <p><span class="font-semibold mr-1">Organizer/ Name:</span> <span id="detailOrganizer"></span></p>
+                </div>
+
+                <div class="flex items-start md:items-center gap-2 md:gap-4 hidden" id="detailInviteOrganizationRow">
+                    <svg class="w-5 h-5 text-purple-600 flex-shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3" />
+                    </svg>
+
+                    <p>
+                        <span class="font-semibold mr-1">Invite by Organization:</span>
+                        <span id="detailInviteOrganization"></span>
+                    </p>
+                </div>
+
+                <div class="flex items-start md:items-center gap-2 md:gap-4 hidden" id="detailEmailRow">
+                    <svg class="w-5 h-5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8h18V8H3v8z" />
+                    </svg>
+
+                    <p>
+                        <span class="font-semibold mr-1">Email:</span>
+                        <a id="detailEmail" href="#" class="text-blue-600 hover:underline break-all"></a>
+                    </p>
                 </div>
 
                 <!-- Phone -->
@@ -474,24 +560,64 @@
             document.getElementById('eventForm').reset();
         }
 
+        function handleEventTypeChange() {
+            const selected = document.querySelector('input[name="event_type"]:checked');
+
+            const inviteBox = document.getElementById('inviteBox');
+            const registerCloseBox = document.getElementById('registerCloseBox');
+            const registerCloseInput = document.getElementById('registration_close_date');
+
+            if (!selected) return;
+
+            if (selected.value === 'ngof') {
+                inviteBox.classList.add('hidden');
+                registerCloseBox.classList.remove('hidden');
+            }
+
+            if (selected.value === 'invite') {
+                inviteBox.classList.remove('hidden');
+                registerCloseBox.classList.add('hidden');
+                registerCloseInput.value = '';
+            }
+        }
+
         function editEvent(id) {
             fetch(`/newEvent/${id}/json`)
                 .then(res => res.json())
                 .then(event => {
-                    document.getElementById('modalTitle').innerText = 'Edit Event';
-                    document.getElementById('eventForm').action = `/newEvent/${id}`;
-                    document.getElementById('methodField').value = "PUT";
+                    function formatDate(value) {
+                        if (!value) return '';
+                        return String(value).split('T')[0];
+                    }
+
+                    function formatDateTime(value) {
+                        if (!value) return '';
+                        return String(value).substring(0, 16);
+                    }
+
                     document.getElementById('title').value = event.title ?? '';
                     document.getElementById('description').value = event.description ?? '';
-                    document.getElementById('start_date').value = event.start_date ?? '';
-                    document.getElementById('end_date').value = event.end_date ?? '';
+
+                    document.getElementById('start_date').value = formatDate(event.start_date);
+                    document.getElementById('end_date').value = formatDate(event.end_date);
+
                     document.getElementById('start_time').value = event.start_time ?? '';
                     document.getElementById('end_time').value = event.end_time ?? '';
+
                     document.getElementById('location').value = event.location ?? '';
-                    document.getElementById('organizer').value = event.organizer ?? '';
+                    document.getElementById('organizerInput').value = event.organizer ?? '';
+                    document.getElementById('inviteInput').value = event.organization_invite ?? '';
                     document.getElementById('organizer_email').value = event.organizer_email ?? '';
                     document.getElementById('phone').value = event.phone ?? '';
-                    document.getElementById('registration_close_date').value = event.registration_close_date ?? '';
+                    document.getElementById('registration_close_date').value = formatDateTime(event
+                        .registration_close_date);
+
+                    const eventTypeRadio = document.querySelector(
+                        `input[name="event_type"][value="${event.event_type}"]`);
+                    if (eventTypeRadio) {
+                        eventTypeRadio.checked = true;
+                        handleEventTypeChange();
+                    }
 
                     // Populate existing files
                     let fileList = document.getElementById('existingFiles');
@@ -566,6 +692,19 @@
                 document.getElementById('detailDate').innerText = 'N/A';
             }
 
+            const emailRow = document.getElementById('detailEmailRow');
+            const emailEl = document.getElementById('detailEmail');
+
+            if (event.organizer_email) {
+                emailEl.innerText = event.organizer_email;
+                emailEl.href = `mailto:${event.organizer_email}`;
+                emailRow.classList.remove('hidden');
+            } else {
+                emailEl.innerText = '';
+                emailEl.removeAttribute('href');
+                emailRow.classList.add('hidden');
+            }
+
             // Phone
             const phoneRow = document.getElementById('detailPhoneRow');
             const phoneEl = document.getElementById('detailPhone');
@@ -587,6 +726,38 @@
             // Other fields
             document.getElementById('detailLocation').innerText = event.location || 'N/A';
             document.getElementById('detailOrganizer').innerText = event.organizer || 'N/A';
+
+            const inviteOrgRow = document.getElementById('detailInviteOrganizationRow');
+            const inviteOrgText = document.getElementById('detailInviteOrganization');
+
+            if (event.event_type === 'invite') {
+                inviteOrgText.innerText = event.organization_invite || 'N/A';
+                inviteOrgRow.classList.remove('hidden');
+            } else {
+                inviteOrgText.innerText = '';
+                inviteOrgRow.classList.add('hidden');
+            }
+
+            const registerCloseRow = document.getElementById('detailRegisterCloseRow');
+            const registerCloseText = document.getElementById('detailRegisterClose');
+
+            if (event.event_type === 'ngof' && event.registration_close_date) {
+                const d = new Date(event.registration_close_date);
+
+                registerCloseText.innerText = d.toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+
+                registerCloseRow.classList.remove('hidden');
+            } else {
+                registerCloseText.innerText = '';
+                registerCloseRow.classList.add('hidden');
+            }
             document.getElementById('detailDescription').innerText = event.description || 'No description';
 
             // Files

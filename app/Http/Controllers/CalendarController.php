@@ -10,7 +10,7 @@ use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EventCreatedMail;
-
+use Illuminate\Support\Facades\Log;
 
 class CalendarController extends Controller
 {
@@ -61,6 +61,8 @@ class CalendarController extends Controller
         $data = $request->validate([
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
+            'event_type' => 'required|in:ngof,invite',
+            'organization_invite' => 'nullable|string|max:255',
             'start_date'  => 'required|date',
             'end_date'    => 'required|date|after_or_equal:start_date',
             'start_time'  => 'required',
@@ -125,21 +127,28 @@ class CalendarController extends Controller
         }
 
         /* ---------- QR Code ---------- */
-        $registrationLink = route('events.register', $event->id);
-        $event->registration_link = $registrationLink;
+        if ($event->event_type === 'ngof') {
+            $registrationLink = route('events.register', $event->id);
+            $event->registration_link = $registrationLink;
 
-        $qr = QrCode::create($registrationLink)->setSize(300);
-        $writer = new PngWriter();
-        $result = $writer->write($qr);
+            $qr = QrCode::create($registrationLink)->setSize(300);
+            $writer = new PngWriter();
+            $result = $writer->write($qr);
 
-        $fileName = 'qrcodes/event_' . $event->id . '.png';
-        Storage::disk('public')->put($fileName, $result->getString());
+            $fileName = 'qrcodes/event_' . $event->id . '.png';
+            Storage::disk('public')->put($fileName, $result->getString());
 
-        $event->qr_code_path = $fileName;
+            $event->qr_code_path = $fileName;
+        } else {
+            $event->registration_link = null;
+            $event->qr_code_path = null;
+            $event->registration_close_date = null;
+        }
+
         $event->save();
 
         // ✉️ Send email to organizer
-        if ($event->organizer_email) {
+        if ($event->event_type === 'ngof' && $event->organizer_email) {
             Mail::to($event->organizer_email)
                 ->send(new EventCreatedMail($event));
         }
@@ -167,6 +176,8 @@ class CalendarController extends Controller
             'events' => $events->map(fn($event) => [
                 'id' => $event->id,
                 'title' => $event->title,
+                'event_type' => $event->event_type,
+                'organization_invite' => $event->organization_invite,
                 'start_date' => $event->start_date->toDateString(),
                 'end_date' => $event->end_date->toDateString(),
                 'start_time' => $event->start_time,
@@ -185,5 +196,76 @@ class CalendarController extends Controller
                 ]),
             ]),
         ]);
+    }
+
+    public function sendEmail(Request $request)
+    {
+        $data = $request->validate([
+            'event_id' => 'required|exists:events,id',
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email',
+            'message'  => 'required|string|max:2000',
+        ]);
+
+        $event = Event::findOrFail($data['event_id']);
+
+        // Only invite events
+        if ($event->event_type !== 'invite') {
+            return response()->json([
+                'message' => 'Only invite events can receive messages.'
+            ], 403);
+        }
+
+        if (!$event->organizer_email) {
+            return response()->json([
+                'message' => 'Organizer email not available.'
+            ], 404);
+        }
+
+        try {
+            Mail::send([], [], function ($mail) use ($event, $data) {
+
+                $mail->to($event->organizer_email)
+                    ->replyTo($data['email'], $data['name']) // 🔥 important
+                    ->subject("📩 New Message: {$event->title}")
+                    ->html("
+                    <div style='font-family: Arial, sans-serif; line-height:1.6'>
+                        <h2 style='color:#16a34a;'>New Message from Event</h2>
+
+                        <p><strong>Event:</strong> {$event->title}</p>
+
+                        <hr>
+
+                        <p><strong>Sender Name:</strong> {$data['name']}</p>
+                        <p><strong>Email:</strong> {$data['email']}</p>
+
+                        <p><strong>Message:</strong></p>
+                        <div style='padding:10px; background:#f3f4f6; border-radius:6px'>
+                            {$data['message']}
+                        </div>
+
+                        <br>
+
+                        <small style='color:#888'>
+                            This message was sent from NGOF Event System
+                        </small>
+                    </div>
+                ");
+            });
+
+            return response()->json([
+                'message' => 'Email sent successfully'
+            ]);
+        } catch (\Exception $e) {
+
+            Log::error('Send email failed', [
+                'error' => $e->getMessage(),
+                'event_id' => $event->id
+            ]);
+
+            return response()->json([
+                'message' => 'Failed to send email'
+            ], 500);
+        }
     }
 }
