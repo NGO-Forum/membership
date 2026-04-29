@@ -197,7 +197,7 @@
                 </div>
 
                 <div id="organizerBox">
-                    <label class="block text-sm font-medium mb-1">Organizer / Name</label>
+                    <label id="organizerLabel" class="block text-sm font-medium mb-1">Organizer</label>
                     <input type="text" name="organizer" id="organizerInput" class="border rounded-md p-2 w-full">
                 </div>
 
@@ -325,7 +325,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M5.121 17.804A4 4 0 018 16h8a4 4 0 012.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    <p><span class="font-semibold mr-2">Organizer / Name: </span> <span id="detailOrganizer"></span></p>
+                    <p><span id="detailOrganizerLabel" class="font-semibold mr-1">Organizer</span> <span id="detailOrganizer"></span></p>
                 </div>
 
                 <div class="flex items-center gap-2 md:gap-4 hidden" id="emailRow">
@@ -419,6 +419,8 @@
             const registerCloseBox = document.getElementById('registerCloseBox');
             const registerCloseInput = document.getElementById('registration_close_date');
 
+            const organizerLabel = document.getElementById('organizerLabel');
+
             if (!selected) return;
 
             organizerBox.classList.remove('hidden');
@@ -430,6 +432,7 @@
                 organizerInput.required = true;
                 inviteInput.required = false;
                 inviteInput.value = '';
+                organizerLabel.innerText = 'Organizer';
             }
 
             if (selected.value === 'invite') {
@@ -439,6 +442,7 @@
                 organizerInput.required = true;
                 inviteInput.required = true;
                 registerCloseInput.value = '';
+                organizerLabel.innerText = 'Name';
             }
         }
 
@@ -513,7 +517,16 @@
 
             // Other fields
             document.getElementById('detailLocation').innerText = event.location || 'N/A';
+
+            const label = document.getElementById('detailOrganizerLabel');
+
+            if (event.event_type === 'invite') {
+                label.innerText = 'Name:';
+            } else {
+                label.innerText = 'Organizer:';
+            }
             document.getElementById('detailOrganizer').innerText = event.organizer || 'N/A';
+
             document.getElementById('detailDescription').innerText = event.description || 'No description';
 
             // 📧 Email
