@@ -7,11 +7,12 @@
     <title>Membership Form</title>
     <link rel="icon" href="/logo.png" type="image/png" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 
 <body class="bg-green-600 min-h-screen p-2">
     <div class="max-w-4xl mx-auto bg-white border-4 border-green-600 rounded-lg p-6 sm:p-8 shadow">
-        <h2 class="text-green-700 font-bold text-3xl mb-6 text-center">Membership Details</h2>
+        <h2 class="text-green-700 font-bold text-3xl mb-6 text-center">Membership Information</h2>
 
         <form action="{{ route('memberships.storeForm') }}" method="POST" class="space-y-6">
             @csrf
@@ -116,14 +117,14 @@
                         class="flex items-center gap-3 p-3 border border-gray-300 rounded-lg cursor-pointer hover:border-green-600 transition">
                         <input type="radio" name="membership_type" value="Full member" class="accent-green-600"
                             {{ old('membership_type') === 'Full member' ? 'checked' : '' }} required>
-                        <span class="font-medium text-gray-700">Full member</span>
+                        <span class="font-medium text-gray-700">Full member (adility to votel elected)</span>
                     </label>
 
                     <label
                         class="flex items-center gap-3 p-3 border border-gray-300 rounded-lg cursor-pointer hover:border-green-600 transition">
                         <input type="radio" name="membership_type" value="Associate member" class="accent-green-600"
                             {{ old('membership_type') === 'Associate member' ? 'checked' : '' }} required>
-                        <span class="font-medium text-gray-700">Associate member</span>
+                        <span class="font-medium text-gray-700">Associate member (only provide inputs)</span>
                     </label>
                 </div>
 
@@ -235,15 +236,11 @@
             </div>
 
             <!-- Buttons -->
-            <div class="flex flex-col sm:flex-row gap-3 sm:justify-between mt-8">
-                <button type="button" onclick="window.location='{{ route('membership.menbershipDetail') }}'"
-                    class="bg-white border border-green-600 text-green-700 px-6 py-2 rounded-lg hover:bg-green-50 transition font-semibold">
-                    Back
-                </button>
-
+            <div class="flex justify-end mt-8">
                 <button type="submit"
                     class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition font-semibold">
                     Next
+                    <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
         </form>

@@ -138,9 +138,6 @@ Route::middleware(['auth'])->group(function () {
         ->where('path', '.*')
         ->name('file.view');
 
-    // Membership detail route
-    Route::get('/membership/menbershipDetail', [MembershipDetailController::class, 'index'])->name('membership.menbershipDetail');
-
     // New Membership form routes
     Route::get('/membership/membershipForm', [NewMembershipController::class, 'form'])->name('membership.membershipForm');
     Route::post('/membership/membershipForm', [NewMembershipController::class, 'storeForm'])->name('memberships.storeForm');

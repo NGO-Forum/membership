@@ -24,7 +24,7 @@
         <form action="{{ route('register') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
             @csrf
             <div>
-                <label for="ngo" class="block text-gray-700 font-semibold mb-2">Name NGO</label>
+                <label for="ngo" class="block text-gray-700 font-semibold mb-2">Your NGO Name</label>
                 <input
                     type="text"
                     name="ngo"
@@ -50,7 +50,7 @@
             </div>
 
             <div class="md:col-span-2">
-                <label for="email" class="block text-gray-700 font-semibold mb-2">Email</label>
+                <label for="email" class="block text-gray-700 font-semibold mb-2">Email of your NGO</label>
                 <input
                     type="email"
                     name="email"
@@ -98,7 +98,7 @@
 
 
         <p class="mt-6 text-center text-gray-700">
-            Already have an account?
+            If you already have an account?
             <a href="{{ route('login') }}" class="text-green-600 font-semibold hover:underline">Login here</a>
         </p>
     </div>

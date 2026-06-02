@@ -15,7 +15,7 @@
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
-        "maatwebsite/excel": "*",
+        "maatwebsite/excel": "^3.1",
         "mpdf/mpdf": "^8.2",
         "openai-php/laravel": "^0.11.0",
         "phpoffice/phpword": "^1.3",

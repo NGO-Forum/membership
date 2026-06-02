@@ -9,6 +9,8 @@ use App\Models\Ngo;
 use App\Models\NewMembership;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
+use App\Exports\RegistrationsExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RegistrationController extends Controller
 {
@@ -147,7 +149,7 @@ class RegistrationController extends Controller
     }
 
 
-    public function show($eventId)
+    public function show(int $eventId)
     {
         $event = Event::with('registrations')->findOrFail($eventId);
 

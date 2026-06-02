@@ -10,7 +10,12 @@ class NewMembershipController extends Controller
 {
     public function form()
     {
-        return view('membership.membershipForm');
+        $membership = NewMembership::where(
+            'user_id',
+            Auth::id()
+        )->first();
+
+        return view('membership.membershipForm', compact('membership'));
     }
 
     public function storeForm(Request $request)
@@ -40,11 +45,11 @@ class NewMembershipController extends Controller
 
         ]);
 
-        NewMembership::create(array_merge(
-            $request->all(),
-            ['user_id' => Auth::id()]  // ← add this
-        ));
-        return redirect()->route('membership.membershipUpload');
+        $membership = NewMembership::updateOrCreate(
+            ['user_id' => Auth::id()],
+            $request->except('_token')
+        );
+        return redirect()->route('membership.membershipUpload', ['membership' => $membership->id]);
     }
 
     public function edit($id)

@@ -54,16 +54,18 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            if (Auth::user()->role === 'admin') {
+            $user = Auth::user();
+
+            if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard');
             }
 
-            if (Auth::user()->isProgram()) {
+            if ($user->isProgram()) {
                 return redirect()->route('events.calendar');
             }
-            if (in_array(Auth::user()->role, ['manager', 'ed', 'board'])) {
+
+            if (in_array($user->role, ['manager', 'ed', 'board'])) {
                 $membership = \App\Models\NewMembership::latest()->first();
-                // or choose the correct one based on your logic
 
                 if ($membership) {
                     return redirect()->route('reports.index', [
@@ -81,7 +83,10 @@ class AuthController extends Controller
                     return redirect()->route('membership.membershipForm');
                 }
 
-                $hasUpload = \App\Models\MembershipUpload::where('new_membership_id', $membership->id)->exists();
+                $hasUpload = \App\Models\MembershipUpload::where(
+                    'new_membership_id',
+                    $membership->id
+                )->exists();
 
                 if (!$hasUpload) {
                     return redirect()->route('membership.membershipUpload');

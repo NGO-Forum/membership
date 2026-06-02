@@ -14,131 +14,13 @@
 <body class="bg-green-600 min-h-screen p-4">
     <div class="max-w-4xl mx-auto bg-white rounded-lg p-8 shadow-md">
 
-        <h1 class="text-base md:text-lg text-gray-800 mb-4 leading-relaxed">
-            The NGO Forum currently serves as the secretariat for the following CSO working groups/networks. Each
-            network plays a critical role in capacity development, information exchange, and advocacy on the issues
-            reflected in its name.
-        </h1>
-
-        <p class="text-lg text-gray-700 mb-2">Please Click on each network to learn more about it:</p>
-
-        <!-- Network Links -->
-        <ul class="list-disc ml-6 mb-4 text-blue-600 text-base space-y-1">
-            <li><a href="https://53786707-5124-4ac6-84ff-9389bf387232.usrfiles.com/ugd/537867_d9b4ed9f583a4b95a3818cc2ab456a94.pdf"
-                    target="_blank" class="hover:underline">NECCAW (Environment, Climate Change, Agriculture and
-                    Water)</a></li>
-            <li><a href="https://53786707-5124-4ac6-84ff-9389bf387232.usrfiles.com/ugd/537867_f3786547af4f4bdbabfdc4504eae2b44.pdf"
-                    target="_blank" class="hover:underline">BWG (Budget Working Group)</a></li>
-            <li><a href="https://53786707-5124-4ac6-84ff-9389bf387232.usrfiles.com/ugd/537867_f3786547af4f4bdbabfdc4504eae2b44.pdf"
-                    target="_blank" class="hover:underline">RCC (Rivers Coalition of Cambodia)</a></li>
-            <li><a href="https://53786707-5124-4ac6-84ff-9389bf387232.usrfiles.com/ugd/537867_99b93fa037d5453cb2284d9f32e59659.pdf"
-                    target="_blank" class="hover:underline">NRLG (Natural Resources and Land Governance)</a></li>
-            <li><a href="https://53786707-5124-4ac6-84ff-9389bf387232.usrfiles.com/ugd/537867_7cfd2df44ede463385c212325fed6fd4.pdf"
-                    target="_blank" class="hover:underline">GGESI (Gender, Governance, Environment and Social
-                    Inclusion)</a></li>
-            <li><a href="https://53786707-5124-4ac6-84ff-9389bf387232.usrfiles.com/ugd/537867_68a4cd24ef0b41bbb90a208c73540256.pdf"
-                    target="_blank" class="hover:underline">METRI Youth Ambassador Platform for Positive Change (Pasted of GGESI)</a></li>
-        </ul>
-
         <form action="{{ route('memberships.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
-            <!-- Network Participation -->
-            <div class="form-section space-y-4 mt-8">
-                <h3
-                    class="flex items-center gap-2 text-lg text-green-700 font-semibold border-b-2 border-green-700 pb-3 mb-4">
-                    <i class="fas fa-network-wired"></i> Network Participation
-                </h3>
-
-                <label class="block font-semibold mb-2">Please join one or many of these networks that you think are
-                    serving the best to your mandate and program focuses:</label>
-                <div class="flex flex-col gap-6">
-                    @php
-                        $networksOld = old('networks', []);
-                    @endphp
-                    <label class="cursor-pointer">
-                        <input type="checkbox" id="network_neccaw" name="networks[]" value="NECCAW"
-                            {{ in_array('NECCAW', $networksOld) ? 'checked' : '' }}
-                            class="form-checkbox text-green-600" />
-                        <span class="ml-2">NECCAW (Environment, Climate Change, Agriculture and Water)</span>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="checkbox" id="network_bwg" name="networks[]" value="BWG"
-                            {{ in_array('BWG', $networksOld) ? 'checked' : '' }} class="form-checkbox text-green-600" />
-                        <span class="ml-2">BWG (Budget Working Group)</span>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="checkbox" id="network_rcc" name="networks[]" value="RCC"
-                            {{ in_array('RCC', $networksOld) ? 'checked' : '' }} class="form-checkbox text-green-600" />
-                        <span class="ml-2">RCC (Rivers Coalition of Cambodia)</span>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="checkbox" id="network_nrlg" name="networks[]" value="NRLG"
-                            {{ in_array('NRLG', $networksOld) ? 'checked' : '' }}
-                            class="form-checkbox text-green-600" />
-                        <span class="ml-2">NRLG (Natural Resources and Land Governance)</span>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="checkbox" id="network_ggesi" name="networks[]" value="GGESI"
-                            {{ in_array('GGESI', $networksOld) ? 'checked' : '' }}
-                            class="form-checkbox text-green-600" />
-                        <span class="ml-2">GGESI (Gender, Governance, Environment and Social Inclusion)</span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Dynamic Focal Points -->
-            <div id="focal-points-section" class="hidden mt-6">
-                <h2 class="text-xl font-bold text-green-600 mb-3">Focal Points for Selected Networks</h2>
-                <div id="focal-points-container" class="flex flex-col gap-4"></div>
-            </div>
-
-            <div class="mt-6">
-                <!-- Ministries Partners -->
-                <div class="mb-4">
-                    <label class="block font-semibold mb-1">
-                        Please list down ministries your Organization is partnering with
-                    </label>
-                    <textarea name="ministries_partners" rows="5"
-                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
-                        placeholder="Please list down">{{ old('ministries_partners') }}</textarea>
-                    @error('ministries_partners')
-                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Development Partners -->
-                <div class="mb-4">
-                    <label class="block font-semibold mb-1">
-                        Please list down development partners (Donors) your Organization is partnering with
-                    </label>
-                    <textarea name="development_partners" rows="5"
-                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
-                        placeholder="Please list down">{{ old('development_partners') }}</textarea>
-                    @error('development_partners')
-                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Private Sector Partners -->
-                <div class="mb-6">
-                    <label class="block font-semibold mb-1">
-                        Please list down private sector your Organization is partnering with
-                    </label>
-                    <textarea name="private_sector_partners" rows="5"
-                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
-                        placeholder="Please list down">{{ old('private_sector_partners') }}</textarea>
-                    @error('private_sector_partners')
-                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-            </div>
-
-
             <div>
                 <!-- ================= ASSESSMENT REPORT ================= -->
-                <h3 class="text-lg font-semibold text-green-700 mt-10 mb-4 border-b pb-2">
-                    <i class="fas fa-clipboard-check mr-2"></i>Basic Organazational Information
+                <h3 class="text-lg font-semibold text-green-700 mb-4 border-b pb-2">
+                    <i class="fas fa-clipboard-check mr-2"></i>About your Organazation
                 </h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 md:gap-6">
@@ -170,31 +52,32 @@
                     </div>
 
                 </div>
+
                 <!-- Vision -->
                 <div class="mb-4">
-                    <label class="block font-semibold mb-1">Vision</label>
+                    <label class="block font-semibold mb-1">Vision *</label>
                     <textarea name="vision" rows="3" placeholder="Enter your Vision"
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">{{ old('vision') }}</textarea>
                 </div>
 
                 <!-- Mission -->
                 <div class="mb-4">
-                    <label class="block font-semibold mb-1">Mission</label>
+                    <label class="block font-semibold mb-1">Mission *</label>
                     <textarea name="mission" rows="3" placeholder="Enter your Mission"
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">{{ old('mission') }}</textarea>
                 </div>
 
                 <!-- Key Actions -->
                 <div class="mb-4">
-                    <label class="block font-semibold mb-1">Key Activity</label>
-                    <textarea name="key_actions" rows="3" placeholder="Enter your Key Action is point"
+                    <label class="block font-semibold mb-1">Key Activity *</label>
+                    <textarea name="key_actions" rows="3" placeholder="Enter your main activities"
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
                         placeholder="Use bullet points if possible">{{ old('key_actions') }}</textarea>
                 </div>
 
                 <div class="mb-4">
                     <label class="block font-semibold mb-2">
-                        Key Program Focuses
+                        Key Program Focuses *
                     </label>
 
                     <div class="space-y-2 grid grid-cols-2 md:grid-cols-4 md:gap-4">
@@ -251,7 +134,7 @@
                 <!-- Staff Information -->
                 <div class="mt-6">
                     <h3 class="text-md font-semibold text-gray-900 mb-3">
-                        Staff Information
+                        Staff Information *
                     </h3>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -261,8 +144,7 @@
                             <label class="block mb-1">
                                 Total Staff
                             </label>
-                            <input type="number" name="staff_total" min="0"
-                                value="{{ old('staff_total') }}"
+                            <input type="number" name="staff_total" min="0" value="{{ old('staff_total') }}"
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
                                 placeholder="Enter total staff">
                             @error('staff_total')
@@ -303,7 +185,7 @@
                 <!-- Annual Budget Information -->
                 <div class="mt-6">
                     <h4 class="text-md font-semibold text-gray-900 mb-3">
-                        Annual Budget Information
+                        Annual Budget Information *
                     </h4>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 text-gray-700 gap-6">
@@ -356,7 +238,8 @@
                                 Total Provinces
                             </label>
                             <input type="number" name="province" min="0" placeholder="e.g. 4"
-                                value="{{ old('province') }}" class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
+                                value="{{ old('province') }}"
+                                class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
                             <p class="text-xs text-gray-400 mt-1">Number of provinces covered</p>
                         </div>
 
@@ -366,7 +249,8 @@
                                 Total Districts
                             </label>
                             <input type="number" name="district" min="0" placeholder="e.g. 47"
-                                value="{{ old('district') }}" class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
+                                value="{{ old('district') }}"
+                                class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
                             <p class="text-xs text-gray-400 mt-1">District/Krong/Khan</p>
                         </div>
 
@@ -376,7 +260,8 @@
                                 Total Communes
                             </label>
                             <input type="number" name="commune" min="0" placeholder="e.g. 54"
-                                value="{{ old('commune') }}" class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
+                                value="{{ old('commune') }}"
+                                class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
                             <p class="text-xs text-gray-400 mt-1">Commune/Sangkat</p>
                         </div>
 
@@ -386,7 +271,8 @@
                                 Total Villages
                             </label>
                             <input type="number" name="village" min="0" placeholder="e.g. 107"
-                                value="{{ old('village') }}" class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
+                                value="{{ old('village') }}"
+                                class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500">
                             <p class="text-xs text-gray-400 mt-1">Villages reached</p>
                         </div>
                     </div>
@@ -401,7 +287,8 @@
                             Upload program maps, coverage reports, or any evidence supporting your coverage numbers.
                         </p>
                         <p class="text-sm text-gray-600 mb-3">
-                            Example: Tropeang Chhuk Village, Stung Meanchey Commune (Sangkat), Meanchey District (Khan), Phnom Penh.
+                            Example: Tropeang Chhuk Village, Stung Meanchey Commune (Sangkat), Meanchey District (Khan),
+                            Phnom Penh.
                         </p>
 
                         <input type="file" name="file"
@@ -464,22 +351,63 @@
 
             </div>
 
+            <div class="mt-6">
+                <!-- Ministries Partners -->
+                <div class="mb-4">
+                    <label class="block font-semibold mb-1">
+                        Please list down ministries your Organization is partnering with
+                    </label>
+                    <textarea name="ministries_partners" rows="5"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
+                        placeholder="Please list down">{{ old('ministries_partners') }}</textarea>
+                    @error('ministries_partners')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Development Partners -->
+                <div class="mb-4">
+                    <label class="block font-semibold mb-1">
+                        Please list down development partners (Donors) your Organization is partnering with
+                    </label>
+                    <textarea name="development_partners" rows="5"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
+                        placeholder="Please list down">{{ old('development_partners') }}</textarea>
+                    @error('development_partners')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Private Sector Partners -->
+                <div class="mb-6">
+                    <label class="block font-semibold mb-1">
+                        Please list down private sector your Organization is partnering with
+                    </label>
+                    <textarea name="private_sector_partners" rows="5"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
+                        placeholder="Please list down">{{ old('private_sector_partners') }}</textarea>
+                    @error('private_sector_partners')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
             <!-- Required Documents -->
             <h3 class="text-lg font-semibold text-green-700 mt-6 mb-3">
                 <i class="fas fa-file-alt text-green-600 mr-2"></i>Required Documents
             </h3>
             @foreach ([
-        'letter' => 'Letter of interest to join NGOF',
-        'constitution' => "The Organization's Constitution and/or By-Laws (where these exist)",
-        'activities' => 'List or summary of current activities in Cambodia, brochures or other explanatory documents',
-        'funding' => 'A list of the Organisation’s funding sources',
-        'board' => 'A list of Board Members or other decision-making body',
-        'authorization' => 'Official authorization/Registration with MoI to operate in Cambodia',
-        'strategic_plan' => 'The organization strategic plan (if available)',
-        'fundraising_strategy' => 'The fundraising strategy (Optional)',
-        'audit_report' => 'Global audit report / Financial Report',
-        'logo' => 'The Logo Organization is required.',
-    ] as $field => $label)
+                    'letter' => 'Letter of interest to join NGOF (required)',
+                    'constitution' => "The Organization's Constitution and/or By-Laws (only for full membership)",
+                    'activities' => 'List or summary of current activities in Cambodia, brochures or other explanatory documents (required)',
+                    'funding' => 'A list of the Organisation’s funding sources (if available)',
+                    'board' => 'A list of Board Members or other decision-making body (if available)',
+                    'authorization' => 'Official authorization/Registration with MoI to operate in Cambodia',
+                    'strategic_plan' => 'The organization strategic plan (if available)',
+                    'fundraising_strategy' => 'The fundraising strategy (if available)',
+                    'audit_report' => 'Global audit report / Financial Report',
+                    'logo' => 'The Logo Organization (required)',
+                ] as $field => $label)
                 <div class="mb-6 border border-gray-300 rounded-md p-4">
                     <label for="{{ $field }}" class="block font-normal mb-3">{{ $label }}</label>
                     <input type="file" id="{{ $field }}" name="{{ $field }}"
@@ -495,13 +423,89 @@
                 </div>
             @endforeach
 
+            <h1 class="text-base md:text-lg text-gray-800 mb-4 leading-relaxed">
+                The NGO Forum currently serves as the secretariat for the following CSO working groups/networks. Each
+                network plays a critical role in capacity development, information exchange, and advocacy on the issues
+                reflected in its name.
+            </h1>
+
+            <p class="text-lg text-gray-700 mb-2">Please Click on each network to learn more about it:</p>
+
+            <!-- Network Links -->
+            <ul class="list-disc ml-6 mb-4 text-blue-600 text-base space-y-1">
+                <li><a href="https://53786707-5124-4ac6-84ff-9389bf387232.usrfiles.com/ugd/537867_d9b4ed9f583a4b95a3818cc2ab456a94.pdf"
+                        target="_blank" class="hover:underline">NECCAW (Environment, Climate Change, Agriculture and
+                        Water)</a></li>
+                <li><a href="https://53786707-5124-4ac6-84ff-9389bf387232.usrfiles.com/ugd/537867_f3786547af4f4bdbabfdc4504eae2b44.pdf"
+                        target="_blank" class="hover:underline">BWG (Budget Working Group)</a></li>
+                <li><a href="https://53786707-5124-4ac6-84ff-9389bf387232.usrfiles.com/ugd/537867_f3786547af4f4bdbabfdc4504eae2b44.pdf"
+                        target="_blank" class="hover:underline">RCC (Rivers Coalition of Cambodia)</a></li>
+                <li><a href="https://53786707-5124-4ac6-84ff-9389bf387232.usrfiles.com/ugd/537867_99b93fa037d5453cb2284d9f32e59659.pdf"
+                        target="_blank" class="hover:underline">NRLG (Natural Resources and Land Governance)</a></li>
+                <li><a href="https://53786707-5124-4ac6-84ff-9389bf387232.usrfiles.com/ugd/537867_7cfd2df44ede463385c212325fed6fd4.pdf"
+                        target="_blank" class="hover:underline">GGESI (Gender, Governance, Environment and Social
+                        Inclusion)</a></li>
+            </ul>
+
+            <!-- Network Participation -->
+            <div class="form-section space-y-4 mt-8">
+                <h3
+                    class="flex items-center gap-2 text-lg text-green-700 font-semibold border-b-2 border-green-700 pb-3 mb-4">
+                    <i class="fas fa-network-wired"></i> Network Participation ( Optional )
+                </h3>
+
+                <label class="block font-semibold mb-2">Please join one or many of these networks that you think are
+                    serving the best to your mandate and program focuses:</label>
+                <div class="flex flex-col gap-6">
+                    @php
+                        $networksOld = old('networks', []);
+                    @endphp
+                    <label class="cursor-pointer">
+                        <input type="checkbox" id="network_neccaw" name="networks[]" value="NECCAW"
+                            {{ in_array('NECCAW', $networksOld) ? 'checked' : '' }}
+                            class="form-checkbox text-green-600" />
+                        <span class="ml-2">NECCAW (Environment, Climate Change, Agriculture and Water)</span>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="checkbox" id="network_bwg" name="networks[]" value="BWG"
+                            {{ in_array('BWG', $networksOld) ? 'checked' : '' }}
+                            class="form-checkbox text-green-600" />
+                        <span class="ml-2">BWG (Budget Working Group)</span>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="checkbox" id="network_rcc" name="networks[]" value="RCC"
+                            {{ in_array('RCC', $networksOld) ? 'checked' : '' }}
+                            class="form-checkbox text-green-600" />
+                        <span class="ml-2">RCC (Rivers Coalition of Cambodia)</span>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="checkbox" id="network_nrlg" name="networks[]" value="NRLG"
+                            {{ in_array('NRLG', $networksOld) ? 'checked' : '' }}
+                            class="form-checkbox text-green-600" />
+                        <span class="ml-2">NRLG (Natural Resources and Land Governance)</span>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="checkbox" id="network_ggesi" name="networks[]" value="GGESI"
+                            {{ in_array('GGESI', $networksOld) ? 'checked' : '' }}
+                            class="form-checkbox text-green-600" />
+                        <span class="ml-2">GGESI (Gender, Governance, Environment and Social Inclusion)</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Dynamic Focal Points -->
+            <div id="focal-points-section" class="hidden mt-6">
+                <h2 class="text-xl font-bold text-green-600 mb-3">Focal Points for Selected Networks</h2>
+                <div id="focal-points-container" class="flex flex-col gap-4"></div>
+            </div>
+
             <!-- Pledge -->
             <div class="mt-8">
                 <h2 class="text-xl font-bold text-green-600 mb-3">Pledge of commitment:</h2>
                 <p class="text-gray-800 mb-4 leading-relaxed">
                     On behalf of my organization, I accept the Mission Statement and Values of the NGO Forum on Cambodia
                     and agree to abide by the By-Laws governing membership. I strongly commit to actively participating
-                    in regular related events and joint efforts of the NGO Forum.
+                    in regular related events and joint efforts of the NGO Forum on Cambodia.
                 </p>
                 <div class="mb-4">
                     <label class="flex items-center space-x-2">
@@ -537,8 +541,10 @@
 
             <!-- Buttons -->
             <div class="flex justify-between mt-6">
-                <a href="{{ route('membership.membershipForm') }}"
-                    class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Back</a>
+                <button type="button" onclick="history.back()"
+                    class="bg-white border border-green-600 text-green-700 px-6 py-2 rounded-lg hover:bg-green-600 hover:text-white transition font-semibold">
+                    Back
+                </button>
                 <button type="submit"
                     class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Submit</button>
             </div>

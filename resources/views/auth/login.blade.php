@@ -37,14 +37,14 @@
         <form action="{{ route('login') }}" method="POST" class="space-y-4">
             @csrf
             <div>
-                <label for="email" class="block text-gray-700 font-medium mb-1">Email</label>
-                <input type="email" name="email" id="email" required
+                <label for="email" class="block text-gray-700 font-medium mb-1">Email of your NGO</label>
+                <input type="email" name="email" id="email" required placeholder="you@example.com"
                     class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                     value="{{ old('email') }}">
             </div>
             <div>
                 <label for="password" class="block text-gray-700 font-medium mb-1">Password</label>
-                <input type="password" name="password" id="password" required
+                <input type="password" name="password" id="password" required placeholder="Enter password"
                     class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
             </div>
             <div class="flex items-center justify-between">
@@ -61,7 +61,7 @@
         </form>
 
         <p class="mt-4 text-center text-gray-600">
-            Don't have an account? <a href="{{ route('register') }}" class="text-green-600 hover:underline">Register
+            If you don't have an account? <a href="{{ route('register') }}" class="text-green-600 hover:underline">Register
                 here</a>
         </p>
     </div>
