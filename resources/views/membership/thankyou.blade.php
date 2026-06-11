@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,76 +21,63 @@
     </style>
 </head>
 
-<body class="min-h-screen flex items-center justify-center bg-green-600 p-2 sm:p-4 lg:p-6">
+<body class="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center p-2 sm:p-4">
 
-<div class="text-center">
+    <div class="w-full max-w-3xl mx-auto">
 
-    <!-- Header -->
-    <div class="flex items-center justify-center text-white mb-4">
-        <h1 class="text-2xl sm:text-5xl lg:text-4xl font-bold">
-            NGO Forum Membership
-        </h1>
-    </div>
+        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden">
 
-    <!-- Subtitle -->
-    <p class="text-lg sm:text-xl mb-8 text-white">
-        Please review and update your organization’s membership information
-    </p>
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-green-600 to-emerald-500 px-4 sm:px-4 py-4 sm:py-6 text-center">
 
-    <!-- Main Card -->
-    <div class="w-full max-w-3xl shadow-2xl bg-gray-50 rounded-lg border border-gray-200">
+                <!-- Icon -->
+                <div
+                    class="w-16 h-16 sm:w-24 sm:h-24 mx-auto bg-white rounded-full flex items-center justify-center shadow-lg mb-4 sm:mb-6">
+                    <i class="fas fa-check text-green-600 text-3xl sm:text-5xl"></i>
+                </div>
 
-        <div class="p-6 sm:p-8 text-left space-y-4">
-            <h2 class="text-green-600 text-xl font-semibold">
-                Dear Valued NGOF Member,
-            </h2>
+                <!-- Title -->
+                <h1 class="text-2xl sm:text-4xl font-bold text-white leading-tight">
+                    You've done a great job!
+                </h1>
 
-            <p class="text-gray-700 leading-relaxed">
-                Thank you for taking part in the NGOF membership process. This form allows your organization to complete one of the following actions:
-            </p>
-
-            <ul class="list-disc list-inside text-gray-700 leading-relaxed space-y-1">
-                <li>Reconfirm your existing NGOF membership</li>
-                <li>Apply for NGOF membership</li>
-                <li>Notify NGOF of membership discontinuation</li>
-            </ul>
-
-            <p class="text-gray-700 leading-relaxed">
-                All information provided will be treated with strict confidentiality and will be used solely for NGOF administrative, coordination, and engagement purposes. Your cooperation supports accurate record-keeping and strengthens collaboration across the NGOF network.
-            </p>
-        </div>
-
-        <!-- Confirmation Section -->
-        <div class="flex flex-col items-center justify-center p-8 bg-white rounded-b-lg border-t border-gray-100 text-center space-y-4">
-
-            <div class="bg-green-100 rounded-full p-2">
-                <i class="fas fa-check-circle text-green-500 text-4xl sm:text-7xl"></i>
             </div>
 
-            <h2 class="text-xl sm:text-4xl font-semibold text-green-600">
-                Thank you for your time
-            </h2>
+            <!-- Content -->
+            <div class="p-5 sm:p-8 md:p-12">
 
-            <p class="text-md sm:text-lg text-green-700">
-                Your response has been successfully recorded.
-            </p>
+                <h2 class="text-base sm:text-xl font-bold text-green-700 mb-5">
+                    Dear {{ Auth::user()->name ?? 'Valued NGOF Member' }},
+                </h2>
 
-            <ul class="list-disc list-inside text-gray-700 max-w-full text-left space-y-2">
-                <li>
-                    If you have reconfirmed or applied for membership, our team will carefully review your information and contact you if additional details are required.
-                </li>
-                <li>
-                    If you have chosen to discontinue your membership, we sincerely thank you for your past engagement and valuable contribution to the NGOF community.
-                </li>
-            </ul>
+                <div class="space-y-5 text-gray-700 text-base leading-relaxed">
 
-            <p class="text-gray-700 max-w-full">
-                We appreciate your time and interest, and we remain committed to transparent communication, constructive collaboration, and strong partnerships across our network.
-            </p>
+                    <p>
+                        Thank you for your submission. Your request and supporting
+                        documents have been successfully received by
+                        <strong>The NGO Forum on Cambodia (NGOF)</strong>.
+                    </p>
+
+                    <p>
+                        Our management team will carefully review the information
+                        provided and contact you should any additional
+                        clarification or documentation be required.
+                    </p>
+
+                    <p>
+                        We sincerely appreciate your engagement and continued
+                        contribution to strengthening civil society collaboration
+                        in Cambodia.
+                    </p>
+
+                </div>
+
+            </div>
+
         </div>
 
     </div>
-</div>
 
 </body>
+
 </html>

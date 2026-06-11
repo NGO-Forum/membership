@@ -93,7 +93,7 @@ class NewMembershipController extends Controller
         return redirect()->route('admin.newMembership');
     }
 
-    public function delete($id)
+    public function delete(int $id)
     {
         $membership = NewMembership::findOrFail($id);
         $membership->delete();

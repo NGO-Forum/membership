@@ -37,7 +37,7 @@
         <form action="{{ route('login') }}" method="POST" class="space-y-4">
             @csrf
             <div>
-                <label for="email" class="block text-gray-700 font-medium mb-1">Email of your NGO</label>
+                <label for="email" class="block text-gray-700 font-medium mb-1">Email of your Organization</label>
                 <input type="email" name="email" id="email" required placeholder="you@example.com"
                     class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                     value="{{ old('email') }}">

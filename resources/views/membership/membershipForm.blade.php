@@ -32,7 +32,7 @@
             <!-- Organization Names -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="font-semibold block mb-2 text-gray-700">Organization Name in English
+                    <label class="font-semibold block mb-2 text-gray-700">Your Organization Name in English
                         (Required)</label>
                     <input type="text" name="org_name_en" placeholder="Enter Name NGO"
                         value="{{ old('org_name_en') }}"
@@ -56,7 +56,7 @@
                 </div>
 
                 <div>
-                    <label class="font-semibold block mb-2 text-gray-700">Organization Name in Khmer (Required)</label>
+                    <label class="font-semibold block mb-2 text-gray-700">Your Organization Name in Khmer (Required)</label>
                     <input type="text" name="org_name_kh" placeholder="Enter Name NGO"
                         value="{{ old('org_name_kh') }}"
                         class="border border-gray-300 rounded-lg w-full p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
@@ -117,14 +117,14 @@
                         class="flex items-center gap-3 p-3 border border-gray-300 rounded-lg cursor-pointer hover:border-green-600 transition">
                         <input type="radio" name="membership_type" value="Full member" class="accent-green-600"
                             {{ old('membership_type') === 'Full member' ? 'checked' : '' }} required>
-                        <span class="font-medium text-gray-700">Full member (adility to votel elected)</span>
+                        <span class="font-medium text-sm text-gray-700">Full member (the rights to vote and being elected)</span>
                     </label>
 
                     <label
                         class="flex items-center gap-3 p-3 border border-gray-300 rounded-lg cursor-pointer hover:border-green-600 transition">
                         <input type="radio" name="membership_type" value="Associate member" class="accent-green-600"
                             {{ old('membership_type') === 'Associate member' ? 'checked' : '' }} required>
-                        <span class="font-medium text-gray-700">Associate member (only provide inputs)</span>
+                        <span class="font-medium text-sm text-gray-700">Associate member (the rights to provide inputs only)</span>
                     </label>
                 </div>
 

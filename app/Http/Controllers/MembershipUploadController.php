@@ -14,6 +14,7 @@ use App\Mail\NewMembershipUploadedMail;
 use App\Mail\NewMembershipMail;
 use App\Models\Ngo;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class MembershipUploadController extends Controller
 {
@@ -281,14 +282,14 @@ class MembershipUploadController extends Controller
             }
 
             // ✅ Send to director (same template but auto text changes)
-            if (!empty($newMembership->director_email)) {
-                Mail::to($newMembership->director_email)
+            if (Auth::check() && !empty(Auth::user()->email)) {
+                Mail::to(Auth::user()->email)
                     ->send(new NewMembershipMail($newMembership, $isExistingNgo));
             }
         } catch (\Throwable $e) {
             Log::error('Membership email error: ' . $e->getMessage(), [
                 'new_membership_id' => $newMembership->id ?? null,
-                'director_email' => $newMembership->director_email ?? null,
+                'user_email' => Auth::user()->email ?? null,
             ]);
         }
 

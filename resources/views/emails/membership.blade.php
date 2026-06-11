@@ -28,20 +28,22 @@
                         <td style="padding:30px; color:#333; font-size:15px; line-height:1.7;">
 
                             <p>
-                                Dear <strong>{{ $membership->director_name ?? 'Applicant' }}</strong>,
+                                Dear <strong>{{ Auth::user()->name ?? 'Valued NGOF Member' }}</strong>,
                             </p>
 
                             <p>
                                 @if ($isExistingNgo)
                                     Thank you for reconfirming your membership with <strong>The NGO Forum on
                                         Cambodia</strong>.
-                                    We have received your updated information. Our management team will review the
-                                    details and contact you
+                                        <br><br>
+                                    We have received your updated information. <br><br>
+                                    Our management team will review the details and contact you
                                     if any additional information is required.
                                 @else
                                     Thank you for your interest in becoming a member of <strong>The NGO Forum on
-                                        Cambodia</strong>.
-                                    We have successfully received your submitted information. Our management team will
+                                        Cambodia</strong>.<br><br>
+                                    We have successfully received your submitted information. <br><br> 
+                                    Our management team will
                                     carefully review your application
                                     and will contact you once the review process is complete.
                                 @endif

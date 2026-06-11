@@ -31,7 +31,7 @@ class AuthController extends Controller
             'role' => 'user',
         ]);
 
-        return redirect()->route('login')->with('success', 'Registration successful! Please login.');
+        return redirect()->route('login')->with('success', 'Your account has been created successfully! Please login.');
     }
 
 

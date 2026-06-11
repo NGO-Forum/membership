@@ -284,7 +284,7 @@
                         </label>
 
                         <p class="text-sm text-gray-600 mb-1">
-                            Upload program maps, coverage reports, or any evidence supporting your coverage numbers.
+                            Upload program maps, coverage reports, or any evidence supporting your coverage numbers target areas.
                         </p>
                         <p class="text-sm text-gray-600 mb-3">
                             Example: Tropeang Chhuk Village, Stung Meanchey Commune (Sangkat), Meanchey District (Khan),
@@ -355,7 +355,7 @@
                 <!-- Ministries Partners -->
                 <div class="mb-4">
                     <label class="block font-semibold mb-1">
-                        Please list down ministries your Organization is partnering with
+                        Please list down names of ministries your Organization is partnering with
                     </label>
                     <textarea name="ministries_partners" rows="5"
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
@@ -368,7 +368,7 @@
                 <!-- Development Partners -->
                 <div class="mb-4">
                     <label class="block font-semibold mb-1">
-                        Please list down development partners (Donors) your Organization is partnering with
+                        Please list down names of development partners (Donors) your Organization is partnering with
                     </label>
                     <textarea name="development_partners" rows="5"
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
@@ -381,7 +381,7 @@
                 <!-- Private Sector Partners -->
                 <div class="mb-6">
                     <label class="block font-semibold mb-1">
-                        Please list down private sector your Organization is partnering with
+                        Please list down names of private sector your Organization is partnering with
                     </label>
                     <textarea name="private_sector_partners" rows="5"
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
@@ -398,15 +398,15 @@
             </h3>
             @foreach ([
                     'letter' => 'Letter of interest to join NGOF (required)',
-                    'constitution' => "The Organization's Constitution and/or By-Laws (only for full membership)",
+                    'constitution' => "The Organization's Constitution and/or By-Laws (only for those selected being full membership)",
                     'activities' => 'List or summary of current activities in Cambodia, brochures or other explanatory documents (required)',
                     'funding' => 'A list of the Organisation’s funding sources (if available)',
                     'board' => 'A list of Board Members or other decision-making body (if available)',
-                    'authorization' => 'Official authorization/Registration with MoI to operate in Cambodia',
+                    'authorization' => 'Official authorization/Registration with MoI to operate in Cambodia (Required)',
                     'strategic_plan' => 'The organization strategic plan (if available)',
                     'fundraising_strategy' => 'The fundraising strategy (if available)',
-                    'audit_report' => 'Global audit report / Financial Report',
-                    'logo' => 'The Logo Organization (required)',
+                    'audit_report' => 'Global audit report / Financial Report (Required)',
+                    'logo' => 'The logo of your organization (High resolution Required in format of PNG, JPEG...)',
                 ] as $field => $label)
                 <div class="mb-6 border border-gray-300 rounded-md p-4">
                     <label for="{{ $field }}" class="block font-normal mb-3">{{ $label }}</label>
@@ -424,12 +424,12 @@
             @endforeach
 
             <h1 class="text-base md:text-lg text-gray-800 mb-4 leading-relaxed">
-                The NGO Forum currently serves as the secretariat for the following CSO working groups/networks. Each
-                network plays a critical role in capacity development, information exchange, and advocacy on the issues
+                The NGO Forum on Cambodia (NGOF) currently serves as the secretariat for the following CSO technical working groups/networks. Each
+                network will represent CSOs to engage with Group BWG and it plays a critical role in capacity development, information exchange, and advocacy on the issues
                 reflected in its name.
             </h1>
 
-            <p class="text-lg text-gray-700 mb-2">Please Click on each network to learn more about it:</p>
+            <p class="text-lg text-gray-700 mb-2">Please click on each network to learn more about it:</p>
 
             <!-- Network Links -->
             <ul class="list-disc ml-6 mb-4 text-blue-600 text-base space-y-1">
@@ -488,7 +488,7 @@
                         <input type="checkbox" id="network_ggesi" name="networks[]" value="GGESI"
                             {{ in_array('GGESI', $networksOld) ? 'checked' : '' }}
                             class="form-checkbox text-green-600" />
-                        <span class="ml-2">GGESI (Gender, Governance, Environment and Social Inclusion)</span>
+                        <span class="ml-2">GGESI (Governance, Gender, Environment and Social Inclusion)</span>
                     </label>
                 </div>
             </div>
@@ -503,7 +503,7 @@
             <div class="mt-8">
                 <h2 class="text-xl font-bold text-green-600 mb-3">Pledge of commitment:</h2>
                 <p class="text-gray-800 mb-4 leading-relaxed">
-                    On behalf of my organization, I accept the Mission Statement and Values of the NGO Forum on Cambodia
+                    On behalf of my organization, I accept the Mission Statement and Values of the NGO Forum on Cambodia (NGOF) 
                     and agree to abide by the By-Laws governing membership. I strongly commit to actively participating
                     in regular related events and joint efforts of the NGO Forum on Cambodia.
                 </p>
